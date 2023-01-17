@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" class="relative h-full antialiased dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.png" />
+    <meta http-equiv="content-security-policy" content="">
+		<link href="./_app/immutable/assets/_layout-b19f90b6.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/_page-49288d19.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/PostsList-988031de.css" rel="stylesheet">
+		<link rel="modulepreload" href="./_app/immutable/start-aa93bf10.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/index-998a520c.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/singletons-e8597c0a.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/preload-helper-41c905a7.js">
+		<link rel="modulepreload" href="./_app/immutable/components/pages/_layout.svelte-a9fb7042.js">
+		<link rel="modulepreload" href="./_app/immutable/modules/pages/_layout.js-9cbb603b.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/_layout-da46b06b.js">
+		<link rel="modulepreload" href="./_app/immutable/components/pages/posts/__page__/_page.svelte-c3d5dcdd.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/info-523b83f0.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/ArrowLeftIcon-fadd5b28.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/PostsList-c2f76d1b.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/PostDate-2c42476a.js"><title>Rafael "Auyer" Passos | Posts</title><!-- HEAD_svelte-1j9di4b_START --><!-- HEAD_svelte-1j9di4b_END -->
+    <script>
+      let darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+      updateMode()
+      darkModeMediaQuery.addEventListener('change', updateModeWithoutTransitions)
+      window.addEventListener('storage', updateModeWithoutTransitions)
+
+      function updateMode() {
+        let isSystemDarkMode = darkModeMediaQuery.matches
+        let isDarkMode =
+          window.localStorage.isDarkMode === 'true' ||
+          (!('isDarkMode' in window.localStorage) && isSystemDarkMode)
+
+        if (isDarkMode) {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+
+        if (isDarkMode === isSystemDarkMode) {
+          delete window.localStorage.isDarkMode
+        }
+      }
+
+      function disableTransitionsTemporarily() {
+        document.documentElement.classList.add('[&_*]:!transition-none')
+        window.setTimeout(() => {
+          document.documentElement.classList.remove('[&_*]:!transition-none')
+        }, 0)
+      }
+
+      function updateModeWithoutTransitions() {
+        disableTransitionsTemporarily()
+        updateMode()
+      }
+    </script>
+  </head>
+
+  <body class="h-full bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400">
+    <div>
+
+
+<div class="flex flex-col min-h-screen "><div class="flex flex-col flex-grow w-full px-4 py-2"><header class="flex items-center justify-between w-full max-w-4xl py-4 mx-auto lg:pb-8"><nav class="nav flex items-center w-full mx-auto svelte-1r9m0vj"><a class="logolink" href="/" active="true"><img src="/assets/logo.svg" alt="Auyer" width="30px" height="30px"></a>
+  <a class="link svelte-1r9m0vj" href="/about" active="false">About
+  </a>
+  <a class="link svelte-1r9m0vj" href="/posts" active="false">Posts
+  </a>
+</nav>
+      <button type="button" role="switch" aria-label="Toggle Dark Mode" aria-checked="true" class="w-5 h-5 sm:h-8 sm:w-8 sm:p-1"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="hidden text-zinc-500 dark:block"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="block text-zinc-400 dark:hidden"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg></button></header>
+    <main>
+
+<div class="flex flex-col flex-grow"><header class="pt-4"><h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Check my posts:
+    </h1>
+    <p class="mt-6">I should write more.</p></header>
+
+  <div class="mt-16 sm:mt-20"><div class="flex flex-col gap-16 md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40"><article class="grid items-start grid-cols-4 gap-8"><div class="relative z-10 order-first mb-3 flex text-zinc-500 dark:text-zinc-400 flex-col hidden md:flex text-sm">
+  <div class="flex flex-col"><time datetime="2018-08-31">August 31, 2018</time>
+    
+    <span>7 min read</span></div></div>
+
+      <div class="col-span-4 md:col-span-3"><div class="relative flex flex-col items-start group ">
+            <div class="relative z-10 order-first mb-3 flex text-zinc-500 dark:text-zinc-400 md:hidden pl-3.5"><span class="absolute inset-y-0 left-0 flex items-center py-1" aria-hidden="true"><span class="h-full w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500"></span></span>
+  <div class="flex"><time datetime="2018-08-31">August 31, 2018</time>
+    <span class="mx-1">•</span>
+    <span>7 min read</span></div></div>
+          
+
+  <div class="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100"><div class="absolute z-0 transition scale-95 opacity-0 -inset-y-6 -inset-x-4 bg-zinc-50 group-hover:scale-100 group-hover:opacity-100 dark:bg-zinc-800/50 sm:-inset-x-6 sm:rounded-2xl"></div>
+        <a href="/post/latex-with-vscode" data-sveltekit-prefetch><span class="absolute z-20 -inset-y-6 -inset-x-4 sm:-inset-x-6 sm:rounded-2xl"></span>
+          <span class="relative z-10">Writing LaTeX Documents In Visual Studio Code With LaTeX Workshop</span></a></div>
+
+  <div class="relative z-10 flex-1 text-sm text-zinc-600 dark:text-zinc-400 mt-2"><div slot="description" class="prose dark:prose-invert svelte-1c2379o"><!-- HTML_TAG_START --><p><em>If you want to write LaTeX on your machine, VS Code is a great option for you! Installing all the necessary packages is a simple process. And with the power of Git, you can sync with web-based editors like Overleaf, and have satisfying versioning and backup.</em></p><!-- HTML_TAG_END --></div></div>
+
+  <div aria-hidden="true" class="relative z-10 flex items-center mt-4"><div slot="actions"><div class="flex items-center text-teal-500"><span class="text-sm font-medium">Read</span>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-1"><path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></div></div></div></div></div>
+    </article></div></div>
+
+  
+  <div class="flex items-center justify-between pt-16 pb-8"><div></div>
+
+    </div>
+</div>
+      <footer class="footer svelte-uoqvvb">© 2023 Rafael Passos
+  <small class="line">🚀 Built with SvelteKit</small>
+</footer></main></div></div>
+
+
+		<script type="module" data-sveltekit-hydrate="11vtb0w">
+			import { start } from "./_app/immutable/start-aa93bf10.js";
+
+			start({
+				env: {},
+				paths: {"assets":"","base":""},
+				target: document.querySelector('[data-sveltekit-hydrate="11vtb0w"]').parentNode,
+				version: "1673995438848",
+				hydrate: {
+					node_ids: [0, 7],
+					data: [null,{type:"data",data:{posts:[{title:"Writing LaTeX Documents In Visual Studio Code With LaTeX Workshop",date:"2018-08-31",headings:[{depth:2,value:"Why LaTeX",id:"why-latex"},{depth:2,value:"Installing tools",id:"installing-tools"},{depth:2,value:"LaTeX + GIT",id:"latex--git"},{depth:2,value:"Integrating with Overleaf",id:"integrating-with-overleaf"},{depth:2,value:"Conclusion",id:"conclusion"}],slug:"latex-with-vscode",isIndexFile:true,preview:{html:"\u003Cp\u003E\u003Cem\u003EIf you want to write LaTeX on your machine, VS Code is a great option for you! Installing all the necessary packages is a simple process. And with the power of Git, you can sync with web-based editors like Overleaf, and have satisfying versioning and backup.\u003C\u002Fem\u003E\u003C\u002Fp\u003E",text:"If you want to write LaTeX on your machine, VS Code is a great option for you! Installing all the necessary packages is a simple process. And with the power of Git, you can sync with web-based editors like Overleaf, and have satisfying versioning and backup."},readingTime:"7 min read",next:void 0,previous:void 0}],page:1,limit:10},uses:{params:["page"]}}],
+					form: null,
+					error: null
+				}
+			});
+		</script>
+	</div>
+  </body>
+</html>
