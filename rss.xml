@@ -1,0 +1,17 @@
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+      <channel>
+        <title>Rafael "Auyer" Passos</title>
+        <link>https://rcpassos.me</link>
+        <description>Rafael "Auyer" Passos's blog</description>
+        <atom:link href="https://rcpassos.me/rss.xml" rel="self" type="application/rss+xml" />
+        
+              <item>
+                <guid>https://rcpassos.me/posts/latex-with-vscode</guid>
+                <title>Writing LaTeX Documents In Visual Studio Code With LaTeX Workshop</title>
+                <description>If you want to write LaTeX on your machine, VS Code is a great option for you! Installing all the necessary packages is a simple process. And with the power of Git, you can sync with web-based editors like Overleaf, and have satisfying versioning and backup.</description>
+                <link>https://rcpassos.me/posts/latex-with-vscode</link>
+                <pubDate>Fri, 31 Aug 2018 00:00:00 GMT</pubDate>
+            </item>
+          
+      </channel>
+    </rss>
