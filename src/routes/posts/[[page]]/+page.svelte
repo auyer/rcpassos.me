@@ -17,9 +17,7 @@
 
 <div class="flex flex-col flex-grow">
   <header class="pt-4">
-    <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
-      Check my posts:
-    </h1>
+    <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Check my posts:</h1>
     <p class="mt-6">I should write more.</p>
   </header>
 

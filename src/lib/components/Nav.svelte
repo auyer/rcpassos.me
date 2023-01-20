@@ -1,6 +1,5 @@
 <script>
   let activeTab = 'home'
-  import { base } from "$app/paths";
 </script>
 
 <nav class="nav flex items-center w-full mx-auto">

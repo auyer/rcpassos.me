@@ -3,7 +3,6 @@
   import PostsList from '$lib/components/PostsList.svelte'
   import SocialLinks from '$lib/components/SocialLinks.svelte'
   import { avatar, bio, name } from '$lib/info.js'
-  import { base } from "$app/paths";
 
   /** @type {import('./$types').PageData} */
   export let data

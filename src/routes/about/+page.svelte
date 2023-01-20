@@ -14,7 +14,7 @@
     <div class="overlay" />
   </header>
 </container>
-<br/>
+<br />
 <container class="flex flex-col flex-grow w-full mx-auto max-w-4xl">
   <p>
     I am a Computer Scientist with a Bachelor’s Degree from IFB - <i

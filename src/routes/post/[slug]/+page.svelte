@@ -5,7 +5,6 @@
   import SocialLinks from '$lib/components/SocialLinks.svelte'
   import { afterNavigate } from '$app/navigation'
   import PostDate from '$lib/components/PostDate.svelte'
-  import { base } from "$app/paths";
 
   /** @type {import('./$types').PageData} */
   export let data
