@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>{name}</title>
+  <title>About: {name}</title>
   <meta name="description" content={bio} />
 </svelte:head>
 
