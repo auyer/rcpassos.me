@@ -6,6 +6,14 @@
         <atom:link href="https://rcpassos.me/rss.xml" rel="self" type="application/rss+xml" />
         
               <item>
+                <guid>https://rcpassos.me/posts/going-fast-with-go</guid>
+                <title>Going Fast With Go - an introduction to Golang (slides)</title>
+                <description>This is a (small) presentation I gave to my coworkers at CEPESC. At the time, most of the software there was written in Java, and our team (researchers from the Federal University of Brasilia) was developing in Python. I was advocating using Golang in some performance-critical areas of our system.</description>
+                <link>https://rcpassos.me/posts/going-fast-with-go</link>
+                <pubDate>Thu, 01 Aug 2019 00:00:00 GMT</pubDate>
+            </item>
+          
+              <item>
                 <guid>https://rcpassos.me/posts/latex-with-vscode</guid>
                 <title>Writing LaTeX Documents In Visual Studio Code With LaTeX Workshop</title>
                 <description>If you want to write LaTeX on your machine, VS Code is a great option for you! Installing all the necessary packages is a simple process. And with the power of Git, you can sync with web-based editors like Overleaf, and have satisfying versioning and backup.</description>
