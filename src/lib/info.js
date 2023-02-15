@@ -10,11 +10,11 @@ export const avatar = '/assets/profile.png'
 
 export const bio = `\
 I'm Rafael, a Brazilian software engineer. 
-I began my career as a researcher, but migrated to the tech industry in 2019.
+I began my career as a researcher but migrated to the tech industry in 2019.
 I'm a curious individual. 
 I started with (web) software development in Golang.
-After thath, I specialized in Data Engineering and created a data focused squad. 
-Besides all that, I worked with a fair share of Cloud Infrastructure and Kubernetes, do development in Golang, Python and Rust.
+After that, I specialized in Data Engineering and created a data-focused squad. 
+Besides all this, I worked with a fair share of Cloud Infrastructure and Kubernetes, doing development in Golang, Python, and Rust.
 `
 
 // Your social usernames, empty strings won't be used.
