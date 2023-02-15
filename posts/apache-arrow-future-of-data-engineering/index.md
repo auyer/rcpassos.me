@@ -1,6 +1,6 @@
 ---
 title: How I Decreased ETL Cost by Leveraging the Apache Arrow Ecosystem
-date: 2023-02-01
+date: 2023-02-14
 ---
 
 > In the field of Data Engineering, the Apache Spark framework is one of the most known and powerful ways to extract and process data.
