@@ -6,6 +6,17 @@
         <atom:link href="https://rcpassos.me/rss.xml" rel="self" type="application/rss+xml" />
         
               <item>
+                <guid>https://rcpassos.me/posts/apache-arrow-future-of-data-engineering</guid>
+                <title>How I Decreased ETL Cost by Leveraging the Apache Arrow Ecosystem</title>
+                <description>In the field of Data Engineering, the Apache Spark framework is one of the most known and powerful ways to extract and process data.
+It is well-trusted, and it is also very simple to use once you get the infrastructure set up.
+Understandably, most engineers will choose it for every task.
+However, in a lot of ways, it can be overkill. And a very expensive one.</description>
+                <link>https://rcpassos.me/posts/apache-arrow-future-of-data-engineering</link>
+                <pubDate>Wed, 01 Feb 2023 00:00:00 GMT</pubDate>
+            </item>
+          
+              <item>
                 <guid>https://rcpassos.me/posts/going-fast-with-go</guid>
                 <title>Going Fast With Go - an introduction to Golang (slides)</title>
                 <description>This is a (small) presentation I gave to my coworkers at CEPESC. At the time, most of the software there was written in Java, and our team (researchers from the Federal University of Brasilia) was developing in Python. I was advocating using Golang in some performance-critical areas of our system.</description>
