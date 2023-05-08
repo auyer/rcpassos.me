@@ -111,7 +111,7 @@ For example, one valid path could be `s3://bucket/database/folder/`.
 If you do not specify the file name, it will generate a random one. If you want to keep a single file, or want to replace an existing one, make sure to specify the file name.
 
 ```
-df.write_parquet("output.snappy.parquet", compression:"snappy")
+df.write_parquet("output.zstd.parquet", compression:"zstd")
 ```
 
 It is also possible to use PyArrow to do this.
@@ -123,14 +123,16 @@ import pyarrow.parquet as pq
 
 pq.write_table(
     df.to_arrow(),
-    where="output.snappy.parquet",
-    compression="snappy",
+    where="output.zstd.parquet",
+    compression="zstd",
 )
 ```
 
 I created an example repository in GitHub that puts all of this together. Check it out!
 
 [github.com/auyer/polars-extraction](https://github.com/auyer/polars-extraction)
+
+Update: I created a second post going deeper into other techiques. Check it out: [Lightweight Large Data Extractions with Polars and ConnectorX](https://rcpassos.me/post/lightweight-large-etls-with-polars-connectorx).
 
 ## Conclusion
 
