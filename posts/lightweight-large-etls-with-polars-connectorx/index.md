@@ -3,11 +3,10 @@ title: Lightweight Large Data Extractions with Polars and ConnectorX
 date: 2023-05-07
 ---
 
-In my last blog post, I shared a brief version of the journey I went through while creating the data platform that we currently use at my company.
-Additionally, I mentioned the latest tool that I have added to my arsenal - Apache Arrow (or the libraries based on it).
+In my last blog post, I shared the latest tool that I have added to my arsenal - Apache Arrow (or the libraries based on it).
 In this post, I will delve deeper into the topic and demonstrate some of the techniques I employed.
-
-If you have not read it yet, I highly suggest you do so: [How I Decreased ETL Cost by Leveraging the Apache Arrow Ecosystem](https://rcpassos.me/post/apache-arrow-future-of-data-engineering).
+If you have not read it yet, I highly suggest you do so before this one.
+I also shared a brief version of the journey I went through while creating the data platform that we currently use at my company : [How I Decreased ETL Cost by Leveraging the Apache Arrow Ecosystem](https://rcpassos.me/post/apache-arrow-future-of-data-engineering).
 
 ## ConnectorX, and what it does differently
 
@@ -190,12 +189,11 @@ Another thing to know about doing things distributed is that running operations 
 ## Conclusion
 
 Creating a datalake with minimal modifications to the tables can get you a long way.
-It will be easier to deal with schema changes comming from the applications, and in small teams, it will allow the developers to contribute too.
+It will be easier to deal with schema changes coming from the applications, and in small teams, it will allow developers to contribute as well.
 
-All other operations can be done directly in the datalake.
-From simple aggregations and joins, to hundreds of lines of SQL queries, you can do it all.
-Polars and the other Apache Arrow-based libraries can do almost anything you might need.
-DuckDB is also a very nice library if processing data with SQL is what you want.
-Doing these operations on top of Parquet files wont add any load to production databases, and will give you a buch of optimizations that help analytical queries.
+All other operations can be done directly in the data lake.
+From simple aggregations and joins to hundreds of lines of SQL queries, you can accomplish anything using tools such as Polars and other Apache Arrow-based libraries.
+If you prefer processing data with SQL, the DuckDB library is also a great option.
+By performing these operations on top of Parquet files, you won't add any load to production databases, and you'll benefit from many optimizations that can improve analytical queries.
 
 If you want a complete code example, check it out on [GitHub.com/auyer/polars-extraction](https://github.com/auyer/polars-extraction)!
