@@ -9,12 +9,9 @@ export const name = `${firstName} ${lastName}`
 export const avatar = '/assets/profile.png'
 
 export const bio = `\
-I'm Rafael, a Brazilian software engineer. 
-I began my career as a researcher but migrated to the tech industry in 2019.
+I'm Rafael, a Brazilian software engineer.
 I'm a curious individual. 
-I started with (web) software development in Golang.
-After that, I specialized in Data Engineering and created a data-focused squad. 
-Besides all this, I worked with a fair share of Cloud Infrastructure and Kubernetes, doing development in Golang, Python, and Rust.
+I love to learn new things and I'm always looking for ways to challenge myself.
 `
 
 // Your social usernames, empty strings won't be used.
