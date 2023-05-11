@@ -5,6 +5,7 @@ date: 2023-05-07
 
 In my last blog post, I shared the latest tool that I have added to my arsenal - Apache Arrow (or the libraries based on it).
 In this post, I will delve deeper into the topic and demonstrate some of the techniques I employed.
+
 If you have not read it yet, I highly suggest you do so before this one.
 I also shared a brief version of the journey I went through while creating the data platform that we currently use at my company : [How I Decreased ETL Cost by Leveraging the Apache Arrow Ecosystem](https://rcpassos.me/post/apache-arrow-future-of-data-engineering).
 
