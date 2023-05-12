@@ -25,6 +25,34 @@
     })
   })
 
+  let session_id = (Math.random() + 1).toString(36).substring(7)
+  let iter: number = 0
+  let cancel: boolean = false
+
+  async function putKeyBackground() {
+    if (cancel) {
+      return
+    }
+    iter++
+    await PutKeyValue({
+      key: `bg:${session_id}:iter:${iter}`,
+      value: { 'background-iter': iter, description: 'bg job running in your browser' }
+    })
+    setTimeout(putKeyBackground, 10000)
+  }
+
+  onMount(async () => {
+    pannelResults = `There are no results to display yet.\nUse the actions above to see results here.\n\nA background job is running in your browser with id ${session_id}.\nCheck the WAL for details.`
+    putKeyBackground()
+  })
+
+  const cancelBg = async () => {
+      cancel = true
+
+      pannelResults = `Background process cancelled.`
+    
+  }
+
   const deletePrefix = async ({ detail: { key } }) => {
     const [results, err] = await DeletePrefix({ key })
 
@@ -145,6 +173,7 @@
       on:deleteKey={deleteKey}
       on:deletePrefix={deletePrefix}
       on:deleteAll={deleteAll}
+      on:cancelBg={cancelBg}
     />
     <div class="card card-hover p-4 space-y-8">
       <div class="shadow-xl rounded-lg p-4">

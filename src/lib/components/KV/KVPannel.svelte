@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let pannelResults = `There are no results to display yet. \nRun a Read or List to see them here`
+  export let pannelResults = `There are no results to display yet.\nUse the actions above to see results here.`
 
   let key: string
   let keyClass: string
@@ -92,6 +92,11 @@
     }
   }
 
+  function cancelBg() {
+    clearClass()
+    dispatch('cancelBg')
+  }
+
   let isFocused: boolean = true
   import { focusTrap, CodeBlock } from '@skeletonlabs/skeleton'
 </script>
@@ -112,9 +117,9 @@
   <div class="grid grid-cols-2 gap-4 p-4">
     <div class="btn-group variant-filled-primary">
       <button class="justify-center text-center" on:click={getKey}> Read</button>
-      <button class="justify-center text-center" on:click={putKey}>Put</button>
+      <button class="justify-center text-center" on:click={putKey}>Put Key</button>
     </div>
-    <div class="btn-group variant-filled-secondary">
+    <div class="btn-group variant-filled-tertiary">
       <button on:click={listKeys}>List</button>
       <button on:click={listPrefix}>ListPrefix</button>
     </div>
@@ -125,6 +130,9 @@
       <button on:click={deletePrefix}>DeletePrefix</button>
       <button on:click={deleteAll}>DeleteAll</button>
     </div>
+  </div>
+  <div class="flex items-center justify-center">
+    <button class="btn variant-filled-error" on:click={cancelBg}>Cancel Background Job</button>
   </div>
   <div>
     <h2>Results area</h2>
