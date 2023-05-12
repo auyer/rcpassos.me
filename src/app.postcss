@@ -1,8 +1,9 @@
+/* Write your global styles here, in PostCSS syntax */
+@import './prism.css';
+
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
-@import './prism.css';
 @import 'tailwindcss/utilities';
-
 @layer base {
   body {
     @apply text-zinc-600 dark:text-zinc-400;
@@ -20,4 +21,8 @@
   hr {
     @apply border-zinc-100 dark:border-zinc-700/25;
   }
+}
+
+a {
+  text-decoration: none;
 }
