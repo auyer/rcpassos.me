@@ -21,19 +21,18 @@
 </script>
 
 <div>
-  <nav class="nav flex items-center w-full mx-auto gap-4">
-    <!-- <div class="mx-auto gap-2"> -->
-    <a class="btn logolink" href="/">
+  <nav class="nav flex items-center w-full mx-auto gap-2">
+    <a class="btn min-w-fit" href="/">
       <img src="/assets/logo.svg" alt="Auyer" width="35px" height="35px" />
     </a>
     <a class="btn no-underline {classesActive('/about')}" href="/about"> About </a>
     <a class="btn no-underline {classesActive('/posts')}" href="/posts"> Posts </a>
 
-    <button class="btn variant-ghost-primary w-30 justify-between" use:popup={popupCombobox}>
+    <button class="btn variant-ghost-primary w-25 justify-between" use:popup={popupCombobox}>
       <span class="capitalize"> Projects</span>
       <span>↓</span>
     </button>
-    <div class="card z-40 w-30 shadow-xl py-2 gap-2" data-popup="popupCombobox">
+    <div class="card z-40 w-25 shadow-xl py-2 gap-2" data-popup="popupCombobox">
       <ol class="list">
         <li>
           <a class="btn w-30 no-underline {classesActive('/projects/kv')}" href="/projects/kv"

@@ -163,7 +163,7 @@
     </Accordion>
   </div>
 
-  <container class="w-full mx-auto max-w-4xl grid grid-cols-2 gap-4">
+  <container class="w-full mx-auto max-w-4xl sm:max-w-full grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-2">
     <KVPannel
       {pannelResults}
       on:listKeys={listKeys}

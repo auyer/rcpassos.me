@@ -18,7 +18,9 @@
   <div class="flex flex-col flex-grow w-full px-4 py-2">
     <header class="flex items-center justify-between w-full max-w-4xl py-4 mx-auto lg:pb-8">
       <Nav />
-      <LightSwitch />
+      <div class="px-2">
+        <LightSwitch />
+      </div>
     </header>
     <main>
       <slot />
