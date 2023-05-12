@@ -36,7 +36,7 @@
     iter++
     await PutKeyValue({
       key: `bg:${session_id}:iter:${iter}`,
-      value: { 'background-iter': iter, description: 'bg job running in your browser' }
+      value: { 'background-iter': iter }
     })
     setTimeout(putKeyBackground, 10000)
   }
