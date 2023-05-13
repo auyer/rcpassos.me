@@ -115,25 +115,25 @@
     </label>
   </form>
 
-  <div class="grid grid-cols-2 gap-2 p-2 flex items-center text-center gap-4">
-    <div class="btn-group variant-filled-primary text-center">
-      <button on:click={getKey}> Read</button>
-      <button on:click={putKey}>Put Key</button>
-    </div>
-    <div class="btn-group variant-filled text-center">
-      <button on:click={listKeys}>List</button>
-      <button on:click={listPrefix}>ListPrefix</button>
-    </div>
-  </div>
-  <div class="flex items-center justify-center">
-    <div class="btn-group variant-filled-warning">
-      <button on:click={deleteKey}>Delete</button>
-      <button on:click={deletePrefix}>DeletePrefix</button>
-      <button on:click={deleteAll}>DeleteAll</button>
-    </div>
-  </div>
-  <div class="flex items-center justify-center w-full">
-    <button class="btn variant-filled-error" on:click={cancelBg}>Cancel Background Job</button>
+  <div
+    class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 p-2"
+  >
+    <button class="btn variant-filled-primary text-center" on:click={getKey}>Read</button>
+    <button class="btn variant-filled-primary text-center" on:click={putKey}>Put Key</button>
+    <button class="btn variant-filled text-center" on:click={listKeys}>List</button>
+    <button class="btn variant-filled text-center" on:click={listPrefix}>List Prefix</button>
+
+    <button class="btn variant-filled-warning text-center" on:click={deleteKey}>Delete</button>
+    <button class="btn variant-filled-warning text-center" on:click={deletePrefix}
+      >Delete Prefix</button
+    >
+    <button class="btn variant-filled-warning text-center" on:click={deleteAll}>Delete All</button>
+
+    <button class="btn btn-sm variant-filled-error align-top" on:click={cancelBg}>
+      Stop
+      <br />
+      Background Job
+    </button>
   </div>
   <div class="gap-2">
     <h2>Results area</h2>
