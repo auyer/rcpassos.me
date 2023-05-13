@@ -115,9 +115,7 @@
     </label>
   </form>
 
-  <div
-    class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 p-2"
-  >
+  <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 p-2">
     <button class="btn variant-filled-primary text-center" on:click={getKey}>Read</button>
     <button class="btn variant-filled-primary text-center" on:click={putKey}>Put Key</button>
     <button class="btn variant-filled text-center" on:click={listKeys}>List</button>

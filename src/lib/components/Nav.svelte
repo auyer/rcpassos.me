@@ -9,8 +9,6 @@
   $: classesActiveContains = (href: string) =>
     $page.url.pathname.includes(href) ? 'variant-filled-primary' : 'variant-ghost-primary'
 
-  let comboboxValue: string
-
   const popupCombobox: PopupSettings = {
     event: 'focus-click',
     target: 'popupCombobox',
@@ -20,9 +18,9 @@
 </script>
 
 <div>
-  <nav class="nav flex items-center w-full mx-auto gap-2">
+  <nav class="nav flex flex-wrap w-full gap-2">
     <a class="btn min-w-fit" href="/" data-sveltekit-preload-data="hover">
-      <img src="/assets/logo.svg" alt="Auyer" width="35px" height="35px" />
+      <img src="/assets/logo.svg" alt="Auyer" width="30px" height="30px" />
     </a>
     <a
       class="btn no-underline {classesActive('/about')}"
@@ -38,25 +36,25 @@
     >
       Posts
     </a>
-
-    <button class="btn variant-ghost-primary w-25 justify-between" use:popup={popupCombobox}>
-      <span class="capitalize"> Projects</span>
-      <span>↓</span>
-    </button>
-    <div class="card z-40 w-35 shadow-xl py-2 gap-2" data-popup="popupCombobox">
-      <ol class="list">
-        <li>
-          <a
-            class="btn w-30 no-underline {classesActive('/projects/kv')}"
-            href="/projects/kv"
-            data-sveltekit-preload-data="hover">MemoryKV DEMO</a
-          >
-        </li>
-        <li>
-          <a class="btn w-30 no-underline" href="https://github.com/auyer/">GitHub Projects</a>
-        </li>
-      </ol>
-      <div class="arrow bg-surface-100-800-token" />
+    <div>
+      <button class="btn variant-ghost-primary justify-between" use:popup={popupCombobox}>
+        <span> Projects</span>
+        <span>↓</span>
+      </button>
+      <div class="card z-40 shadow-xl py-2 gap-2" data-popup="popupCombobox">
+        <ol class="list">
+          <li>
+            <a
+              class="btn no-underline {classesActive('/projects/kv')}"
+              href="/projects/kv"
+              data-sveltekit-preload-data="hover">MemoryKV DEMO</a
+            >
+          </li>
+          <li>
+            <a class="btn no-underline" href="https://github.com/auyer/">GitHub Projects</a>
+          </li>
+        </ol>
+      </div>
     </div>
   </nav>
 </div>
