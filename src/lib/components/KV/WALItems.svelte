@@ -10,7 +10,7 @@
 <div>
   <ol class="border-l border-neutral-300 dark:border-neutral-500">
     {#each messages as content (content)}
-      <div animate:flip in:fade out:fly={{ x: 100 }} class="item">
+      <div animate:flip in:fade out:fly={{ x: 50 }} class="item">
         <WALItem {content} />
       </div>
     {/each}

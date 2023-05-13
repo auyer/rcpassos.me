@@ -18,7 +18,7 @@
 
   onMount(() => {
     messageStore.subscribe((currentMessage) => {
-      if (messages?.length >= 20) {
+      if (messages?.length >= 30) {
         messages.pop()!
       }
       messages = [currentMessage, ...messages]
@@ -38,7 +38,7 @@
       key: `bg:${session_id}:iter:${iter}`,
       value: { 'background-iter': iter }
     })
-    setTimeout(putKeyBackground, 10000)
+    setTimeout(putKeyBackground, 20000)
   }
 
   onMount(async () => {
@@ -47,10 +47,9 @@
   })
 
   const cancelBg = async () => {
-      cancel = true
+    cancel = true
 
-      pannelResults = `Background process cancelled.`
-    
+    pannelResults = `Background process cancelled.`
   }
 
   const deletePrefix = async ({ detail: { key } }) => {
@@ -133,13 +132,8 @@
   import { Accordion, AccordionItem } from '@skeletonlabs/skeleton'
 </script>
 
-<svelte:head>
-  <!-- <title>Admin: {name}</title> -->
-  <!-- <meta name="description" content={bio} /> -->
-</svelte:head>
-
-<div class="mx-auto gap-8">
-  <div class="card w-full mx-auto max-w-4xl m-5 p-4">
+<div class="gap-8">
+  <div class="card w-full max-w-6xl mx-auto m-5 p-2">
     <Accordion>
       <AccordionItem open>
         <svelte:fragment slot="summary"
@@ -156,14 +150,12 @@
             proxy as the only ingress point.
           </p>
           <a href="http://github.com/auyer/MemoryKV">github.com/auyer/MemoryKV</a>
-          <!-- </p> -->
         </svelte:fragment>
       </AccordionItem>
-      <!-- ... -->
     </Accordion>
   </div>
 
-  <container class="w-full mx-auto max-w-4xl sm:max-w-full grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-2">
+  <container class="w-full max-w-6xl mx-auto grid md:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
     <KVPannel
       {pannelResults}
       on:listKeys={listKeys}
@@ -175,7 +167,7 @@
       on:deleteAll={deleteAll}
       on:cancelBg={cancelBg}
     />
-    <div class="card card-hover p-4 space-y-8">
+    <div class="card p-4 space-y-8">
       <div class="shadow-xl rounded-lg p-4">
         <h2 class="p-4">Live Database feed</h2>
         <div class="card card-hover p-4 overflow-auto">

@@ -1,5 +1,6 @@
 <script lang="ts">
-  export let pannelResults = `There are no results to display yet.\nUse the actions above to see results here.`
+  export let pannelResults =
+    'There are no results to display yet.\nUse the actions above to see results here.'
 
   let key: string
   let keyClass: string
@@ -101,7 +102,7 @@
   import { focusTrap, CodeBlock } from '@skeletonlabs/skeleton'
 </script>
 
-<div class="card card-hover p-4 space-y-4">
+<div class="card p-4 m-2 space-y-4">
   <h2>Interactive area</h2>
   <form use:focusTrap={isFocused}>
     <label class="label">
@@ -114,12 +115,12 @@
     </label>
   </form>
 
-  <div class="grid grid-cols-2 gap-4 p-4">
-    <div class="btn-group variant-filled-primary">
-      <button class="justify-center text-center" on:click={getKey}> Read</button>
-      <button class="justify-center text-center" on:click={putKey}>Put Key</button>
+  <div class="grid grid-cols-2 gap-2 p-2 flex items-center text-center gap-4">
+    <div class="btn-group variant-filled-primary text-center">
+      <button on:click={getKey}> Read</button>
+      <button on:click={putKey}>Put Key</button>
     </div>
-    <div class="btn-group variant-filled-tertiary">
+    <div class="btn-group variant-filled text-center">
       <button on:click={listKeys}>List</button>
       <button on:click={listPrefix}>ListPrefix</button>
     </div>
@@ -131,10 +132,10 @@
       <button on:click={deleteAll}>DeleteAll</button>
     </div>
   </div>
-  <div class="flex items-center justify-center">
+  <div class="flex items-center justify-center w-full">
     <button class="btn variant-filled-error" on:click={cancelBg}>Cancel Background Job</button>
   </div>
-  <div>
+  <div class="gap-2">
     <h2>Results area</h2>
     <CodeBlock code={pannelResults} />
   </div>
