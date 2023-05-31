@@ -6,25 +6,16 @@
   import '../app.postcss'
   import Nav from '$lib/components/Nav.svelte'
   import Footer from '$lib/components/Footer.svelte'
-  import { LightSwitch } from '@skeletonlabs/skeleton'
-
-  import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom'
 
   import { storePopup } from '@skeletonlabs/skeleton'
-  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow })
 </script>
 
 <div class="flex flex-col min-h-screen">
-  <div class="flex flex-col flex-grow w-full px-4 py-2">
-    <header class="flex items-center justify-between w-full max-w-4xl py-4 mx-auto lg:pb-8">
-      <Nav />
-      <div class="px-2">
-        <LightSwitch />
-      </div>
-    </header>
-    <main>
-      <slot />
-      <Footer />
-    </main>
-  </div>
+  <header>
+    <Nav />
+  </header>
+  <main class="m-4">
+    <slot />
+    <Footer />
+  </main>
 </div>
