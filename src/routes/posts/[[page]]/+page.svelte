@@ -16,7 +16,7 @@
 
 <div class="flex flex-col flex-grow">
   <header class="pt-4">
-    <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Check my posts:</h1>
+    <h1 class="text-6xl font-bold tracking-tight sm:text-5xl">Check my posts:</h1>
     <p class="mt-6">I also post these on Medium</p>
   </header>
 
@@ -45,11 +45,4 @@
 </div>
 
 <style>
-  a {
-    @apply flex items-center gap-2 font-medium text-zinc-700;
-  }
-
-  :global(.dark) a {
-    @apply text-zinc-300;
-  }
 </style>
