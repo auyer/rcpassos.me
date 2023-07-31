@@ -7,7 +7,7 @@
   <meta name="description" content={bio} />
 </svelte:head>
 
-<container class="flex flex-col flex-grow w-full mx-auto max-w-4xl">
+<container class="flex flex-col flex-grow w-full mx-auto max-w-6xl">
   <header class="hero">
     <img alt="Rafael walking a bridge" width="1600" height="1230" src="/assets/hero.webp" />
     <div class="gradient" />
@@ -15,72 +15,50 @@
   </header>
 </container>
 <br />
-<container class="flex flex-col flex-grow w-full mx-auto max-w-4xl">
-  <h1>Rafael, the human being</h1>
-  <p>
-    I am a curious person and an explorer. Understanding things is one of my biggest motivators. It
-    has to be a superficial understanding in areas out of my scope, but I like to get a fuller
-    picture when I can.
+  <container class="flex flex-col flex-grow w-full mx-auto grid md:grid-cols-2 gap-4 sm:grid-cols-1 max-w-6xl" >
+    <div>
+  
+  <h1>Who am I</h1>
+  <p class="py-2 first-letter:text-6xl first-letter:font-bold first-letter:text-gray-900 dark:first-letter:text-gray-100 first-letter:mr-3 first-letter:float-left">
+    I am driven by an insatiable curiosity and a love for exploration. The quest for understanding is one of my greatest motivations in life.
   </p>
 
-  <p>
-    When it comes to technology, I am always testing new things, new languages, software, and
-    projects. I do this looking for better solutions to real solutions, or just to get to know new
-    things that could be useful someday.
+  <p class="py-2">
+    Regarding technology, I constantly explore and experiment with new programming languages, software, and projects, pushing my boundaries to learn and grow.
   </p>
 
-  <p>
-    I love to travel (that's me exploring the world, I guess). I believe seeing different places,
-    cultures and people is very enriching to me as an individual.
+  <p  class="py-2">
+    I have a deep love for traveling. Discovering different places, cultures, and connecting with people from various backgrounds enriches my life. These experiences broaden my horizons and positively impact me.
   </p>
+
+  <p  class="py-2">In essence, my journey as a curious person and explorer revolves around the pursuit of knowledge, new experiences, and the appreciation of the diverse world we inhabit.</p>
 
   <br />
-</container>
-<container class="flex flex-col flex-grow w-full mx-auto max-w-4xl">
-  <h1>Rafael, the professional</h1>
-  <p>
-    I have a questioning mind guided by reason. I always aim to establish trust in my workspace, so
-    I can propose and discuss changes. I try to improve the quality of the projects I work on, both
-    on a technical (engineering) and a product approach.
+  </div>
+  <div>
+  <h1>As a professional</h1>
+  <p class="py-2 first-letter:text-6xl first-letter:font-bold first-letter:text-gray-900 dark:first-letter:text-gray-100 first-letter:mr-3 first-letter:float-left">
+    I am a software engineer with a keen and curious mind. Guided by reason, I am always eager to question and explore new ideas. 
   </p>
-
-  <p>I gravitate toward being in the planning and discovery of products and solutions.</p>
-  <p>
-    I am a Computer Scientist with a Bachelor’s Degree from IFB - <i
-      >Instituto Federal de Brasília</i
-    > (Federal institute of Brasília).
+  <p class="py-2">
+    I hold a Bachelor's Degree in Computer Science from IFB - <i>Instituto Federal de Brasília</i> (Federal Institute of Brasília), which has provided me with a strong academic foundation.
   </p>
-
-  <p>
-    I was a Researcher from Dec 2017 to Dec 2019 with the University of Brasília and governmental
-    agencies. I did Micro Service development with Python and GO.
+  <p class="py-2">
+    Building trust in my workspace is crucial to me, as it enables me to propose and engage in constructive discussions about potential changes that can enhance our projects.
   </p>
-
-  <p>
-    I started working in the tech industry in Dec 2019. Due to a combination of company needs and
-    personal interests, I specialized in Data Engineering.
+  <p class="py-2">My approach to work involves both the technical engineering aspects and the product development side, aiming to consistently improve the quality of the projects I am involved in.
   </p>
-
-  <p>
-    I formed and led a six members squad with Data analysts and Data engineers. In this team, I was
-    the technical leader and guided our solutions. With them, I created and evolved what became our
-    current data platform.
+  <p class="py-2">
+    As part of my journey, I had the privilege of forming and leading a team of six talented individuals, comprising Data analysts and Data engineers. Taking on the role of the technical leader, we created and evolved a robust data platform that remains in use today.
   </p>
-
-  <p>
-    Since then, we have gone through a downsizing. I no longer have a team to manage. I am still the
-    maintainer of the platform, but that's not all I do. I also do software development in Golang
-    and Vue, also Python and Rust when needed.
+  <p class="py-2">
+    In summary, my journey as a software engineer has been driven by a deep sense of curiosity, a commitment to quality, and a continuous pursuit of growth and learning. I am dedicated to making meaningful contributions to the field of technology and to the success of the projects I undertake.
   </p>
-
-  <p>Want to know more? Contact me. Thanks!</p>
+  </div>
 </container>
 
 <style lang="scss">
   $w-s: 750px;
-  p {
-    line-height: 1.8em;
-  }
   .hero {
     position: relative;
     overflow: hidden;
