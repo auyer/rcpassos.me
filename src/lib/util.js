@@ -6,9 +6,9 @@
  * @returns
  */
 export function paginate(data, { page = 1, limit } = {}) {
-  if (limit) {
-    return data.slice((page - 1) * limit, page * limit)
-  }
+	if (limit) {
+		return data.slice((page - 1) * limit, page * limit);
+	}
 
-  return data
+	return data;
 }
