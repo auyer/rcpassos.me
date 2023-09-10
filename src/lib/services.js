@@ -1,5 +1,7 @@
 import { error } from '@sveltejs/kit';
-/** @param {string} url
+
+/** 
+ * @param {string} url
  * @param {BodyInit | FormData} body
  * @returns {Promise<[any, any]>}
  */
@@ -21,10 +23,12 @@ export async function Post(url, body) {
 			return [resBody, null];
 		}
 	} catch (error) {
-		return [{}, { message: error, code: 500 }];
+		return [null, { message: error, code: 500 }];
 	}
 }
-/** @param {string} url
+
+/** 
+ * @param {string} url
  * @param {BodyInit | FormData} body
  * @returns {Promise<[any, any]>}
  */
@@ -39,19 +43,21 @@ export async function Put(url, body) {
 				body,
 				headers
 			});
-			console.log('response: ', response);
+			// console.log('response: ', response);
 			const resBody = await response.text();
-			console.log('body: ', resBody);
+			// console.log('body: ', resBody);
 			if (!response.ok) {
 				throw error(response.status, resBody);
 			}
 			return [resBody, null];
 		}
 	} catch (error) {
-		return [{}, error];
+		return [null, error];
 	}
 }
-/** @param {string} url
+
+/**
+ * @param {string} url
  * @returns {Promise<[any, any]>}
  */
 export async function Get(
@@ -68,10 +74,12 @@ export async function Get(
 		}
 		return [resBody, null];
 	} catch (error) {
-		return [{}, { message: error, code: 500 }];
+		return [null, { message: error, code: 500 }];
 	}
 }
-/** @param {string} url
+
+/**
+ * @param {string} url
  * @returns {Promise<[any, any]>}
  */
 export async function Delete(
@@ -88,18 +96,21 @@ export async function Delete(
 		}
 		return [resBody, null];
 	} catch (error) {
-		return [{}, { message: error, code: 500 }];
+		return [null, { message: error, code: 500 }];
 	}
 }
 // const API_ENDPOINT = 'http://localhost:8080';
 const API_ENDPOINT = 'https://kv.rcpassos.me';
-/** @returns {Promise<[string[], any]>} */
+
+/**
+ * 
+ * @returns {Promise<[string[]|null, any]>}
+ */
 export async function ListKeys() {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/keys';
 		const [jsonRes, err] = await Get(baseURL + path);
-		// console.log(jsonRes)
 		const listResponse = jsonRes;
 		if (err) {
 			return [listResponse, err];
@@ -109,12 +120,16 @@ export async function ListKeys() {
 		return [null, error];
 	}
 }
-/** @returns {Promise<[any]>} */
-export async function PutKeyValue({ key, value }) {
+
+/**
+ * @param {string} key - The key in the database.
+ * @param {any} value - The author of the book.
+ */
+export async function PutKeyValue(key, value) {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/' + key;
-		const [_, err] = await Put(baseURL + path, value);
+		const [err] = await Put(baseURL + path, value);
 		if (err) {
 			return [err];
 		}
@@ -123,12 +138,16 @@ export async function PutKeyValue({ key, value }) {
 		return [error];
 	}
 }
-/** @returns {Promise<[string[], any]>} */
-export async function ListPrefix({ key }) {
+
+/**
+ * @param {string} key - The key in the database.
+ * @returns {Promise<[string[]|null, any]>} 
+ */
+export async function ListPrefix(key) {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/keys/' + key;
-		console.log(path);
+		// console.log(path);
 		const [jsonRes, err] = await Get(baseURL + path);
 		const listResponse = jsonRes;
 		if (err) {
@@ -139,8 +158,12 @@ export async function ListPrefix({ key }) {
 		return [null, error];
 	}
 }
-/** @returns {Promise<[string, any]>} */
-export async function GetKey({ key }) {
+
+/**
+ * @param {string} key - The key in the database.
+ * @returns {Promise<[string|null, any]>} 
+ */
+export async function GetKey(key) {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/' + key;
@@ -153,8 +176,12 @@ export async function GetKey({ key }) {
 		return [null, error];
 	}
 }
-/** @returns {Promise<[string, any]>} */
-export async function DeleteKey({ key }) {
+
+/**
+ * @param {string} key - The key in the database.
+ * @returns {Promise<[string|null, any]>} 
+ */
+export async function DeleteKey(key) {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/' + key;
@@ -167,8 +194,13 @@ export async function DeleteKey({ key }) {
 		return [null, error];
 	}
 }
-/** @returns {Promise<[string, any]>} */
-export async function DeletePrefix({ key }) {
+
+
+/**
+ * @param {string} key - The key in the database.
+ * @returns {Promise<[string|null, any]>} 
+ */
+export async function DeletePrefix(key) {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/keys/' + key;
@@ -181,12 +213,15 @@ export async function DeletePrefix({ key }) {
 		return [null, error];
 	}
 }
-/** @returns {Promise<[any]>} */
+
+/**
+ * @returns {Promise<[any]>} 
+ */
 export async function DeleteAll() {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/keys';
-		const [_, err] = await Delete(baseURL + path);
+		const [err] = await Delete(baseURL + path);
 		if (err) {
 			return [err];
 		}
