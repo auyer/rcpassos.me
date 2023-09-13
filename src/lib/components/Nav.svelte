@@ -1,13 +1,21 @@
-<script lang="ts">
+<script lang="js">
 	import { page } from '$app/stores';
 	import { AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
 
-	$: classesActive = (href: string) =>
+	/**
+	 * @param {string} href
+	 */
+	function classesActive(href) {
 		href === $page.url.pathname ? 'variant-filled-primary' : 'variant-ghost-primary';
+	}
 
-	$: classesActiveContains = (href: string) =>
+	/**
+	 * @param {string} href
+	 */
+	function classesActiveContains(href) {
 		$page.url.pathname.includes(href) ? 'variant-filled-primary' : 'variant-ghost-primary';
+	}
 
 	let isExpanded = 'hidden';
 
@@ -37,29 +45,17 @@
 		>
 			Posts
 		</a>
-		<!-- <button class="btn variant-ghost-primary justify-between" on:click={clickHandler}>
-      <span> Projects</span>
-      <span>↓</span>
-    </button> -->
-		<!-- <div class="{isExpanded}"> -->
-		<!-- <ul class="list">
-        <li> -->
 		<a
 			class="btn no-underline {classesActive('/projects/kv')}"
 			href="/projects/kv"
 			data-sveltekit-preload-data="hover"
 			on:click={clickHandler}>MemoryKV</a
 		>
-		<!-- </li>
-        <li> -->
 		<a
 			class="btn no-underline {classesActive('/projects/github')}"
 			href="https://github.com/auyer/"
 			on:click={clickHandler}>GitHub</a
 		>
-		<!-- </li>
-      </ul> -->
-		<!-- </div> -->
 
 		<svelte:fragment slot="trail">
 			<LightSwitch />
