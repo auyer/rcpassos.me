@@ -99,7 +99,6 @@
 	};
 
 	const listPrefix = async ({ detail: { key } }) => {
-		// console.log(key);
 		const [results, err] = await ListPrefix(key);
 
 		if (err) {

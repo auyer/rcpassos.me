@@ -88,7 +88,6 @@
 	}
 	function putKey() {
 		clearClass();
-		console.log('key, value', key, value);
 		const k = validateKey();
 		const v = validateValue();
 		if (k && v) {

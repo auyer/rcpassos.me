@@ -14,9 +14,7 @@ export const openConnection = () => {
 		});
 		// Listen for messages
 		socket.addEventListener('message', function (event) {
-			console.log('Message from server ', event.data)
 			messageStore.set(event.data);
 		});
 	}
-}
-
+};

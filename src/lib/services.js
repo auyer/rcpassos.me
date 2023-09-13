@@ -1,9 +1,9 @@
 import { error } from '@sveltejs/kit';
 
-/** 
+/**
  * @param {string} url
  * @param {BodyInit | FormData} body
- * @returns {Promise<[any, any]>}
+ * @returns {Promise<[any, any]|undefined>}
  */
 export async function Post(url, body) {
 	try {
@@ -27,10 +27,10 @@ export async function Post(url, body) {
 	}
 }
 
-/** 
+/**
  * @param {string} url
  * @param {BodyInit | FormData} body
- * @returns {Promise<[any, any]>}
+ * @returns {Promise<[any, any]|undefined>}
  */
 export async function Put(url, body) {
 	try {
@@ -43,9 +43,7 @@ export async function Put(url, body) {
 				body,
 				headers
 			});
-			// console.log('response: ', response);
 			const resBody = await response.text();
-			// console.log('body: ', resBody);
 			if (!response.ok) {
 				throw error(response.status, resBody);
 			}
@@ -103,7 +101,7 @@ export async function Delete(
 const API_ENDPOINT = 'https://kv.rcpassos.me';
 
 /**
- * 
+ *
  * @returns {Promise<[string[]|null, any]>}
  */
 export async function ListKeys() {
@@ -141,13 +139,12 @@ export async function PutKeyValue(key, value) {
 
 /**
  * @param {string} key - The key in the database.
- * @returns {Promise<[string[]|null, any]>} 
+ * @returns {Promise<[string[]|null, any]>}
  */
 export async function ListPrefix(key) {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/keys/' + key;
-		// console.log(path);
 		const [jsonRes, err] = await Get(baseURL + path);
 		const listResponse = jsonRes;
 		if (err) {
@@ -161,7 +158,7 @@ export async function ListPrefix(key) {
 
 /**
  * @param {string} key - The key in the database.
- * @returns {Promise<[string|null, any]>} 
+ * @returns {Promise<[string|null, any]>}
  */
 export async function GetKey(key) {
 	try {
@@ -179,7 +176,7 @@ export async function GetKey(key) {
 
 /**
  * @param {string} key - The key in the database.
- * @returns {Promise<[string|null, any]>} 
+ * @returns {Promise<[string|null, any]>}
  */
 export async function DeleteKey(key) {
 	try {
@@ -195,10 +192,9 @@ export async function DeleteKey(key) {
 	}
 }
 
-
 /**
  * @param {string} key - The key in the database.
- * @returns {Promise<[string|null, any]>} 
+ * @returns {Promise<[string|null, any]>}
  */
 export async function DeletePrefix(key) {
 	try {
@@ -215,7 +211,7 @@ export async function DeletePrefix(key) {
 }
 
 /**
- * @returns {Promise<[any]>} 
+ * @returns {Promise<[any]>}
  */
 export async function DeleteAll() {
 	try {
