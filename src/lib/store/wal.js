@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 export const messageStore = writable();
 // const API_ENDPOINT = 'ws://localhost:8080';
-const API_ENDPOINT = 'wss://kv.rcpassos.me';
+const API_ENDPOINT = 'ws://kv.rcpassos.me';
 
 export const openConnection = () => {
 	if (browser) {
@@ -14,6 +14,7 @@ export const openConnection = () => {
 		});
 		// Listen for messages
 		socket.addEventListener('message', function (event) {
+			// console.log('Message from server ', event.data)
 			messageStore.set(event.data);
 		});
 	}
