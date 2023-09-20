@@ -10,7 +10,7 @@
 
 <div>
 	<ol class="border-l border-neutral-300 dark:border-neutral-500">
-		{#each messages as content (content)}
+		{#each messages as content, index (index)}
 			<div animate:flip in:fade|global out:fly|global={{ x: 50 }} class="item">
 				<WALItem {content} />
 			</div>
