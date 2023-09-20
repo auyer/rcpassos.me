@@ -18,7 +18,7 @@ export function openConnection(attempt = 0) {
 
     ws.onclose = function (e) {
       // simple exponential backoff
-      const timeout =  1000 * (attempt + 1 ** 2)
+      const timeout =  1000 * (attempt ** 2)
       console.log(`Socket is closed. Reconnect will be attempted in ${timeout/1000} second(s).`, e.reason);
       messageStore.set('Reconnecting');
       if (attempt > MAX_ATTEMPTS) {
