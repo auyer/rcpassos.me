@@ -71,7 +71,7 @@ This wastes a lot of time and resources.
 ## Code Time
 
 ConnectorX is integrated into Polars, and if both are installed, you can call `polars.read_sql`.
-I will use it direclty though:
+I will use it directly though:
 
 ```
 import connectorx as cx
@@ -132,7 +132,7 @@ I created an example repository in GitHub that puts all of this together. Check 
 
 [github.com/auyer/polars-extraction](https://github.com/auyer/polars-extraction)
 
-Update: I created a second post going deeper into other techiques. Check it out: [Lightweight Large Data Extractions with Polars and ConnectorX](https://rcpassos.me/post/lightweight-large-etls-with-polars-connectorx).
+Update: I created a second post going deeper into other techniques. Check it out: [Lightweight Large Data Extractions with Polars and ConnectorX](https://rcpassos.me/post/lightweight-large-etls-with-polars-connectorx).
 
 ## Conclusion
 

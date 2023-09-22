@@ -13,7 +13,7 @@
 	} from '$lib/services';
 
 	/** @type {String} */
-	let pannelResults = '';
+	let panelResults = '';
 
 	/** @type {Array<{id:number, content: string}>} */
 	let messages = [];
@@ -25,8 +25,7 @@
 				return;
 			}
 			if (messages?.length >= 30) {
-				const poped = messages.pop();
-				console.log('Popped', poped);
+				messages.pop();
 			}
 			messages = [currentMessage, ...messages];
 		});
@@ -51,23 +50,23 @@
 	}
 
 	onMount(async () => {
-		pannelResults = `There are no results to display yet.\nUse the actions above to see results here.\n\nA background job is running in your browser with id ${session_id}.\nCheck the WAL for details.`;
+		panelResults = `There are no results to display yet.\nUse the actions above to see results here.\n\nA background job is running in your browser with id ${session_id}.\nCheck the WAL for details.`;
 		putKeyBackground();
 	});
 
 	const cancelBg = async () => {
 		cancel = true;
 
-		pannelResults = `Background process cancelled.`;
+		panelResults = `Background process cancelled.`;
 	};
 
 	const deletePrefix = async ({ detail: { key } }) => {
 		const [results, err] = await DeletePrefix(key);
 
 		if (err) {
-			pannelResults = `ERROR: ${JSON.stringify(err)}`;
+			panelResults = `ERROR: ${JSON.stringify(err)}`;
 		} else {
-			pannelResults = `DELETED ALL KEYS\nWITH PREFIX\n${key}`;
+			panelResults = `DELETED ALL KEYS\nWITH PREFIX\n${key}`;
 		}
 	};
 
@@ -75,9 +74,9 @@
 		const [err] = await DeleteAll();
 
 		if (err) {
-			pannelResults = `ERROR: ${JSON.stringify(err)}`;
+			panelResults = `ERROR: ${JSON.stringify(err)}`;
 		} else {
-			pannelResults = `DELETED ALL KEYS`;
+			panelResults = `DELETED ALL KEYS`;
 		}
 	};
 
@@ -85,10 +84,10 @@
 		const [result, err] = await DeleteKey(key);
 		console.log('result', result, err);
 		if (err) {
-			pannelResults = `ERROR: ${JSON.stringify(err)}`;
+			panelResults = `ERROR: ${JSON.stringify(err)}`;
 		} else {
 			const value = JSON.stringify(result);
-			pannelResults = `DELETED\n${key}\nValue\n${value}`;
+			panelResults = `DELETED\n${key}\nValue\n${value}`;
 		}
 	};
 
@@ -96,10 +95,10 @@
 		const [results, err] = await ListKeys();
 
 		if (err) {
-			pannelResults = `ERROR: ${JSON.stringify(err)}`;
+			panelResults = `ERROR: ${JSON.stringify(err)}`;
 		} else {
 			const values = results.join('\n');
-			pannelResults = `LIST\n${values}`;
+			panelResults = `LIST\n${values}`;
 		}
 	};
 
@@ -107,10 +106,10 @@
 		const [results, err] = await ListPrefix(key);
 
 		if (err) {
-			pannelResults = `ERROR: ${JSON.stringify(err)}`;
+			panelResults = `ERROR: ${JSON.stringify(err)}`;
 		} else {
 			const values = results?.join('\n');
-			pannelResults = `LIST\n${values}`;
+			panelResults = `LIST\n${values}`;
 		}
 	};
 
@@ -118,11 +117,11 @@
 		const [prev, err] = await PutKeyValue(key, value);
 
 		if (err) {
-			pannelResults = `ERROR: ${JSON.stringify(err)}`;
+			panelResults = `ERROR: ${JSON.stringify(err)}`;
 		} else if (prev !== '') {
-			pannelResults = `INSERT\n${key}\nValue\n${value}\nPrevious Value\n${prev}`;
+			panelResults = `INSERT\n${key}\nValue\n${value}\nPrevious Value\n${prev}`;
 		} else {
-			pannelResults = `INSERT\n${key}\nValue\n${value}`;
+			panelResults = `INSERT\n${key}\nValue\n${value}`;
 		}
 	};
 
@@ -130,17 +129,17 @@
 		const [result, err] = await GetKey(key);
 
 		if (err) {
-			pannelResults = `ERROR: ${JSON.stringify(err)}`;
+			panelResults = `ERROR: ${JSON.stringify(err)}`;
 		} else if (result !== '') {
 			const value = result?.toString();
-			pannelResults = `READ\n${key}\nValue\n${value}`;
+			panelResults = `READ\n${key}\nValue\n${value}`;
 		} else {
-			pannelResults = `READ\n${key}\nValue Not Found`;
+			panelResults = `READ\n${key}\nValue Not Found`;
 		}
 	};
 
 	import WALItems from '$lib/components/KV/WALItems.svelte';
-	import KVPannel from '$lib/components/KV/KVPannel.svelte';
+	import KVpanel from '$lib/components/KV/KVpanel.svelte';
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 </script>
 
@@ -156,7 +155,7 @@
 						A KV in memory database built in Rust for learning purposes with a live feed of the WAL
 						(Write Ahead Log).
 					</p>
-					<p>This page has a controll pannel and a WebSocket feed.</p>
+					<p>This page has a control panel and a WebSocket feed.</p>
 					<p>
 						The server is hosted in a small free-tier cloud VM, with <s
 							>WAF rules to allow Cloudflare proxy as the only ingress point.</s
@@ -169,8 +168,8 @@
 	</div>
 
 	<container class="w-full max-w-6xl mx-auto grid md:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
-		<KVPannel
-			{pannelResults}
+		<KVpanel
+			{panelResults}
 			on:listKeys={listKeys}
 			on:putKey={putKey}
 			on:getKey={getKey}

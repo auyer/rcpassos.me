@@ -70,7 +70,7 @@ Now, let us install LaTeX Workshop plugin from the Visual Studio Code Marketplac
 ![Extensions Page in VS Code](./extension.webp)
 Extensions Page in VS Code
 
-Or install it by running the following command in the command pallete:
+Or install it by running the following command in the command palette:
 
 ```bash
 ext install latex-workshop
@@ -121,8 +121,8 @@ This feature works with private repositories as well. And all you need to do is 
 
 Now, when you open the Menu, there is an option to Sync with GitHub. The panel shown in the picture below is where you can PULL and PUSH changes to your Git repository. This way you can keep your collaborators up to date with what you’ve created offline, and you can work from a different computer when you need/desire. Neat!
 
-![GitHub Sync Pannel](./git.webp)
-GitHub Sync Pannel
+![GitHub Sync Panel](./git.webp)
+GitHub Sync Panel
 
 ## Conclusion
 
