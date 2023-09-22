@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="js">
 	import { openConnection, messageStore } from '$lib/store/wal';
 	import { onMount } from 'svelte';
 
@@ -12,9 +12,11 @@
 		DeleteAll
 	} from '$lib/services';
 
-	let pannelResults: string;
+	/** @type {String} */
+	let pannelResults = '';
 
-	let messages = Array<string>();
+	/** @type {Array<{id:number, content: string}>} */
+	let messages = [];
 
 	onMount(() => {
 		openConnection();
@@ -23,15 +25,18 @@
 				return;
 			}
 			if (messages?.length >= 30) {
-				messages.pop()!;
+				const poped = messages.pop();
+				console.log('Popped', poped);
 			}
 			messages = [currentMessage, ...messages];
 		});
 	});
 
 	let session_id = (Math.random() + 1).toString(36).substring(7);
-	let iter: number = 0;
-	let cancel: boolean = false;
+	/** @type {Number} */
+	let iter = 0;
+	/** @type {Boolean} */
+	let cancel = false;
 
 	async function putKeyBackground() {
 		if (cancel) {
@@ -78,7 +83,7 @@
 
 	const deleteKey = async ({ detail: { key } }) => {
 		const [result, err] = await DeleteKey(key);
-
+		console.log('result', result, err);
 		if (err) {
 			pannelResults = `ERROR: ${JSON.stringify(err)}`;
 		} else {
@@ -110,10 +115,12 @@
 	};
 
 	const putKey = async ({ detail: { key, value } }) => {
-		const err = await PutKeyValue(key, value);
+		const [prev, err] = await PutKeyValue(key, value);
 
 		if (err) {
 			pannelResults = `ERROR: ${JSON.stringify(err)}`;
+		} else if (prev !== '') {
+			pannelResults = `INSERT\n${key}\nValue\n${value}\nPrevious Value\n${prev}`;
 		} else {
 			pannelResults = `INSERT\n${key}\nValue\n${value}`;
 		}
@@ -124,9 +131,11 @@
 
 		if (err) {
 			pannelResults = `ERROR: ${JSON.stringify(err)}`;
-		} else {
-			const value = JSON.stringify(result);
+		} else if (result !== '') {
+			const value = result?.toString();
 			pannelResults = `READ\n${key}\nValue\n${value}`;
+		} else {
+			pannelResults = `READ\n${key}\nValue Not Found`;
 		}
 	};
 
@@ -149,8 +158,9 @@
 					</p>
 					<p>This page has a controll pannel and a WebSocket feed.</p>
 					<p>
-						The server is hosted in a small free-tier cloud VM, with WAF rules to allow Cloudflare
-						proxy as the only ingress point.
+						The server is hosted in a small free-tier cloud VM, with <s
+							>WAF rules to allow Cloudflare proxy as the only ingress point.</s
+						> Cloudflare Tunnel acting as a reverse Proxy.
 					</p>
 					<a href="http://github.com/auyer/MemoryKV">github.com/auyer/MemoryKV</a>
 				</svelte:fragment>

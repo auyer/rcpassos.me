@@ -18,19 +18,19 @@ export async function Post(url, body) {
 			});
 			const resBody = await response.json();
 			if (!response.ok) {
-				throw error(response.status, resBody);
+				return ["",error(response.status, resBody)]
 			}
 			return [resBody, null];
 		}
 	} catch (error) {
-		return [null, { message: error, code: 500 }];
+		return [null, error];
 	}
 }
 
 /**
  * @param {string} url
  * @param {BodyInit | FormData} body
- * @returns {Promise<[any, any]|undefined>}
+ * @returns {Promise<[string, any]>}
  */
 export async function Put(url, body) {
 	try {
@@ -45,18 +45,18 @@ export async function Put(url, body) {
 			});
 			const resBody = await response.text();
 			if (!response.ok) {
-				throw error(response.status, resBody);
+				return ["",error(response.status, resBody)]
 			}
 			return [resBody, null];
 		}
 	} catch (error) {
-		return [null, error];
+		return ['', error];
 	}
 }
 
 /**
  * @param {string} url
- * @returns {Promise<[any, any]>}
+ * @returns {Promise<[string, any]>}
  */
 export async function Get(
 	// fetch: any,
@@ -66,13 +66,13 @@ export async function Get(
 		const response = await fetch(url, {
 			method: 'GET'
 		});
-		const resBody = await response.json();
+		const resBody = await response.text();
 		if (!response.ok) {
-			throw error(response.status, resBody);
+			return ["",error(response.status, resBody)]
 		}
 		return [resBody, null];
 	} catch (error) {
-		return [null, { message: error, code: 500 }];
+		return ["", error];
 	}
 }
 
@@ -90,15 +90,15 @@ export async function Delete(
 		});
 		const resBody = await response.json();
 		if (!response.ok) {
-			throw error(response.status, resBody);
+			return ["",error(response.status, resBody)]
 		}
 		return [resBody, null];
 	} catch (error) {
-		return [null, { message: error, code: 500 }];
+		return [null, error];
 	}
 }
 // const API_ENDPOINT = 'http://localhost:8080';
-const API_ENDPOINT = 'https://kv.rcpassos.me';
+const API_ENDPOINT = 'https://memorykv.rcpassos.me';
 
 /**
  *
@@ -109,7 +109,8 @@ export async function ListKeys() {
 		const baseURL = API_ENDPOINT;
 		const path = '/keys';
 		const [jsonRes, err] = await Get(baseURL + path);
-		const listResponse = jsonRes;
+		// list will return a json compatible list of keys
+		const listResponse = JSON.parse(jsonRes);
 		if (err) {
 			return [listResponse, err];
 		}
@@ -127,13 +128,14 @@ export async function PutKeyValue(key, value) {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/' + key;
-		const [err] = await Put(baseURL + path, value);
+		const [response, err] = await Put(baseURL + path, value);
+		console.log("PutKeyValue", response, err)
 		if (err) {
-			return [err];
+			return [response, err];
 		}
-		return null;
+		return [response, err];
 	} catch (error) {
-		return [error];
+		return ["",error];
 	}
 }
 
@@ -146,7 +148,8 @@ export async function ListPrefix(key) {
 		const baseURL = API_ENDPOINT;
 		const path = '/keys/' + key;
 		const [jsonRes, err] = await Get(baseURL + path);
-		const listResponse = jsonRes;
+		// list will return a json compatible list of keys
+		const listResponse = JSON.parse(jsonRes);
 		if (err) {
 			return [listResponse, err];
 		}
@@ -164,11 +167,11 @@ export async function GetKey(key) {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/' + key;
-		const [jsonRes, err] = await Get(baseURL + path);
+		const [response, err] = await Get(baseURL + path);
 		if (err) {
-			return [jsonRes, err];
+			return [response, err];
 		}
-		return [jsonRes, err];
+		return [response, err];
 	} catch (error) {
 		return [null, error];
 	}
@@ -182,11 +185,11 @@ export async function DeleteKey(key) {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/' + key;
-		const [jsonRes, err] = await Delete(baseURL + path);
+		const [response, err] = await Delete(baseURL + path);
 		if (err) {
-			return [jsonRes, err];
+			return [response, err];
 		}
-		return [jsonRes, err];
+		return [response, err];
 	} catch (error) {
 		return [null, error];
 	}
@@ -200,11 +203,11 @@ export async function DeletePrefix(key) {
 	try {
 		const baseURL = API_ENDPOINT;
 		const path = '/keys/' + key;
-		const [jsonRes, err] = await Delete(baseURL + path);
+		const [response, err] = await Delete(baseURL + path);
 		if (err) {
-			return [jsonRes, err];
+			return [response, err];
 		}
-		return [jsonRes, err];
+		return [response, err];
 	} catch (error) {
 		return [null, error];
 	}

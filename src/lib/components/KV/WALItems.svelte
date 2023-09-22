@@ -1,5 +1,5 @@
 <script lang="js">
-	/** @type {Array<string>} */
+	/** @type {Array<{id:number, content: string}>} */
 	export let messages;
 
 	import { fade, fly } from 'svelte/transition';
@@ -10,9 +10,9 @@
 
 <div>
 	<ol class="border-l border-neutral-300 dark:border-neutral-500">
-		{#each messages as content, index (index)}
+		{#each messages as msg (msg.id)}
 			<div animate:flip in:fade|global out:fly|global={{ x: 50 }} class="item">
-				<WALItem {content} />
+				<WALItem content={msg.content} />
 			</div>
 		{/each}
 	</ol>
