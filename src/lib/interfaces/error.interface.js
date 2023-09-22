@@ -1,4 +1,4 @@
-export {}
+export {};
 
 /** @typedef {Object} AppError
  * @property {string} message
