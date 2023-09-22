@@ -139,7 +139,7 @@
 	};
 
 	import WALItems from '$lib/components/KV/WALItems.svelte';
-	import KVpanel from '$lib/components/KV/KVpanel.svelte';
+	import KVPanel from '$lib/components/KV/KVPanel.svelte';
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 </script>
 
@@ -168,7 +168,7 @@
 	</div>
 
 	<container class="w-full max-w-6xl mx-auto grid md:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
-		<KVpanel
+		<KVPanel
 			{panelResults}
 			on:listKeys={listKeys}
 			on:putKey={putKey}
