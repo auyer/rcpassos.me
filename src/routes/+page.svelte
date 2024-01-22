@@ -23,7 +23,9 @@
 				class="mx-auto rounded-full w-36 h-36 ring-2 ring-zinc-200 dark:ring-zinc-700"
 			/>
 			<div>
-				<span class="role">👩‍💻 Developer <span class="invert">👩‍💻 Developer</span> </span>&nbsp;
+				<span class="role"
+					>💻 Software Engineer<span class="invert">💻 Software Engineer</span>
+				</span>&nbsp;
 				<span class="role"
 					>📈 Data Engineer <span class="invert">📈 Data Engineer</span>
 				</span>&nbsp;
