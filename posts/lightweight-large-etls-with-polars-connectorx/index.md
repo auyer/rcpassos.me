@@ -63,7 +63,7 @@ Creating a new column or index have their cost as well.
 To implement this, you will need to decide how to partition your table.
 In my case, I will use a sequential numeric id and will decide the number of partitions based on the reported size that Postgres gives me.
 
-```
+```python
 query_min_max = f"""select min({PARTITION_COLUMN}) as min_id,
         max({PARTITION_COLUMN}) as max_id,
         pg_total_relation_size('{SCHEMA}.{TABLE}') as size
@@ -78,7 +78,7 @@ With the values from this query, you know how many lines you have (if the table 
 
 The next part is to run your queries in a loop and processes them one part at a time.
 
-```
+```python
 start = df_min_max["min_id"]
 stop = df_min_max["max_id"]
 step = math.ceil((stop - start) / parts)
@@ -96,7 +96,7 @@ My actual implementation is a bit fancier than this though.
 I created a function that returns a generator.
 What this means, is that the result of the function will look and behave like an Iterator, but each element will be processed only when it is called by the iteration process.
 
-```
+```python
 def query_generator_ranges(conn, start, stop, parts) -> Iterator[pl.LazyFrame]:
 step = math.ceil((stop - start) / parts)
 
@@ -117,7 +117,7 @@ return (
 
 And I use it like this:
 
-```
+```python
 dfs = query_generator_ranges(conn, start, stop, parts)
 for df in dfs:
     # process your df here
@@ -139,7 +139,7 @@ If you have this kind of tracing, you can add ids and other metadata here.
 But know that every row in this table will have them.
 I also prefix added columns with an underscore to make them easy to spot.
 
-```
+```python
 dt = datetime.now()
 extraction_id = "xyz"
 df = df.with_columns([
@@ -153,7 +153,7 @@ One I had to do, is date unit conversion.
 The tool we use for querying the datalake in my company does not support dates in micro or nanoseconds precision.
 The function below automatically detects date-time columns using the `dtype` attribute and casts them no mili-seconds.
 
-```
+```python
 # This function will find all timestamps and cast them to the "ms" unit
 def date_to_ms(df: pl.LazyFrame) -> pl.LazyFrame:
     for ix, col_type in enumerate(df.dtypes):

@@ -18,7 +18,7 @@ export async function Post(url, body) {
 			});
 			const resBody = await response.json();
 			if (!response.ok) {
-				return ["",error(response.status, resBody)]
+				return ['', error(response.status, resBody)];
 			}
 			return [resBody, null];
 		}
@@ -45,7 +45,7 @@ export async function Put(url, body) {
 			});
 			const resBody = await response.text();
 			if (!response.ok) {
-				return ["",error(response.status, resBody)]
+				return ['', error(response.status, resBody)];
 			}
 			return [resBody, null];
 		}
@@ -68,11 +68,11 @@ export async function Get(
 		});
 		const resBody = await response.text();
 		if (!response.ok) {
-			return ["",error(response.status, resBody)]
+			return ['', error(response.status, resBody)];
 		}
 		return [resBody, null];
 	} catch (error) {
-		return ["", error];
+		return ['', error];
 	}
 }
 
@@ -90,7 +90,7 @@ export async function Delete(
 		});
 		const resBody = await response.json();
 		if (!response.ok) {
-			return ["",error(response.status, resBody)]
+			return ['', error(response.status, resBody)];
 		}
 		return [resBody, null];
 	} catch (error) {
@@ -129,13 +129,13 @@ export async function PutKeyValue(key, value) {
 		const baseURL = API_ENDPOINT;
 		const path = '/' + key;
 		const [response, err] = await Put(baseURL + path, value);
-		console.log("PutKeyValue", response, err)
+		console.log('PutKeyValue', response, err);
 		if (err) {
 			return [response, err];
 		}
 		return [response, err];
 	} catch (error) {
-		return ["",error];
+		return ['', error];
 	}
 }
 
