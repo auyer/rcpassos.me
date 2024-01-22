@@ -73,7 +73,7 @@ This wastes a lot of time and resources.
 ConnectorX is integrated into Polars, and if both are installed, you can call `polars.read_sql`.
 I will use it directly though:
 
-```
+```python
 import connectorx as cx
 
 arrow_table = cx.read_sql(
@@ -95,7 +95,7 @@ This next call instructs Polars to read the arrow table memory space. And as the
 > This operation will be zero copy for the most part.
 > Types that are not supported by Polars may be cast to the closest supported type.
 
-```
+```python
 import polars as pl
 df = pl.from_arrow(arrow_table)
 ```
@@ -110,7 +110,7 @@ This could be done to a local path, or almost any destination [fsspec](https://f
 For example, one valid path could be `s3://bucket/database/folder/`.
 If you do not specify the file name, it will generate a random one. If you want to keep a single file, or want to replace an existing one, make sure to specify the file name.
 
-```
+```python
 df.write_parquet("output.zstd.parquet", compression:"zstd")
 ```
 
@@ -118,7 +118,7 @@ It is also possible to use PyArrow to do this.
 As I said before, PyArrow uses the C++ implementation of Arrow.
 But data can flow between them seamlessly without the need for serialization, or even memory copying.
 
-```
+```python
 import pyarrow.parquet as pq
 
 pq.write_table(
