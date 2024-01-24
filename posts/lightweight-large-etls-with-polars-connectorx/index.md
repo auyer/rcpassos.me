@@ -1,5 +1,5 @@
 ---
-title: Lightweight Large Data Extractions with Polars and ConnectorX
+title: Lightweight ETLs For Larger Than RAM Tables With Polars And ConnectorX
 date: 2023-05-07
 ---
 
