@@ -1,7 +1,4 @@
 <script>
-	import '../theme.postcss';
-
-
 	import '../app.postcss';
 	import Nav from '$lib/components/Nav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
