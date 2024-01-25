@@ -9,10 +9,11 @@ export const name = `${firstName} ${lastName}`;
 export const avatar = '/assets/profile.png';
 
 export const bio = `\
-I'm Rafael, a Brazilian software engineer.
-I'm a curious individual. 
-I love to learn new things and I'm always looking for ways to challenge myself.
-`;
+My name is Rafael, a Computer Scientist currently working as a Staff Software Engineer.
+I am driven by my curiosity and passion for technology.
+I fervently seek out opportunities for learning new concepts.
+This blog is a place where I can share some of my thoughts and experiences, but most of all, a personal incentive to keep learning.`
+;
 
 // Your social usernames, empty strings won't be used.
 // For sake of the live demo, I'm using `username/repo` for github,
