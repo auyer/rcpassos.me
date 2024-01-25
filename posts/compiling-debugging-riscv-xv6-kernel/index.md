@@ -1,5 +1,5 @@
 ---
-title: Compiling and Debugging a Kernel - the Xv6 kernel for the RISC-V Architecture
+title: Compiling and Debugging a Kernel - Xv6 for the RISC-V Architecture
 date: 2024-01-21
 ---
 
