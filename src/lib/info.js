@@ -12,8 +12,7 @@ export const bio = `\
 My name is Rafael, a Computer Scientist currently working as a Staff Software Engineer.
 I am driven by my curiosity and passion for technology.
 I fervently seek out opportunities for learning new concepts.
-This blog is a place where I can share some of my thoughts and experiences, but most of all, a personal incentive to keep learning.`
-;
+This blog is a place where I can share some of my thoughts and experiences, but most of all, a personal incentive to keep learning.`;
 
 // Your social usernames, empty strings won't be used.
 // For sake of the live demo, I'm using `username/repo` for github,

@@ -76,7 +76,7 @@
 	</div>
 
 	<div class="w-full mx-auto overflow-x-hidden">
-    <article class="prose">
+		<article class="prose">
 			<header class="flex flex-col">
 				<h1
 					class="mt-4 text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-4xl"

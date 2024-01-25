@@ -3,15 +3,14 @@ title: Compiling and Debugging a Kernel - Xv6 for the RISC-V Architecture
 date: 2024-01-25
 ---
 
-> After years of working in high-level development, I decided it was time to delve deeper. 
-> I decided to learn more about how Operating Systems are built. 
+> After years of working in high-level development, I decided it was time to delve deeper.
+> I decided to learn more about how Operating Systems are built.
 > This is my inaugural article on the topic, and it covers how to compile the necessary tools and run the XV6 kernel for a RISC-V machine/emulator.
-
 
 ### What we are going to do:
 
 Download the source code for **riscv-gnu-toolchain**, **QEMU**, **the Xv6 kernel**.
-We will compile them one after the other and then run the kernel in the emulator. 
+We will compile them one after the other and then run the kernel in the emulator.
 Additionally, we will learn how to debug the kernel with GDB.
 
 ## What even is Xv6 RISC-V?
@@ -125,10 +124,9 @@ init: starting sh
 $
 ```
 
-| ℹ️  Quick Tip: How to close the running QEMU instance                 | 
-|----------------------------------------------------------------------|
-|Press: `Ctrl + a` to enter the "QEMU shell", and then `q` and `Enter` |
-
+| ℹ️ Quick Tip: How to close the running QEMU instance                  |
+| --------------------------------------------------------------------- |
+| Press: `Ctrl + a` to enter the "QEMU shell", and then `q` and `Enter` |
 
 ## Running with GDB: Debugging the kernel
 
@@ -136,17 +134,17 @@ Just running the kernel is not very useful to understand what is happening.
 Luckily, QEMU has a built-in GDB (GNU Debugger) server, so we can connect to it and debug the kernel.
 We can use it to execute the code step by step, and inspect variables and their values while the kernel is running.
 
-I had not used GDB in a while, so I had to relearn how to use it. 
-First, the xv6-riscv repository has a `.gdbinit` file in the root folder. 
-It provides some basic configuration that allows GDB to work on our code base. 
+I had not used GDB in a while, so I had to relearn how to use it.
+First, the xv6-riscv repository has a `.gdbinit` file in the root folder.
+It provides some basic configuration that allows GDB to work on our code base.
 But we need to allow GDB to use it explicitly.
 I had to create a file `$HOME/.config/gdb/gdbinit` file with the following content:
 
 ```
 set auto-load safe-path <path to you local xv6-riscv codebase>
 ```
-If you don't create it, you will see a warning telling you to do so.
 
+If you don't create it, you will see a warning telling you to do so.
 
 To run it, you will need to open two terminal windows, one for QEMU and one for GDB, both in the xv6-riscv codebase root folder.
 In the QEMU terminal, run `make CPUS=1 qemu-gdb` (CPUS=1 makes it run in a single core, so it is easier to debug).
@@ -159,28 +157,28 @@ You will see a screen like this:
 
 This the TUI (Text User Interface) mode of GDB.
 
-### Some GDB commands I found useful 
+### Some GDB commands I found useful
 
-| command                 	| What it does                                           	|
-|-------------------------	|--------------------------------------------------------	|
-| b $param / break $param 	| Adds a breakpoint on symbol $param                     	|
-| c / continue            	| Will Continue execution until next breakpoint         	|
-| s / step                	| Step into the next line, entering a function if needed 	|
-| n / next                	| Continue to the next line, not entering functions      	|
-| watch $expression       	| Will stop when the value of an expression changes      	|
-| rwatch $expression      	| Will stop when the value of an expression is read      	|
+| command                 | What it does                                           |
+| ----------------------- | ------------------------------------------------------ |
+| b $param / break $param | Adds a breakpoint on symbol $param                     |
+| c / continue            | Will Continue execution until next breakpoint          |
+| s / step                | Step into the next line, entering a function if needed |
+| n / next                | Continue to the next line, not entering functions      |
+| watch $expression       | Will stop when the value of an expression changes      |
+| rwatch $expression      | Will stop when the value of an expression is read      |
 
-
-The first breakpoint I added was at \_entry `break _entry`, after witch you can press `c` to continue. 
+The first breakpoint I added was at \_entry `break _entry`, after witch you can press `c` to continue.
 It will stop at your breakpoint.
 After that, you can use `s` or `n` depending on whether you want to enter a function or continue over it.
 
 The `_entry` is among the first instructions executed.
 However, GDB will not display its source.
-Check the `kernel/kernel.asm` file that gets generated when compiling, to follow these first steps. 
+Check the `kernel/kernel.asm` file that gets generated when compiling, to follow these first steps.
 `_entry` should be in the first lines of the file.
 
 This is what it looks like:
+
 ```yaml
 kernel/kernel: file format elf64-littleriscv
 
@@ -197,12 +195,11 @@ Disassembly of section .text:
   80000016: 076000ef          	jal	8000008c <start>
 ```
 
-When you reach the `start` function, GDB will start to show you the code around what it being executed. 
+When you reach the `start` function, GDB will start to show you the code around what it being executed.
 This step is also reachable directly by a breakpoint `b start`.
 
 ![GDB tui on terminal screenshot with userinit function being shown](./gdb-riscv-xv6-with-code.png)
 
 Also do add a breakpoint `break main` to see the main function of the kernel, and `break userinit` to see the first kernel-space to user user-space transition: the first user program being run.
-The program it runs it a small assembly program `user/initcode.S`. 
+The program it runs it a small assembly program `user/initcode.S`.
 What it does is call the `exec` syscall, to start the second user-space program: `user/init.c` it creates the console, and starts the shell.
-
