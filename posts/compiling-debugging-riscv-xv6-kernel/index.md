@@ -1,6 +1,6 @@
 ---
 title: Compiling and Debugging a Kernel - Xv6 for the RISC-V Architecture
-date: 2024-01-21
+date: 2024-01-25
 ---
 
 > After years of working in high-level development, I decided it was time to delve deeper. 
