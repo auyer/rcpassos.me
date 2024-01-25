@@ -1,6 +1,8 @@
 import { join } from 'path';
 
+import typography from '@tailwindcss/typography';
 import { skeleton } from '@skeletonlabs/tw-plugin';
+import { theme } from './src/theme';
 /** @type {import('tailwindcss').Config} */
 export default {
 	darkMode: 'class',
@@ -12,14 +14,10 @@ export default {
 		extend: {}
 	},
 	plugins: [
+		typography,
 		skeleton({
 			themes: {
-				// preset: [
-				//   {
-				//     name: 'skeleton',
-				//     enhancements: true,
-				//   },
-				// ],
+				custom: [theme]
 			}
 		})
 	]
