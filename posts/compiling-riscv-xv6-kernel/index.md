@@ -3,15 +3,16 @@ title: Compiling and Debugging a Kernel - the Xv6 kernel for the RISC-V Architec
 date: 2024-01-21
 ---
 
-> After years of working with development on high level concepts, I decided to go down a few levels.
-> I decided to study more about how Operating Systems are built.
-> This is my first article on the topic, and it cover how to compile the necessary tools to compile and run the XV6 kernel for a RISC-V machine/emulator.
+> After years of working in high-level development, I decided it was time to delve deeper. 
+> I decided to learn more about how Operating Systems are built. 
+> This is my inaugural article on the topic, and it covers how to compile the necessary tools and run the XV6 kernel for a RISC-V machine/emulator.
+
 
 ### What we are going to do:
 
 Download the source code for **riscv-gnu-toolchain**, **QEMU**, **the Xv6 kernel**.
-We will compile one by one, and then run the kernel in the emulator.
-We will also learn how to debug the kernel with GDB.
+We will compile them one after the other and then run the kernel in the emulator. 
+Additionally, we will learn how to debug the kernel with GDB.
 
 ## What even is Xv6 RISC-V?
 
@@ -21,27 +22,27 @@ The Xv6 kernel is a simplified re-implementation of the Unix V6 kernel, and it i
 
 That covers the Xv6 part, but what about RISC-V?
 
-RISC-V is an open-source architecture for creating processors, and it is gaining a lot of traction in the industry.
-It quite new, and a lot simpler than the x86 and ARM comonly found in computers and mobile devices theses days.
-This makes it a great choice for learning how to build a kernel, since it is going to be easier to understand.
+RISC-V is an open-source architecture for creating processors, and it's gaining a lot of traction in the industry.
+It is quite new, it's significantly simpler than the x86 and ARM that are commonly found in computers and mobile devices these days.
+This makes it an excellent choice for learning to build a kernel, as it's easier to understand.
 
 ## Resources
 
-One of the main resources I am using, is this MIT Course [6.S081 Operating System Engineering](https://learncs.me/mit/6.s081).
-It is free and all its content is fully available on the internet.
-The course I had on Operating Systems in college was focused on the theory behind it, and not on the practical side.
-This one is the opposite, and it is very interesting to see how things are implemented in a real kernel.
-It is what I chose as a starting point.
+One of the main resources I am using is this MIT Course [6.S081 Operating System Engineering](https://learncs.me/mit/6.s081).
+It's free, and all its content is fully available on the Internet.
+The Operating Systems course I took in college was theory-focused, not practically inclined.
+This course is the opposite, and it's fascinating to see how things get implemented in a real kernel.
+This is what I selected as my starting point.
 
-Another very interesting resource, is this YouTube playist [Source Dive by the Low Byte Productions Channel](https://www.youtube.com/playlist?list=PLP29wDx6QmW4Mw8mgvP87Zk33LRcKA9bl).
+Another very interesting resource is this YouTube playlist [Source Dive by the Low Byte Productions Channel](https://www.youtube.com/playlist?list=PLP29wDx6QmW4Mw8mgvP87Zk33LRcKA9bl).
 It is quite entertaining, and it goes through the source code of the Xv6 kernel, explaining how it works and some of its concepts.
 
 ## Setup
 
 You will need a machine with a modern C compiler, and a few other tools, like QEMU and GDB.
 For this article, I chose to build everything from source.
-This can take some time depending on the machine running.
-If you want to skip this step, you can use the pre-compiled binaries provided by MIT. A guide is available [in the Tools page](https://pdos.csail.mit.edu/6.828/2020/tools.html) for the course.
+This can take some time depending on the machine in use.
+You can also use the pre-compiled binaries provided by MIT. A guide is available [on the Tools page](https://pdos.csail.mit.edu/6.828/2020/tools.html) for the course.
 
 ## Installing the toolchain
 
@@ -63,11 +64,10 @@ sudo make -j $(nproc)
 
 `$(nproc)` will be the number of cores in your machine.
 In my case, this is equivalent to `make -j 24`.
-You can give a smaller number if your machine becames unresponsive while compiling, but it will take longer.
-In my experience, giving it a larger number than the number of cores in your processor will not make it faster.
-Probably because the CPU will need to do a lot more context switching from one compiling job to another.
-Note that you will need root access to the `/usr/local/` folder to install the toolchain.
-That is the reason I ran make with sudo.
+You can give a smaller number if your machine becomes unresponsive while compiling, but it will take longer.
+Based on my experience, assigning a larger number than the actual number of cores in your processor will not expedite the process.
+This is likely because the CPU will be required to perform a larger amount of context switching from one compiling job to another.
+Note that root access to the `/usr/local/` folder is necessary to install the toolchain; this is why I ran 'make' with 'sudo'.
 
 ### QEMU
 
@@ -125,36 +125,62 @@ init: starting sh
 $
 ```
 
-### How to close the running QEMU instance
+| ℹ️  Quick Tip: How to close the running QEMU instance                 | 
+|----------------------------------------------------------------------|
+|Press: `Ctrl + a` to enter the "QEMU shell", and then `q` and `Enter` |
 
-Press: `Ctrl + a` and then `q` and `Enter`
 
-## Running with GDB
+## Running with GDB: Debugging the kernel
 
 Just running the kernel is not very useful to understand what is happening.
-We can use GDB to debug the kernel while it is running, and see what codepaths are being executed.
-Luckly, QEMU has a built-in GDB server, so we can connect to it and debug the kernel.
+Luckily, QEMU has a built-in GDB (GNU Debugger) server, so we can connect to it and debug the kernel.
+We can use it to execute the code step by step, and inspect variables and their values while the kernel is running.
 
-I had not used GDB in a while, so I had to relearn how to use it. Also, I had to create a file `$HOME/.config/gdb/gdbinit` file with the following content:
+I had not used GDB in a while, so I had to relearn how to use it. 
+First, the xv6-riscv repository has a `.gdbinit` file in the root folder. 
+It provides some basic configuration that allows GDB to work on our code base. 
+But we need to allow GDB to use it explicitly.
+I had to create a file `$HOME/.config/gdb/gdbinit` file with the following content:
 
 ```
 set auto-load safe-path <path to you local xv6-riscv codebase>
 ```
+If you don't create it, you will see a warning telling you to do so.
 
-mkdir -p .config/gdb
 
-Open two terminal windows, one for QEMU and one for GDB.
+To run it, you will need to open two terminal windows, one for QEMU and one for GDB, both in the xv6-riscv codebase root folder.
 In the QEMU terminal, run `make CPUS=1 qemu-gdb` (CPUS=1 makes it run in a single core, so it is easier to debug).
+It will wait for a GDB connection.
 
 In the GDB terminal, run: `riscv64-unknown-elf-gdb -tui`
 You will see a screen like this:
 
-![QEMU and GDB on terminal screenshot](./xv6-riscv-gdb.jpg)
+![QEMU and GDB on terminal screenshot](./gdb-riscv-xv6.png)
 
-The first breakpoint I added was at \_entry `break _entry`, after witch you can press `c` to continue, or `s` to step.
-I cloud not get any source displayed before the `start` function (also reachable diraclty by a breakpoint `b start`).
-But you can see the instructions executed prior to it in the `kernel/kernel.asm` file that gets generated when compiling. It should be in the fisrt lines of the file.
+This the TUI (Text User Interface) mode of GDB.
 
+### Some GDB commands I found useful 
+
+| command                 	| What it does                                           	|
+|-------------------------	|--------------------------------------------------------	|
+| b $param / break $param 	| Adds a breakpoint on symbol $param                     	|
+| c / continue            	| Will Continue execution until next breakpoint         	|
+| s / step                	| Step into the next line, entering a function if needed 	|
+| n / next                	| Continue to the next line, not entering functions      	|
+| watch $expression       	| Will stop when the value of an expression changes      	|
+| rwatch $expression      	| Will stop when the value of an expression is read      	|
+
+
+The first breakpoint I added was at \_entry `break _entry`, after witch you can press `c` to continue. 
+It will stop at your breakpoint.
+After that, you can use `s` or `n` depending on whether you want to enter a function or continue over it.
+
+The `_entry` is among the first instructions executed.
+However, GDB will not display its source.
+Check the `kernel/kernel.asm` file that gets generated when compiling, to follow these first steps. 
+`_entry` should be in the first lines of the file.
+
+This is what it looks like:
 ```yaml
 kernel/kernel: file format elf64-littleriscv
 
@@ -171,7 +197,12 @@ Disassembly of section .text:
   80000016: 076000ef          	jal	8000008c <start>
 ```
 
-Some other interesting breakpoint to check:
+When you reach the `start` function, GDB will start to show you the code around what it being executed. 
+This step is also reachable directly by a breakpoint `b start`.
 
-Also do add a breakpoint `break main` to see the main function of the kernel.
-`break userinit`
+![GDB tui on terminal screenshot with userinit function being shown](./gdb-riscv-xv6-with-code.png)
+
+Also do add a breakpoint `break main` to see the main function of the kernel, and `break userinit` to see the first kernel-space to user user-space transition: the first user program being run.
+The program it runs it a small assembly program `user/initcode.S`. 
+What it does is call the `exec` syscall, to start the second user-space program: `user/init.c` it creates the console, and starts the shell.
+
