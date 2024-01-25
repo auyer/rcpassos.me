@@ -54,7 +54,7 @@
 	<meta name="twitter:image" content={ogImage} />
 </svelte:head>
 
-<div class="root max-w-6xl mx-auto lg:max-w-none">
+<div class="root max-w-8xl mx-auto lg:max-w-none">
 	<div class="hidden lg:block pt-8">
 		<div class="sticky top-0 w-full flex justify-end pt-11 pr-8">
 			<svelte:element
@@ -79,7 +79,7 @@
     <article class="prose">
 			<header class="flex flex-col">
 				<h1
-					class="mt-6 text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl"
+					class="mt-4 text-3xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-4xl"
 				>
 					{data.post.title}
 				</h1>
