@@ -1,5 +1,5 @@
 <script lang="js">
-	export let pannelResults =
+	export let panelResults =
 		'There are no results to display yet.\nUse the actions above to see results here.';
 
 	/** @type {string} */
@@ -149,6 +149,6 @@
 	</div>
 	<div class="gap-2">
 		<h2>Results area</h2>
-		<CodeBlock code={pannelResults} />
+		<CodeBlock code={panelResults} />
 	</div>
 </div>

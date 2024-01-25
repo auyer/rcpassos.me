@@ -43,7 +43,7 @@ Some common Linux commands for installing LaTeX are:
 
 ```bash
 # Arch Linux Family
-sudo pacman -S texlive-most
+sudo pacman -S texlive
 
 # For Ubuntu, you might need a ppa:
 sudo add-apt-repository ppa:jonathonf/texlive
