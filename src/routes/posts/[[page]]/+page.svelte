@@ -16,7 +16,7 @@
 
 <div class="flex flex-col flex-grow">
 	<header class="pt-4">
-		<h1 class="text-6xl font-bold tracking-tight sm:text-5xl">Check my posts:</h1>
+		<h1 class="lg:text-6xl font-bold tracking-tight md:text-4xl text-2xl">Check my posts:</h1>
 		<p class="mt-6">I also post these on Medium</p>
 	</header>
 
