@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
+	import { onMount } from 'svelte';
 
 	/**
 	 * @param {string} href
@@ -10,54 +11,84 @@
 		href === $page.url.pathname ? 'variant-filled-primary' : 'variant-ghost-primary';
 	}
 
-	/**
-	 * @param {string} href
-	 */
-	function classesActiveContains(href) {
-		$page.url.pathname.includes(href) ? 'variant-filled-primary' : 'variant-ghost-primary';
-	}
-
-	let isExpanded = 'hidden';
-
 	function clickHandler() {
-		isExpanded === 'hidden' ? (isExpanded = '') : (isExpanded = 'hidden');
+		const nav = document.getElementById('menu-content');
+		if (nav != null) {
+			if (nav.style.display === 'none') {
+				nav.style.display = 'block';
+			} else {
+				nav.style.display = 'none';
+			}
+		}
 	}
+
+	onMount(() => {
+		const handleResize = () => {
+			const nav = document.getElementById('menu-content');
+			if (nav != null) {
+				if (window.innerWidth > 1024) {
+					nav.style.display = 'flex';
+				} else {
+					nav.style.display = 'none';
+				}
+			}
+		};
+
+		window.addEventListener('resize', handleResize);
+	});
 </script>
 
 <div>
 	<AppBar slotTrail="place-content-end">
 		<svelte:fragment slot="lead">
-			<a class="btn min-w-fit" href="/" data-sveltekit-preload-data="hover">
-				<img src="/assets/logo.svg" alt="Auyer" width="30px" height="30px" />
-			</a>
+			<div class="flex items-center justify-between flex-wrap">
+				<div class="flex items-center flex-shrink-0 text-white mr-6">
+					<a class="btn min-w-fit" href="/" data-sveltekit-preload-data="hover">
+						<img src="/assets/logo.svg" alt="Auyer" width="30px" height="30px" />
+					</a>
+				</div>
+				<div
+					id="menu-content"
+					class="w-full block flex-grow lg:flex lg:items-center lg:w-auto lg:block hidden"
+				>
+					<div class="text-sm lg:flex-grow">
+						<a
+							class="block lg:inline-block btn no-underline {classesActive('/posts')}"
+							href="/posts"
+							data-sveltekit-preload-data="hover"
+						>
+							Posts
+						</a>
+						<a
+							class="block lg:inline-block btn no-underline {classesActive('/about')}"
+							href="/about"
+							data-sveltekit-preload-data="hover"
+						>
+							About
+						</a>
+						<a
+							class="block lg:inline-block btn no-underline {classesActive('/projects/kv')}"
+							href="/projects/kv"
+							data-sveltekit-preload-data="hover">MemoryKV: A Cool Demo</a
+						>
+						<a
+							class="block lg:inline-block btn no-underline {classesActive('/projects/github')}"
+							href="https://github.com/auyer/">GitHub</a
+						>
+					</div>
+				</div>
+			</div>
 		</svelte:fragment>
-		<a
-			class="btn no-underline {classesActive('/about')}"
-			href="/about"
-			data-sveltekit-preload-data="hover"
-		>
-			About
-		</a>
-		<a
-			class="btn no-underline {classesActive('/posts')}"
-			href="/posts"
-			data-sveltekit-preload-data="hover"
-		>
-			Posts
-		</a>
-		<a
-			class="btn no-underline {classesActive('/projects/kv')}"
-			href="/projects/kv"
-			data-sveltekit-preload-data="hover"
-			on:click={clickHandler}>MemoryKV</a
-		>
-		<a
-			class="btn no-underline {classesActive('/projects/github')}"
-			href="https://github.com/auyer/"
-			on:click={clickHandler}>GitHub</a
-		>
-
 		<svelte:fragment slot="trail">
+			<div class="block lg:hidden">
+				<button class="flex items-center px-3 py-2 rounded" on:click={clickHandler}>
+					<svg viewBox="0 0 100 80" class="fill-token w-4 h-4">
+						<rect width="100" height="20" />
+						<rect y="30" width="100" height="20" />
+						<rect y="60" width="100" height="20" />
+					</svg>
+				</button>
+			</div>
 			<LightSwitch />
 		</svelte:fragment>
 	</AppBar>
