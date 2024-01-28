@@ -153,7 +153,7 @@ It will wait for a GDB connection.
 In the GDB terminal, run: `riscv64-unknown-elf-gdb -tui`
 You will see a screen like this:
 
-![QEMU and GDB on terminal screenshot](./gdb-riscv-xv6.png)
+![QEMU and GDB on terminal screenshot](./gdb-riscv-xv6.avif)
 
 This the TUI (Text User Interface) mode of GDB.
 
@@ -198,7 +198,7 @@ Disassembly of section .text:
 When you reach the `start` function, GDB will start to show you the code around what it being executed.
 This step is also reachable directly by a breakpoint `b start`.
 
-![GDB tui on terminal screenshot with userinit function being shown](./gdb-riscv-xv6-with-code.png)
+![GDB tui on terminal screenshot with userinit function being shown](./gdb-riscv-xv6-with-code.avif)
 
 Also do add a breakpoint `break main` to see the main function of the kernel, and `break userinit` to see the first kernel-space to user user-space transition: the first user program being run.
 The program it runs it a small assembly program `user/initcode.S`.
