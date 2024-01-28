@@ -9,7 +9,7 @@
 
 <container class="flex flex-col flex-grow w-full mx-auto max-w-6xl">
 	<header class="hero">
-		<img alt="Rafael walking a bridge" width="1600" height="1230" src="/assets/hero.webp" />
+		<img alt="Rafael walking a bridge" width="1600" height="1230" src="/assets/hero.avif" />
 		<div class="gradient" />
 		<div class="overlay" />
 	</header>
@@ -98,7 +98,7 @@
 	}
 
 	.gradient {
-		background-image: url('/assets/mesh-gradient.jpg');
+		background-image: url('/assets/mesh-gradient.avif');
 		background-size: cover;
 		pointer-events: none;
 		mix-blend-mode: screen;

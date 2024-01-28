@@ -2,7 +2,7 @@
 	import ArrowRightIcon from '$lib/components/ArrowRightIcon.svelte';
 	import PostsList from '$lib/components/PostsList.svelte';
 	import SocialLinks from '$lib/components/SocialLinks.svelte';
-	import { avatar, bio, name } from '$lib/info.js';
+	import { avatar_avif, avatar_png, bio, name } from '$lib/info.js';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -16,19 +16,16 @@
 <container class="flex flex-col flex-grow w-full mx-auto max-w-6xl">
 	<!-- bio -->
 	<section class="flex flex-col items-center gap-16 pt-8 pb-16">
-		<div class="flex flex-col items-center w-full gap-6 rounded-lg">
-			<img
-				src={avatar}
-				alt={name}
-				class="mx-auto rounded-full w-36 h-36 ring-2 ring-zinc-200 dark:ring-zinc-700"
-			/>
+		<div class="flex flex-col items-center w-full gap-6">
+			<picture class="profile-box">
+				<source class="profile" type="image/avif" srcset={avatar_avif} />
+				<img class="profile" src={avatar_png} alt={name} />
+			</picture>
 			<div>
 				<span class="role"
 					>💻 Software Engineer<span class="invert">💻 Software Engineer</span>
-				</span>&nbsp;
-				<span class="role"
-					>📈 Data Engineer <span class="invert">📈 Data Engineer</span>
-				</span>&nbsp;
+				</span>
+				<span class="role">📈 Data Engineer <span class="invert">📈 Data Engineer</span> </span>
 				<span class="role"
 					>🐧 Open Source & Linux Enthusiast <span class="invert"
 						>🐧 Open Source & Linux Enthusiast</span
@@ -50,7 +47,7 @@
 				Recently Published
 			</h2>
 			<a href="/posts" class="flex items-center gap-1 text-sm font-medium text-teal-500"
-				>View All <ArrowRightIcon class="w-4 h-4" /></a
+				>View All <ArrowRightIcon class="w-4 h-4 m-2" /></a
 			>
 		</div>
 		<PostsList posts={data.posts} />
@@ -58,6 +55,12 @@
 </container>
 
 <style lang="scss">
+	.profile {
+		@apply mx-auto rounded-full w-36 h-36;
+	}
+  .profile-box{
+    @apply profile ring-2 ring-zinc-200 dark:ring-zinc-700
+  }
 	$w-s: 750px;
 
 	.role {
@@ -71,10 +74,6 @@
 
 		@media (min-width: $w-s) {
 			font-size: var(--f-u3);
-		}
-
-		+ .role {
-			margin-left: 1em;
 		}
 
 		&:nth-of-type(1) {
