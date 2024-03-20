@@ -369,7 +369,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # this should point to your project path 
-VM_DIR=/home/auyer/code/kernel-dev/arm64
+VM_DIR=/home/auyer/kernel-dev/arm64
 BOOT_DIR=$VM_DIR/boot
 
 virt-install \
