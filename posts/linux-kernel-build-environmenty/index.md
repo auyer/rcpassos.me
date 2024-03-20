@@ -66,7 +66,7 @@ It is a minimal image that requires no configuration to use.
 It allows root login without a password, and it is perfect for quick testing and development.
 
 I will create two VMs.
-The first one will be for the x86_64 architecture, and the second one will be for the arm64 architecture.
+The first one will be for the amd64 (x86_64) architecture, and the second one will be for the arm64 (aarch64) architecture.
 The daily built images can be found at [cdimage.debian.org](http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/).
 
 Downloading the base images in qcow2 format (a format that is easy to work with in QEMU and Libvirt):
@@ -78,22 +78,26 @@ $ wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-n
 ```
 
 If we peek into these files, we can see the partitions inside.
+It is expected for any Linux system to have at least two partitions: one for the root filesystem, and one for the boot filesystem.
+The boot is usually a small `vfat` or `fat32` partition.
+The root partition is larger, and can usually come in the `ext4`, `btrfs` or other less common partition types.
 ```bash
-$ virt-filesystems --long -a ./debian-12-nocloud-amd64-daily.qcow2 
-Name        Type        VFS   Label  Size        Parent
-/dev/sda1   filesystem  ext4  -      1941159936  -
-/dev/sda15  filesystem  vfat  -      129718272   -
+$ virt-filesystems -h --long -a ./debian-12-nocloud-amd64-daily.qcow2 
 
-$ virt-filesystems --long -a ./debian-12-nocloud-arm64-daily.qcow2
-Name        Type        VFS   Label  Size        Parent
-/dev/sda1   filesystem  ext4  -      1941159936  -
-/dev/sda15  filesystem  vfat  -      132872192   -
+Name        Type        VFS   Label  Size  Parent
+/dev/sda1   filesystem  ext4  -      1,8G  -
+/dev/sda15  filesystem  vfat  -      124M  -
+
+
+$ virt-filesystems -h --long -a ./debian-12-nocloud-arm64-daily.qcow2
+Name        Type        VFS   Label  Size  Parent
+/dev/sda1   filesystem  ext4  -      1,8G  -
+/dev/sda15  filesystem  vfat  -      127M  -
 ```
 
-
 From here, most steps will be identical for both architectures (besides the arch name in files).
-I will use a variable to store the architecture name, and use it in the commands.
-When there are differences, I will note them.
+I will use the `ARCH` variable to store the architecture name, and use it in the commands.
+When there are differences, I will make it clear.
 
 
 ## Resizing the Disk Image with virt-resize (Option 1)
@@ -102,9 +106,8 @@ We will need to resize the disk to have enough space to have a usable system.
 This command will create a new qcow2 file with 4GB of space, and copy the contents of the original file to it, while also making the root partition larger.
 In this case, the root partition is the first one, and it is named `/dev/sda1`, with `ext4` filesystem.
 
-
 ```bash
-$ export ARCH=amd64
+$ export ARCH=amd64 # or export ARCH=arm64
 $ qemu-img create -f qcow2 -o preallocation=metadata ./$ARCH/linux-$ARCH.qcow2 4G
 
 $ virt-resize --expand /dev/sda1 debian-12-nocloud-$ARCH-daily.qcow2 ./$ARCH/linux-$ARCH.qcow2
@@ -295,9 +298,6 @@ This way I dont incur the risk of having VMs running when I dont need them.
 ```bash
 $ sudo systemctl enable libvirtd # optional
 ```
-
-
-## Creating the VM
 
 The only persistent configuration we need to create a VM is the disk image.
 From now on, we can create and destroy the VM as many times as we want, and it will always start with the same disk image.
