@@ -110,7 +110,7 @@ $ qemu-img create -f qcow2 -o preallocation=metadata ./$ARCH/linux-$ARCH.qcow2 4
 $ virt-resize --expand /dev/sda1 debian-12-nocloud-$ARCH-daily.qcow2 ./$ARCH/linux-$ARCH.qcow2
 ```
 
-If this step is successful, we can proceed to the next step [Reading files from the qcow2 image](#reading-files-from-the-qcow2-image). 
+If this step is successful, we can proceed to the next step [Reading files from the VM Disk image](#reading-files-from-the-vm-disk-image). 
 #TODO check if link worked
 
 For a yet unknown reason, I experienced an error when running the `virt-resize` command.
