@@ -524,22 +524,106 @@ $ ssh -i ~/.ssh/your_key root@192.168.122.178
 TODO explain git branches
 
 
+This will clone the kernel source code to the `linux` folder.
+It might take a, because the kernel source code is quite large.
 ```bash
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 
+cd linux
 ```
 
-Building only the modules that are currently loaded in the VM
+When building the kernel, the arch name for amd64 is `x86_64`, and for arm64 is `arm64`.
+```bash
+export ARCH=arm64 # or export ARCH=x86_64 
+# todo explain
+make defconfig
+# todo explain
+make olddefconfig
 ```
+
+## Choosing what modules to build 
+
+You could build all kernel modules, but it would take a long time. 
+Instead, we will read what modules your VM needs, and build only those.
+
+Get the current IP address of the VM with the `virsh` command, and run this `lsmod` command over ssh.
+The result will be written to your current folder in your host machine.
+```bash
 ssh root@192.168.122.178 lsmod > modules_list_$ARCH
-
+# and this will configure the kernel to build only the modules you need
 make LSMOD=modules_list_$ARCH localmodconfig
 ```
 
-```
-make -j$(nproc) bzImage modules
+The next step will build the kernel with all available cores.
+This will speed up the process a lot, but it will also consume a lot of resources.
+If you are using a resource limited machine, you can use the `-j` parameter with a lower number.
+
+For amd64 (if your host is amd64):
+```bash
+make -j$(nproc) modules bzImage
 ```
 
-## Choosing what modules to build
+For arm64 (if your host is amd64):
+```bash
+$ make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image.gz modules
+```
+
+## Installing the Kernel Modules
+
+At this point, we have a compiled kernel and modules.
+We can install the modules in the VM directly from the host machine.
+
+```bash
+sudo virsh shutdown linux-$ARCH # or destroy, if it hangs
+
+```
+
+### Option 1: mounting the disk image into a local folder
+These commands are run from the linux folder
+
+```bash
+# create a folder to mount the disk image
+mkdir -p ../$ARCH/mountpoint
+# mount the disk image to the folder we created
+guestmount ../$ARCH/mountpoint
+# copy the modules to the VM disk
+make INSTALL_MOD_PATH=../$ARCH/mountpoint modules_install
+# unmount the disk image, so we can start the VM
+guestunmount ../$ARCH/mountpoint
+```
+
+## Running the VM with the new kernel and Modules
+
+We will create a new script to run the VM with the new kernel.
+
+This new script will have a name `create_built_kernel_amd64.sh`, and there are a few thing that might be different.
+It should look the same as the `create_og_kernel_amd64.sh`, but it should point to the compiled kernel from the previous step.
+In my case, it is in the `arch/x86/boot` folder, and it is named `bzImage`.
+
+Before running 
+```bash
+#!/bin/sh
+if [[ $EUID -ne 0 ]]; then
+    echo "This must be run as root"
+    exit 1
+fi
+
+# this should point to your project path 
+VM_DIR=/home/auyer/code/kernel-dev/amd64
+BOOT_DIR=$VM_DIR/boot
+
+virt-install \
+    --name "linux-amd64" \
+    --memory 1024 \
+    --arch x86_64 \
+    --osinfo detect=on,require=off \
+    --check path_in_use=off \
+    --features acpi=off \
+    --graphics none \
+    --import \
+    --network bridge:virbr0 \
+    --disk path=$VM_DIR/linux-amd64.qcow2 \
+    --boot kernel=$VM_DIR/../linux/arch/x86/boot/bzImage,initrd=$BOOT_DIR/initrd.img-6.1.0-18-amd64,kernel_args="console=tty0 console=ttyS0 loglevel=8 root=/dev/sda1 rootwait"
+```
 
 TODO module install
 
