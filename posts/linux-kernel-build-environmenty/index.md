@@ -547,15 +547,25 @@ Instead, we will read what modules your VM needs, and build only those.
 
 Get the current IP address of the VM with the `virsh` command, and run this `lsmod` command over ssh.
 The result will be written to your current folder in your host machine.
+
+> ⚠️ **Attention**: The `lsmod` command will not work if the VM is not running.
+
+> ⚠️ **Attention**: The `make LSMOD=...` command might ask you to set parameters for the modules you are building.
+> You are most like going to be fine by pressing enter and using the default values.
+> If it fails, you might need to search for the root cause of the error message elsewhere.
+
 ```bash
 ssh root@192.168.122.178 lsmod > modules_list_$ARCH
 # and this will configure the kernel to build only the modules you need
-make LSMOD=modules_list_$ARCH localmodconfig
+make LSMOD=../modules_list_$ARCH localmodconfig
 ```
 
 The next step will build the kernel with all available cores.
 This will speed up the process a lot, but it will also consume a lot of resources.
 If you are using a resource limited machine, you can use the `-j` parameter with a lower number.
+
+> ⚠️ **Attention**: The next command might ask you to set parameters for the modules you are building.
+> You are most like going to be fine by pressing enter and using the default values.
 
 For amd64 (if your host is amd64):
 ```bash
