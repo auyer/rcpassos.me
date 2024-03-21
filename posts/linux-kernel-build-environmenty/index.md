@@ -20,7 +20,7 @@ What we will cover:
 - Building the kernel
 - Booting the kernel in the virtual machine
 - Setting up the Clangd LSP for a better experience navigating the source code
-
+- Using the KWorflow tool to automate the process of building and testing the kernel
 
 # Preparing a Virtual Machine Disk and Files
 
@@ -593,39 +593,78 @@ guestunmount ../$ARCH/mountpoint
 
 ## Running the VM with the new kernel and Modules
 
-We will create a new script to run the VM with the new kernel.
-
-This new script will have a name `create_built_kernel_amd64.sh`, and there are a few thing that might be different.
-It should look the same as the `create_og_kernel_amd64.sh`, but it should point to the compiled kernel from the previous step.
-In my case, it is in the `arch/x86/boot` folder, and it is named `bzImage`.
-
-Before running 
+Now let's create a copy of the script we used to create the VM, and change the kernel and initrd files to the ones we just compiled.
+The idea is to keep both scripts, so we can use them to create the VM again if we need to.
 ```bash
-#!/bin/sh
-if [[ $EUID -ne 0 ]]; then
-    echo "This must be run as root"
-    exit 1
-fi
+$ cp create_og_kernel_$ARCH.sh create_built_kernel_$ARCH.sh
+```
+There is only one thing to change in the script.
+We need to point to the output files of the kernel compilation. 
+That is the `kernel` parameter in the `--boot` option.
 
-# this should point to your project path 
-VM_DIR=/home/auyer/code/kernel-dev/amd64
-BOOT_DIR=$VM_DIR/boot
+Here are the diffs for the two files, showing the changes I made to the `--boot` option.
+The first line is the original file, and the second line is the new file.
+If you are using a different folder structure, that should be adapted too.
 
-virt-install \
-    --name "linux-amd64" \
-    --memory 1024 \
-    --arch x86_64 \
-    --osinfo detect=on,require=off \
-    --check path_in_use=off \
-    --features acpi=off \
-    --graphics none \
-    --import \
-    --network bridge:virbr0 \
-    --disk path=$VM_DIR/linux-amd64.qcow2 \
-    --boot kernel=$VM_DIR/../linux/arch/x86/boot/bzImage,initrd=$BOOT_DIR/initrd.img-6.1.0-18-amd64,kernel_args="console=tty0 console=ttyS0 loglevel=8 root=/dev/sda1 rootwait"
+adm64:
+```bash
+➜  diff create_og_kernel_amd64.sh create_built_kernel_amd64.sh
+< --boot kernel=$BOOT_DIR/vmlinuz-6.1.0-18-amd64,initrd=$BOOT_DIR/initrd.img-6.1.0-18-amd64,kernel_args="console=tty0 console=ttyS0 log
+level=8 root=/dev/sda1 rootwait"
+---
+> --boot kernel=$VM_DIR/../linux/arch/x86/boot/bzImage,initrd=$BOOT_DIR/initrd.img-6.1.0-18-amd64,kernel_args="console=tty0 console=tty
+S0 loglevel=8 root=/dev/sda1 rootwait"
+>
 ```
 
-TODO module install
+arm64:
+```bash
+➜  diff create_og_kernel_arm64.sh create_built_kernel_arm64.sh
+< --boot kernel=$BOOT_DIR/vmlinuz-6.1.0-18-arm64,initrd=$BOOT_DIR/initrd.img-6.1.0-18-arm64,kernel_args="console=ttyAMA0 loglevel=8 roo
+t=/dev/vda1 rootwait" 
+---
+> --boot kernel=$VM_DIR/../linux/arch/arm64/boot/Image.gz,initrd=$BOOT_DIR/initrd.img-6.1.0-18-arm64,kernel_args="console=ttyAMA0 logle
+vel=8 root=/dev/vda1 rootwait"
+```
+
+Before running this script, we need to make shure the VM is off, and remove it from the list of configured VMs (so we can re-create it). 
+```bash
+# attempt the shutdown
+sudo virsh shutdown linux-$ARCH
+# check if it is no longer running. 
+# If it is, force it to shutdown using `destroy` instead
+sudo virsh list --all
+# remove the VM from the list
+sudo virsh undefine linux-$ARCH
+```
+
+Now we can run the script to create the VM with the new kernel and modules.
+```bash
+$ sudo bash create_built_kernel_$ARCH.sh
+
+## Inside the VM:
+# check the version running
+$ uname -a
+Linux localhost 6.8.0-11767-g23956900041d #4 SMP PREEMPT_DYNAMIC Thu Mar 21 10:28:09 -03 2024 x86_64 GNU/Linux
+
+# check the modules installed
+$ ls /lib/modules/
+6.1.0-18-amd64  6.8.0-11767-g23956900041d
+
+```
+
+Great !
+Now we have a VM running with the kernel and modules we just compiled.
+The basic development loop is ready to take place:
+1. make changes to the kernel source code
+2. compile the kernel and modules
+3. install the modules in the VM
+4. run the VM and test the changes
+
+---
+
+The next sections will cover how to set up a development environment for the kernel, and how to use the LSP for the kernel source code.
+After that, we will cover how to use a tool called `kworkflow` to automate the process of building and running the kernel in the VM.
 
 # Setting up Clangd LSP
 
@@ -636,6 +675,10 @@ For the LSP to work, we need to generate the `compile_commands.json` file, and g
 scripts/clang-tools/gen_compile_commands.py
 make -j$(nproc)
 ```
+
+# Using kworkflow
+
+TODO
 
 # Appendix
 
