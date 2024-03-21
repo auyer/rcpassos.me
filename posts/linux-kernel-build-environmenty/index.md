@@ -433,13 +433,13 @@ $ sudo systemctl restart libvirtd
 
 If you want to access the VM with SSH, we need to enable it and change some configs.
 The first step is to configure the `openssh-server` package in the VM.
-It comes installed by default in the Debian Cloud Image, but it lacks keys to work properly.
+It comes installed by default in the Debian Cloud Image, but it lacks host keys to work properly.
 
 We will run two commands inside the VM. 
 The first might ask you to 
 ```bash
 # inside the VM
-# configure and generate server keys
+# configure and generate host keys
 $ dpkg-reconfigure openssh-server
 ```
 
@@ -528,14 +528,11 @@ TODO explain git branches
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 
 ```
 
+Building only the modules that are currently loaded in the VM
 ```
-ssh
-ssh...
-lsmod > vm_mod_list
-exit
+ssh root@192.168.122.178 lsmod > modules_list_$ARCH
 
-scp -i ~/.ssh/rsa_iio_arm64_virt root@192.168.122.38:~/vm_mod_list .
-make LSMOD=vm_mod_list localmodconfig
+make LSMOD=modules_list_$ARCH localmodconfig
 ```
 
 ```
@@ -546,9 +543,14 @@ make -j$(nproc) bzImage modules
 
 TODO module install
 
-For cross compilation:
-```
-pacman -S aarch64-linux-gnu-gcc bc
+# Setting up Clangd LSP
+
+TODO
+
+For the LSP to work, we need to generate the `compile_commands.json` file, and generate a first compilation result.
+```bash
+scripts/clang-tools/gen_compile_commands.py
+make -j$(nproc)
 ```
 
 # Appendix
@@ -571,6 +573,8 @@ sudo virsh undefine linux-amd64
 ```
 
 ## List of Packages I needed to install
+
+For the VM:
 ```bash
 sudo pacman -S guestfs-tools \
                 virt-manager \
@@ -581,5 +585,9 @@ sudo pacman -S guestfs-tools \
                 dnsmasq
 ```
 
+For cross compilation:
+```bash
+pacman -S aarch64-linux-gnu-gcc bc
+```
 
 ## References
