@@ -251,7 +251,7 @@ With the next command, we are listing the files in the boot directory of the ima
 We are looking for the kernel and initrd files, so we can copy them to the host and use them in the VM we are going to create.
 The file name will be different depending on the kernel version and architecture, but it will be similar to `vmlinuz-6.1.0-18-amd64` and `initrd.img-6.1.0-18-amd64`.
 
-> ⚠️ **Attention** Depending on the method used to expand the disk, your root partition might have a different name.
+> ⚠️ **Attention**: Depending on the method used to expand the disk, your root partition might have a different name.
 > In my case, the partition is named `/dev/sda1`, but I've seen it be renamed to `/dev/sda2` and `/dev/sda3` by the `virt-resize` method.
 > Use the `virt-filesystems` command to check the name of the root partition, and use it in the following commands.
 
@@ -273,6 +273,8 @@ Replace the file names with the ones you got from the previous command.
 $ virt-copy-out -a ./$ARCH/linux-$ARCH.qcow2 /boot/initrd.img-6.1.0-18-$ARCH ./$ARCH/boot
 $ virt-copy-out -a ./$ARCH/linux-$ARCH.qcow2 /boot/vmlinuz-6.1.0-18-$ARCH ./$ARCH/boot
 ```
+
+---
 
 # Creating the Virtual Machine
 
@@ -311,7 +313,7 @@ I will show both commands here, and explain the differences.
 The first script will create the VM and run it with the original kernel and initrd files (the two files we got with `virt-copy-out`).
 I will keep them and this script in my environment folder, so I can use them to create the VM again if I need to.
 
-> ⚠️ **Attention**. Some parameters might need to be changed to fit your environment.
+> ⚠️ **Attention**: Some parameters might need to be changed to fit your environment.
 
 - The VM_DIR variable needs to point to your workdir folder. 
 - Shortcuts like `$HOME` or `~` wont work because we will execute this script with the root user.
@@ -429,21 +431,97 @@ $ sudo systemctl restart libvirtd
 
 ### Enabling SSH to access the VM (Optional)
 
-# TODO
+If you want to access the VM with SSH, we need to enable it and change some configs.
+The first step is to configure the `openssh-server` package in the VM.
+It comes installed by default in the Debian Cloud Image, but it lacks keys to work properly.
+
+We will run two commands inside the VM. 
+The first might ask you to 
+```bash
+# inside the VM
+# configure and generate server keys
+$ dpkg-reconfigure openssh-server
+```
+
+> ⚠️ **Attention**: The `dpkg-reconfigure` command might ask you to deal with conflicting configurations.
+> "What do you want to do about modified configuration file sshd_config?"
+> I recommend choosing **install the package maintainer's version**
+
+Now, there are two ways the sshd server can be configured: 
+1. allow (empty) password logins for the root user: simple, but less secure. Its ok for a local VM.
+2. allow only key-based logins, adding your key to the VM. This is more secure, but requires more steps.
+
+#### Option 1: Allow empty password logins for the root user
+Inside the VM, edit the `/etc/ssh/sshd_config` file, and set the following parameters (they are commented by default):
+```
+PermitRootLogin yes
+PasswordAuthentication yes
+PermitEmptyPasswords yes
+```
+
+#### Option 2: Allow only key-based logins
+Inside the VM, edit the `/etc/ssh/sshd_config` file, and set the following parameter (commented by default):
+```
+PermitRootLogin yes
+```
+
+Shutdown the VM by running `'shutdown now` inside of it. 
+Refer to the [Useful Commands For Managing Virsh VM](#useful-commands-for-managing-virsh-vm) section if the shutdown process hangs.
+
+If you have a private/public key pair, skip this command and use it in the next step.
+If you don't, we can generate a new key pair with the `ssh-keygen` command.
+A very complete guide is available [in GitHub docs](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
+But here is the short version:
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+
+Use your public key (or the one you generated) to inject it into the VM.
+```bash
+sudo virt-sysprep -a ./$ARCH/linux-$ARCH.qcow2 --ssh-inject root:file:/home/$USER/.ssh/<your_key>.pub
+```
+
+Restart the VM and check if the sshd server is running.
+```bash
+sudo virsh start --console linux-$ARCH
+```
+
+### Starting the SSH server and connecting to it
 
 ```bash
-sudo virsh net-dhcp-leases default
+# inside the VM
+# start and enable the sshd server, so it starts at boot
+$ systemctl enable --now sshd.service
+```
+If it fails, here a few thing to try:
+```bash
+# run dpkg-reconfigure again, this time choosing to keep your settings
+$ dpkg-reconfigure openssh-server
+# reload systemd configuration and restart sshd
+$ systemctl daemon-reload
+$ systemctl restart sshd.service
+# also the good old system reboot (in the VM)
+$ reboot
 ```
 
+Outise of the VM, you can check the IP address of the VM with the `virsh` command.
+It should be the same result as running ` ip a` inside the VM.
+```bash
+# check the IP address in the dhcp leases for the default network
+$ sudo virsh net-dhcp-leases default
+```
 
-The first time we start a VM, we get a virtual console to interact with it.
-But when just restarting it with virsh, we can just connect to it with SSH. 
+Now you should be able to connect to the VM with the `ssh` command.
+```bash
+$ ssh root@192.168.122.178
+# or if you have an ssh key that is not added to your ssh-agent
+$ ssh -i ~/.ssh/your_key root@192.168.122.178
 ```
-sudo virsh net-dhcp-leases default
-```
+
+---
 
 # Getting the Kernel Source Code
-TODO explain git threes
+TODO explain git branches
 
 
 ```bash
@@ -484,6 +562,8 @@ sudo virsh list --all
 sudo virsh start linux-amd64
 # pause the VM
 sudo virsh suspend linux-amd64
+# shutdown the VM
+sudo virsh shutdown linux-amd64
 # force shutdown the VM (if it gets stuck)
 sudo virsh destroy linux-amd64
 # delete the VM (but not the disk, you can re-create with the same disk as before)
