@@ -29,7 +29,6 @@
 			elements = headings.map((heading) => {
 				return document.getElementById(heading.id);
 			});
-			console.log('elements', elements);
 		}
 	}
 	function setActiveHeading() {
@@ -79,7 +78,8 @@
 						Math.max(0, heading.depth - 1)
 					}`}
 				>
-					• <a href={`#${heading.id}`}>{heading.value}</a>
+					{#if heading.depth == 1}•{:else}{'-'.repeat(heading.depth - 1)}{/if}
+					<a href={`#${heading.id}`}>{heading.value}</a>
 				</li>
 			{/each}
 		</ul>
