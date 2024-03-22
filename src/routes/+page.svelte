@@ -58,9 +58,9 @@
 	.profile {
 		@apply mx-auto rounded-full w-36 h-36;
 	}
-  .profile-box{
-    @apply profile ring-2 ring-zinc-200 dark:ring-zinc-700
-  }
+	.profile-box {
+		@apply profile ring-2 ring-zinc-200 dark:ring-zinc-700;
+	}
 	$w-s: 750px;
 
 	.role {
