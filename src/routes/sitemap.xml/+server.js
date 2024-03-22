@@ -1,7 +1,3 @@
-// This is an endpoint that generates a basic sitemap for the index page and all posts.
-// It's helpful for SEO but does require you to keep it updated to reflect the routes of your website.
-// It is OK to delete this file if you'd rather not bother with it.
-
 import { posts } from '$lib/data/posts';
 import { website } from '$lib/info';
 
