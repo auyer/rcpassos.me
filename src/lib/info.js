@@ -6,7 +6,7 @@ export const lastName = '"Auyer" Passos';
 export const name = `${firstName} ${lastName}`;
 
 // Used for the landing page & footer of posts
-export const avatar_avif= '/assets/profile.avif';
+export const avatar_avif = '/assets/profile.avif';
 export const avatar_png = '/assets/profile.png';
 
 export const bio = `\

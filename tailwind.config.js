@@ -12,15 +12,15 @@ export default {
 	],
 	theme: {
 		extend: {
-      typography: {
-        DEFAULT: {
-          css: {
-            'blockquote p:first-of-type::before': { content: 'none' },
-            'blockquote p:first-of-type::after': { content: 'none' },
-          },
-        },
-      },
-    },
+			typography: {
+				DEFAULT: {
+					css: {
+						'blockquote p:first-of-type::before': { content: 'none' },
+						'blockquote p:first-of-type::after': { content: 'none' }
+					}
+				}
+			}
+		}
 	},
 	plugins: [
 		typography,

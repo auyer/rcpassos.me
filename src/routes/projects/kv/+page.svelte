@@ -152,8 +152,8 @@
 				>
 				<svelte:fragment slot="content">
 					<p>
-						This is a KV in memory database I built in Rust for learning purposes with a live feed of the WAL
-						(Write Ahead Log).
+						This is a KV in memory database I built in Rust for learning purposes with a live feed
+						of the WAL (Write Ahead Log).
 					</p>
 					<p>This page has a control panel and a WebSocket feed.</p>
 					<p>
@@ -161,12 +161,13 @@
 							>WAF rules to allow Cloudflare proxy as the only ingress point.</s
 						> Cloudflare Tunnel acting as a reverse Proxy.
 					</p>
-          <p>
-            Play with it, inserting some data, and looking for what is inside the database.
-            When this page is loaded, a background job is started in your browser, sending data to the server every 20 seconds.
-            It should be showing in the feed, among the other requests that might come from other visitors.
-          </p>
-					Source code: <a href="http://github.com/auyer/MemoryKV">github.com/auyer/MemoryKV</a>
+					<p>
+						Play with it, inserting some data, and looking for what is inside the database. When
+						this page is loaded, a background job is started in your browser, sending data to the
+						server every 20 seconds. It should be showing in the feed, among the other requests that
+						might come from other visitors.
+					</p>
+					Source code:<a href="http://github.com/auyer/MemoryKV">github.com/auyer/MemoryKV</a>
 				</svelte:fragment>
 			</AccordionItem>
 		</Accordion>
