@@ -318,7 +318,7 @@ But to make it easy to manage, we can write a script to create the VM with the n
 There are a few differences between the commands for the amd64 and arm64 architectures.
 I will show both commands here, and explain the differences.
 
-### A script to create the VM
+## A script to create the VM
 
 The first script will create the VM and run it with the original kernel and initrd files (the two files we got with `virt-copy-out`).
 I will keep them and this script in my environment folder, so I can use them to create the VM again if I need to.
@@ -332,8 +332,7 @@ I will keep them and this script in my environment folder, so I can use them to 
 - The `--disk` parameter should point to the disk image you created or resized.
 - If your network is different from `virbr0`, you should change the `--network` parameter to match your network.
 
----
-amd64
+### amd64
 
 I created this as a bash script called `create_og_kernel_amd64.sh`. 
 It stands for "create original kernel amd64", and it should be clear what it does when I look at it again in the future.
@@ -365,8 +364,7 @@ virt-install \
     --boot kernel=$BOOT_DIR/vmlinuz-6.1.0-18-amd64,initrd=$BOOT_DIR/initrd.img-6.1.0-18-amd64,kernel_args="console=tty0 console=ttyS0 loglevel=8 root=/dev/sda1 rootwait"
 ```
 
----
-arm64
+### arm64
 
 Most things are the same as the previous script.
 What changed:
@@ -401,7 +399,7 @@ virt-install \
 ```
 
 
-### Starting the VM
+## Starting the VM
 
 From this part on, the steps are the same for both architectures again.
 With the script from the previous session saved, we can execute this with:
@@ -441,7 +439,7 @@ After changing the file, you need to restart the libvirtd service.
 $ sudo systemctl restart libvirtd
 ```
 
-### Enabling SSH to access the VM (Recommended)
+## Enabling SSH to access the VM (Recommended)
 
 If you want to access the VM with SSH, we need to enable it and change some configs.
 The first step is to configure the `openssh-server` package in the VM.
@@ -463,7 +461,7 @@ Now, there are two ways the sshd server can be configured:
 1. allow (empty) password logins for the root user: simple, but less secure. Its ok for a local VM.
 2. allow only key-based logins, adding your key to the VM. This is more secure, but requires more steps.
 
-#### Option 1: Allow empty password logins for the root user
+### Option 1: Allow empty password logins for the root user
 Inside the VM, edit the `/etc/ssh/sshd_config` file, and set the following parameters (they are commented by default):
 ```
 PermitRootLogin yes
@@ -471,7 +469,7 @@ PasswordAuthentication yes
 PermitEmptyPasswords yes
 ```
 
-#### Option 2: Allow only key-based logins
+### Option 2: Allow only key-based logins
 Inside the VM, edit the `/etc/ssh/sshd_config` file, and set the following parameter (commented by default):
 ```
 PermitRootLogin yes
@@ -498,7 +496,7 @@ Restart the VM and check if the sshd server is running.
 sudo virsh start --console linux-$ARCH
 ```
 
-### Starting the SSH server and connecting to it
+## Starting the SSH server and connecting to it
 
 ```bash
 # inside the VM
@@ -751,6 +749,26 @@ sudo pacman -S guestfs-tools \
                 qemu-system-aarch64 \
                 qemu-system-arm-firmware \
                 dnsmasq
+```
+
+For compiling the Linux Kernel:
+```bash
+pacman -S base-devel 
+```
+
+Or using the dependencies spcecified in the [Linux PKGBUILD](https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/blob/main/PKGBUILD):
+```bash
+pacman -S \
+  make \
+  bc \
+  cpio \
+  gettext \
+  libelf \
+  pahole \
+  perl \
+  python \
+  tar \
+  xz 
 ```
 
 For cross compilation:
