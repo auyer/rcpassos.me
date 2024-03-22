@@ -3,14 +3,20 @@ title: DRAFT -  A Solid Environment For Building And Developing The Linux Kernel
 date: 2024-03-20
 ---
 
-## Introduction
+# Introduction
 
 In my last post ["Compiling and Debugging a Kernel - Xv6 for the RISC-V Architecture"](https://rcpassos.me/post/compiling-debugging-riscv-xv6-kernel), I talked about my sudies on Kernel Development.
 After finishing the MIT course [6.S081 Operating System Engineering](https://learncs.me/mit/6.s081) (available online), I decided it was time to learn how to build the Linux Kernel, and hopefully contribute to it.
 I joined a free software group ([FLUSP](https://flusp.ime.usp.br)) at the University of São Paulo (USP), and started taking a course on Linux Kernel Development.
 
+The Linux Kernel is the most important open source project in the world.
+It had lot of history and a lot of code.
+To build it, you need a good environment, with the right tools and configurations.
+It is very important to have a good workflow, so you can build, test, and debug the kernel efficiently.
+
 In this post, I will cover the setup of the environment for building and contributing to the Linux Kernel.
-It was largely inspired by the guides provided by the FLUSP community, and my experience with them.
+We will create a virtual machine with a Debian Cloud Image, build the kernel on our host machine, and deploy it to the VM.
+This was largely inspired by the guides provided by the FLUSP community, and my experience with them.
 <!-- also [Linux Kernel Newbies](https://kernelnewbies.org/KernelBuild) website. -->
 What we will cover:
 - Creating a Virtual Machine using a Debian Cloud Image
@@ -24,39 +30,42 @@ What we will cover:
 
 # Preparing a Virtual Machine Disk and Files
 
-The first step in my environment setup was to create a virtual machine to build the kernel.
-The reasoning here is that I can have an intalation target to test the kernel I am building, and not disrupt any machine I use for other purpuses.
+The first step in my environment setup was to create a virtual machine.
+The reasoning here is that I can have a clean intalation target to test the kernel I am building, and I wont negatively affect my machine util I tested it in the VM.
 This will also make it easier to backup the environment and roll back to a previous state if something goes wrong.
 
 I use Arch Linux as my main OS, so I will use it as the host for the virtual machine. 
 The packages I list here are for arch linux, but you can use the package manager of your choice to install the equivalent packages for your OS.
-
-## My folder setup for this project
 
 To make it easier for anyone following this setup, here is, this is the folder structure I used in this project.
 You may adapt it to your liking, but I will use these paths in the commands I will show.
 All folders will be created here with these two `mkdir` commands.
 
 ```bash
+# create folders for the amd64 architecute
 $ mkdir -p ~/kernel-dev/amd64/boot
+$ mkdir -p ~/kernel-dev/amd64/modules
+# and for the arm64 architecture
 $ mkdir -p ~/kernel-dev/arm64/boot
+$ mkdir -p ~/kernel-dev/arm64/modules
 
+# this is how the folder structure will look like
 $ cd ~/kernel-dev
-$ tree
-$ tree
+$ tree .
 .
 ├── amd64
 │   ├── boot
-│   │   ├── initrd.img-6.1.0-18-amd64
-│   │   └── vmlinuz-6.1.0-18-amd64
+│   │   └── boot files for amd64
 │   └── linux-amd64.qcow2
 ├── arm64
 │   ├── boot
-│   │   ├── initrd.img-6.1.0-18-arm64
-│   │   └── vmlinuz-6.1.0-18-arm64
+│   │   └── boot files for arm64
 │   └── linux-arm64.qcow2
+├── linux
+│   └── the linux kernel source code
+├── vm bootstrap scripts, and base disk images
 ├── debian-12-nocloud-amd64-daily.qcow2
-└── debian-12-nocloud-arm64-daily.qcow2
+└── debian-12-nocloud-arm64-daily.qcow2 
 ```
 
 ## Downloading a Ready to Use Debian Image
@@ -73,8 +82,9 @@ Downloading the base images in qcow2 format (a format that is easy to work with 
 ```bash
 $ cd ~/kernel-dev
 
-$ wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-nocloud-amd64-daily.qcow2 # amd64
-$ wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-nocloud-arm64-daily.qcow2 # arm64
+# download the images from the debian website for adm64 and arm64
+$ wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-nocloud-amd64-daily.qcow2
+$ wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-nocloud-arm64-daily.qcow2
 ```
 
 If we peek into these files, we can see the partitions inside.
@@ -322,7 +332,8 @@ I will keep them and this script in my environment folder, so I can use them to 
 - The `--disk` parameter should point to the disk image you created or resized.
 - If your network is different from `virbr0`, you should change the `--network` parameter to match your network.
 
-#### amd64
+---
+amd64
 
 I created this as a bash script called `create_og_kernel_amd64.sh`. 
 It stands for "create original kernel amd64", and it should be clear what it does when I look at it again in the future.
@@ -354,7 +365,8 @@ virt-install \
     --boot kernel=$BOOT_DIR/vmlinuz-6.1.0-18-amd64,initrd=$BOOT_DIR/initrd.img-6.1.0-18-amd64,kernel_args="console=tty0 console=ttyS0 loglevel=8 root=/dev/sda1 rootwait"
 ```
 
-#### arm64
+---
+arm64
 
 Most things are the same as the previous script.
 What changed:
@@ -429,7 +441,7 @@ After changing the file, you need to restart the libvirtd service.
 $ sudo systemctl restart libvirtd
 ```
 
-### Enabling SSH to access the VM (Optional)
+### Enabling SSH to access the VM (Recommended)
 
 If you want to access the VM with SSH, we need to enable it and change some configs.
 The first step is to configure the `openssh-server` package in the VM.
@@ -584,21 +596,40 @@ We can install the modules in the VM directly from the host machine.
 
 ```bash
 sudo virsh shutdown linux-$ARCH # or destroy, if it hangs
-
 ```
 
-### Option 1: mounting the disk image into a local folder
+### Option 1: sending modules over SSH
+
+We can leverage the ssh we configured to send the modules to the VM without needing to stop it.
+You can do it with `rsync` or the older standard `scp`.
+`rsync` is a lot faster. It can detect existing files and send an incremental update.
+But it requires the `rsync`  command to be installed in the VM.
+You can install it with `apt-get install rsync`.
+
+```bash
+
+```bash
+# inside the vm
+apt update && apt install rsync
+
+# in your host
+make INSTALL_MOD_PATH=../$ARCH/modules modules_install
+# rsync with -a
+rsync -rvz ./arm64/modules/lib/modules/ root@192.168.122.25:/lib/modules/
+```
+
+### Option 2: mounting the disk image into a local folder
 These commands are run from the linux folder
 
 ```bash
 # create a folder to mount the disk image
-mkdir -p ../$ARCH/mountpoint
+mkdir -p ../$ARCH/modules
 # mount the disk image to the folder we created
-guestmount ../$ARCH/mountpoint
+guestmount ../$ARCH/modules
 # copy the modules to the VM disk
-make INSTALL_MOD_PATH=../$ARCH/mountpoint modules_install
+make INSTALL_MOD_PATH=../$ARCH/modules modules_install
 # unmount the disk image, so we can start the VM
-guestunmount ../$ARCH/mountpoint
+guestunmount ../$ARCH/modules
 ```
 
 ## Running the VM with the new kernel and Modules
