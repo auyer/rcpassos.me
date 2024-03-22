@@ -13,7 +13,13 @@
 		setActiveHeading();
 	});
 
+	let tocFullyVisible = true;
+	// the current heading in view
 	let activeHeading = headings[0];
+	// a subset of headings that are visible in the toc
+	// when scroling down, the headings will be ommited from the top
+	let visibleHeadings = headings;
+
 	let scrollY;
 
 	function updateHeadings() {
@@ -23,6 +29,7 @@
 			elements = headings.map((heading) => {
 				return document.getElementById(heading.id);
 			});
+			console.log('elements', elements);
 		}
 	}
 	function setActiveHeading() {
@@ -37,11 +44,19 @@
 		const scrollProgress = (scrollY + window.innerHeight) / pageHeight;
 
 		if (!activeHeading) {
-			if (scrollProgress > 0.5) {
-				activeHeading = headings[headings.length - 1];
+			if (scrollProgress > 0.9) {
+				activeHeading = headings[headings.length + 1];
 			} else {
 				activeHeading = headings[0];
 			}
+		}
+		// if the active heading is below the 10th heading, start omitting headings from the top
+		if (visibleIndex > 10) {
+			tocFullyVisible = false;
+			visibleHeadings = headings.slice(visibleIndex - 10);
+		} else if (visibleIndex <= 10) {
+			tocFullyVisible = true;
+			visibleHeadings = headings;
 		}
 	}
 </script>
@@ -51,7 +66,11 @@
 <Card>
 	<slot slot="description">
 		<ul class="flex flex-col gap-2">
-			{#each headings as heading}
+			<p>Table of Contents</p>
+			{#if !tocFullyVisible}
+				<li class="pl-2 text-zinc-500 dark:text-zinc-600">...</li>
+			{/if}
+			{#each visibleHeadings as heading}
 				<li
 					class="pl-2 transition-colors border-teal-500 heading text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100"
 					class:active={activeHeading === heading}
@@ -60,7 +79,7 @@
 						Math.max(0, heading.depth - 1)
 					}`}
 				>
-					<a href={`#${heading.id}`}>{heading.value}</a>
+					• <a href={`#${heading.id}`}>{heading.value}</a>
 				</li>
 			{/each}
 		</ul>
