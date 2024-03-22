@@ -8,7 +8,7 @@ date: 2023-02-14
 > Understandably, most engineers will choose it for every task.
 > However, in a lot of ways, it can be overkill. And a very expensive one.
 
-## Our data platform journey
+# Our data platform journey
 
 In our stack, we manage several databases for different microservices that our team built.
 We also have a few legacy databases for two platforms built by external companies.
@@ -19,7 +19,7 @@ Enabling it requires we run ETLs (extract, transform, and load scripts) to get d
 At the time of writing this article, I am the professional responsible for most of the data integrations and extractions at my company.
 And I was also the lead architect for our data platform and infrastructure, and I will explain how it evolved into what we have today.
 
-### Extraction Jobs: what an ETL looks like
+## Extraction Jobs: what an ETL looks like
 
 ![ETL (Extract Transform Load) diagram](./ETL_diagram.svg)
 ETL (Extract Transform Load) diagram
@@ -46,7 +46,7 @@ With this operator, jobs are submitted as Kubernetes custom resources, and the o
 Up to this point, we've been writing Apache Spark scripts and only changing how and where we run them. The last step is different.
 Using Apache Arrow and just simple containers, I made most of the old extractions obsolete.
 
-## Apache Spark vs Apache Arrow (not equivalent)
+# Apache Spark vs Apache Arrow (not equivalent)
 
 Apache Spark is made for distributed work.
 For this, it is usually set up in a cluster with one or a few driver/master nodes, and at least a few executor nodes.
@@ -68,7 +68,7 @@ If you can access the same space in memory, you can use it with the Arrow ecosys
 When I said Spark shuffles cause a lot of traffic over the network, it also requires all this data to be serialized before sending and deserialized at the receiving end.
 This wastes a lot of time and resources.
 
-## Code Time
+# Code Time
 
 ConnectorX is integrated into Polars, and if both are installed, you can call `polars.read_sql`.
 I will use it directly though:
@@ -134,7 +134,7 @@ I created an example repository in GitHub that puts all of this together. Check 
 
 Update: I created a second post going deeper into other techniques. Check it out: [Lightweight Large Data Extractions with Polars and ConnectorX](https://rcpassos.me/post/lightweight-large-etls-with-polars-connectorx).
 
-## Conclusion
+# Conclusion
 
 Apache Spark is an established framework for building complex ETLs.
 But it carries a heavy JVM stack behind it.

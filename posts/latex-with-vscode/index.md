@@ -8,7 +8,7 @@ date: 2018-08-31
 ![LaTeX Workshop on VS Code](./hero.webp)
 LaTeX Workshop on VS Code
 
-## Why LaTeX
+# Why LaTeX
 
 For the uninitiated, LaTeX is not an editor, but a typesetting system. There are a few very compelling reasons why someone might want to use LaTeX instead of the conventional text systems. For me, these are the three most important:
 
@@ -35,7 +35,7 @@ Convinced yet? If not, you might what to google about it, or read this articles:
 
 ---
 
-## Installing tools
+# Installing tools
 
 The installation process can be a little bit different for each system, but the process should be very straightforward. In some systems, you will have multiple options to download. I recommend taking the most complete packages ( without GUI ). They are less likely to give you a headache trying to install additional libraries later.
 
@@ -86,7 +86,7 @@ By default, your document will be recompiled automatically on save. With this, t
 
 ---
 
-## LaTeX + GIT
+# LaTeX + GIT
 
 If you are a developer, you might be used to versioning everything (hopefully). So why not use GIT in your LaTeX documents as well?
 
@@ -106,7 +106,7 @@ I recommend using the pre-built one from the [github.com/github/gitignore](http:
 
 ---
 
-## Integrating with Overleaf
+# Integrating with Overleaf
 
 Overleaf and ShareLaTeX are two of the most popular LaTeX web editors out there. The two platforms are joining forces into the “Overleaf V2”. Overleaf had an interesting GIT feature in version 1, that has evolved into a GitHub sync feature in version 2. It is not clear if this is going to be a free feature or not. It is a premium feature for ShareLaTeX, but free for Overleaf v1 users.
 
@@ -124,7 +124,7 @@ Now, when you open the Menu, there is an option to Sync with GitHub. The panel s
 ![GitHub Sync Panel](./git.webp)
 GitHub Sync Panel
 
-## Conclusion
+# Conclusion
 
 If you are comfortable with VS Code, it might just be your best bet at writing LaTeX on your machine. The possibility of synchronizing your local repository with a web-based collaboration tool allows you to keep writing without internet in your local copy, or without your computer in the web editor.
 
