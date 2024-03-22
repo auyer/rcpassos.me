@@ -1,5 +1,6 @@
 <script>
 	import { bio, name } from '$lib/info.js';
+	import Troll from '$lib/components/Troll.svelte';
 </script>
 
 <svelte:head>
@@ -7,13 +8,8 @@
 	<meta name="description" content={bio} />
 </svelte:head>
 
-<container class="flex flex-col flex-grow w-full mx-auto max-w-6xl">
-	<p>There is nothing here.</p>
-	<p />
-	<p>This is a static site.</p>
-	<p />
-	<p>What are you doing here?</p>
-	<p />
+<container>
+	<Troll />
 </container>
 
 <style>
