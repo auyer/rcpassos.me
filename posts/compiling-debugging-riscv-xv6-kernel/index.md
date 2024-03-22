@@ -7,13 +7,13 @@ date: 2024-01-25
 > I decided to learn more about how Operating Systems are built.
 > This is my inaugural article on the topic, and it covers how to compile the necessary tools and run the XV6 kernel for a RISC-V machine/emulator.
 
-### What we are going to do:
+# What we are going to do:
 
 Download the source code for **riscv-gnu-toolchain**, **QEMU**, **the Xv6 kernel**.
 We will compile them one after the other and then run the kernel in the emulator.
 Additionally, we will learn how to debug the kernel with GDB.
 
-## What even is Xv6 RISC-V?
+# What even is Xv6 RISC-V?
 
 If you are reading this, you are probably interested by Linux, like me.
 Long story short, Linux was inspired by the Unix operating system, and it was built to be a free and open-source alternative to it.
@@ -25,7 +25,7 @@ RISC-V is an open-source architecture for creating processors, and it's gaining 
 It is quite new, it's significantly simpler than the x86 and ARM that are commonly found in computers and mobile devices these days.
 This makes it an excellent choice for learning to build a kernel, as it's easier to understand.
 
-## Resources
+# Resources
 
 One of the main resources I am using is this MIT Course [6.S081 Operating System Engineering](https://learncs.me/mit/6.s081).
 It's free, and all its content is fully available on the Internet.
@@ -36,7 +36,7 @@ This is what I selected as my starting point.
 Another very interesting resource is this YouTube playlist [Source Dive by the Low Byte Productions Channel](https://www.youtube.com/playlist?list=PLP29wDx6QmW4Mw8mgvP87Zk33LRcKA9bl).
 It is quite entertaining, and it goes through the source code of the Xv6 kernel, explaining how it works and some of its concepts.
 
-## Setup
+# Setup
 
 You will need a machine with a modern C compiler, and a few other tools, like QEMU and GDB.
 For this article, I chose to build everything from source.
@@ -68,7 +68,7 @@ Based on my experience, assigning a larger number than the actual number of core
 This is likely because the CPU will be required to perform a larger amount of context switching from one compiling job to another.
 Note that root access to the `/usr/local/` folder is necessary to install the toolchain; this is why I ran 'make' with 'sudo'.
 
-### QEMU
+## QEMU
 
 Since we are running a RISC-V kernel, we need to use a RISC-V emulator.
 QEMO is a very popular emulator, and it supports the RISC-V architecture.
@@ -82,7 +82,7 @@ make -j $(nproc)
 sudo make install
 ```
 
-### Xv6-RISCV codebase
+# Xv6-RISCV codebase
 
 Clone the repository with
 
@@ -128,7 +128,7 @@ $
 | --------------------------------------------------------------------- |
 | Press: `Ctrl + a` to enter the "QEMU shell", and then `q` and `Enter` |
 
-## Running with GDB: Debugging the kernel
+# Running with GDB: Debugging the kernel
 
 Just running the kernel is not very useful to understand what is happening.
 Luckily, QEMU has a built-in GDB (GNU Debugger) server, so we can connect to it and debug the kernel.
@@ -157,7 +157,7 @@ You will see a screen like this:
 
 This the TUI (Text User Interface) mode of GDB.
 
-### Some GDB commands I found useful
+# Some GDB commands I found useful
 
 | command                 | What it does                                           |
 | ----------------------- | ------------------------------------------------------ |

@@ -7,6 +7,7 @@ import remarkHeadings from '@vcarl/remark-headings';
 export default {
 	extensions: ['.svx', '.md'],
 	smartypants: {
+    quotes: true,
 		dashes: 'oldschool'
 	},
 	remarkPlugins: [videos, relativeImages, headings],
