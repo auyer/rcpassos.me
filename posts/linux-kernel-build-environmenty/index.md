@@ -16,8 +16,9 @@ It is very important to have a good workflow, so you can build, test, and debug 
 
 In this post, I will cover the setup of the environment for building and contributing to the Linux Kernel.
 We will create a virtual machine with a Debian Cloud Image, build the kernel on our host machine, and deploy it to the VM.
-This was largely inspired by the guides provided by the FLUSP community, and my experience with them.
-<!-- also [Linux Kernel Newbies](https://kernelnewbies.org/KernelBuild) website. -->
+This configuration was largely inspired by the guides provided by the FLUSP community, and my experience with them and their workshops.
+I also contributed some improvements I am sharing here back to their guides.
+
 What we will cover:
 - Creating a Virtual Machine using a Debian Cloud Image
 - Enabling SSH to access the virtual machine
@@ -26,7 +27,7 @@ What we will cover:
 - Building the kernel
 - Booting the kernel in the virtual machine
 - Setting up the Clangd LSP for a better experience navigating the source code
-- Using the KWorflow tool to automate the process of building and testing the kernel
+- Using the KWorflow tool to streamline the process of building and testing the kernel
 
 # Preparing a Virtual Machine Disk and Files
 
@@ -37,21 +38,30 @@ This will also make it easier to backup the environment and roll back to a previ
 I use Arch Linux as my main OS, so I will use it as the host for the virtual machine. 
 The packages I list here are for arch linux, but you can use the package manager of your choice to install the equivalent packages for your OS.
 
+> **⚠️ Note**: In this guide, I refer to the machine I am using to build the kernel as the host machine, and the virtual machine as the VM.
+> The Host is where the VM is running, but you may also chose to build the Kernel in a different machine that is not the host.
+> If that is the case, only the outputs from the Build step need to be sent from your build machine to the Host machine.
+
+## My folder setup for this project
+
 To make it easier for anyone following this setup, here is, this is the folder structure I used in this project.
 You may adapt it to your liking, but I will use these paths in the commands I will show.
 All folders will be created here with these two `mkdir` commands.
 
 ```bash
 # create folders for the amd64 architecute
-$ mkdir -p ~/kernel-dev/amd64/boot
-$ mkdir -p ~/kernel-dev/amd64/modules
+mkdir -p ~/kernel-dev/amd64/boot
+mkdir -p ~/kernel-dev/amd64/modules
+
 # and for the arm64 architecture
-$ mkdir -p ~/kernel-dev/arm64/boot
-$ mkdir -p ~/kernel-dev/arm64/modules
+mkdir -p ~/kernel-dev/arm64/boot
+mkdir -p ~/kernel-dev/arm64/modules
 
 # this is how the folder structure will look like
-$ cd ~/kernel-dev
-$ tree .
+cd ~/kernel-dev
+tree . w
+
+➜ 
 .
 ├── amd64
 │   ├── boot
@@ -74,17 +84,20 @@ There are a few variations, and the "nocloud" variant is a perfect fit for this 
 It is a minimal image that requires no configuration to use. 
 It allows root login without a password, and it is perfect for quick testing and development.
 
-I will create two VMs.
+For my environment, I will create two VMs.
 The first one will be for the amd64 (x86_64) architecture, and the second one will be for the arm64 (aarch64) architecture.
-The daily built images can be found at [cdimage.debian.org](http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/).
+You may choose to create only one of them, or even create more VMs for different architectures, as most things will be the same for all of them.
+
+The daily built images can be found at [cdimage.debian.org](http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/). 
+At the moment, they offer images for the `amd64`, `arm64`, `ppc64` and `ppc64el` architectures.
 
 Downloading the base images in qcow2 format (a format that is easy to work with in QEMU and Libvirt):
 ```bash
-$ cd ~/kernel-dev
+cd ~/kernel-dev
 
 # download the images from the debian website for adm64 and arm64
-$ wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-nocloud-amd64-daily.qcow2
-$ wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-nocloud-arm64-daily.qcow2
+wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-nocloud-amd64-daily.qcow2
+wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-nocloud-arm64-daily.qcow2
 ```
 
 If we peek into these files, we can see the partitions inside.
@@ -92,14 +105,17 @@ It is expected for any Linux system to have at least two partitions: one for the
 The boot is usually a small `vfat` or `fat32` partition.
 The root partition is larger, and can usually come in the `ext4`, `btrfs` or other less common partition types.
 ```bash
-$ virt-filesystems -h --long -a ./debian-12-nocloud-amd64-daily.qcow2 
+virt-filesystems -h --long -a ./debian-12-nocloud-amd64-daily.qcow2 
 
+➜ 
 Name        Type        VFS   Label  Size  Parent
 /dev/sda1   filesystem  ext4  -      1,8G  -
 /dev/sda15  filesystem  vfat  -      124M  -
 
 
-$ virt-filesystems -h --long -a ./debian-12-nocloud-arm64-daily.qcow2
+virt-filesystems -h --long -a ./debian-12-nocloud-arm64-daily.qcow2
+
+➜ 
 Name        Type        VFS   Label  Size  Parent
 /dev/sda1   filesystem  ext4  -      1,8G  -
 /dev/sda15  filesystem  vfat  -      127M  -
@@ -113,18 +129,20 @@ When there are differences, I will make it clear.
 ## Resizing the Disk Image with virt-resize (Option 1)
 The base files we downloaded are almost ready to use, if not for one thing: they have almost no free space available.
 We will need to resize the disk to have enough space to have a usable system.
+I chose to double the size of the disk, from 2GB to 4GB.
+You may want to make it even larger, depending on your needs.
+
 This command will create a new qcow2 file with 4GB of space, and copy the contents of the original file to it, while also making the root partition larger.
 In this case, the root partition is the first one, and it is named `/dev/sda1`, with `ext4` filesystem.
 
 ```bash
-$ export ARCH=amd64 # or export ARCH=arm64
-$ qemu-img create -f qcow2 -o preallocation=metadata ./$ARCH/linux-$ARCH.qcow2 4G
+export ARCH=amd64 # or export ARCH=arm64
+qemu-img create -f qcow2 -o preallocation=metadata ./$ARCH/linux-$ARCH.qcow2 4G
 
-$ virt-resize --expand /dev/sda1 debian-12-nocloud-$ARCH-daily.qcow2 ./$ARCH/linux-$ARCH.qcow2
+virt-resize --expand /dev/sda1 debian-12-nocloud-$ARCH-daily.qcow2 ./$ARCH/linux-$ARCH.qcow2
 ```
 
 If this step is successful, we can proceed to the next step [Reading files from the VM Disk image](#reading-files-from-the-vm-disk-image). 
-#TODO check if link worked
 
 For a yet unknown reason, I experienced an error when running the `virt-resize` command.
 Since I had it working before, I included it in the tutorial, hoping it will work for you.
@@ -153,19 +171,24 @@ complete output:
 
 If the previous step did not work, we can resize the disk manually.
 This is a more complex process, but it is a good learning experience.
-We will use the `qemu-img` command to resize the image, and the `qemu-nbd` command to mount the image as a device, so we can resize the partition as if it was a normal device. 
+We will use the `qemu-img` command to resize the image, and the `qemu-nbd` command to mount the image as a device, so we can resize the partition as if it was a normal device.
+
+The image we downloaded is about 2GB in total. 
+To achieve the same 4GB size from the previous step, I will add 2GB to the image.
 
 ```bash
 # copy the base image to the new file location
-$ cp debian-12-nocloud-$ARCH-daily.qcow2 ./$ARCH/linux-$ARCH.qcow2
+cp debian-12-nocloud-$ARCH-daily.qcow2 ./$ARCH/linux-$ARCH.qcow2
 # resize the image 
-$ qemu-img resize ./$ARCH/linux-$ARCH.qcow2 +2G
+qemu-img resize ./$ARCH/linux-$ARCH.qcow2 +2G
 ```
 
-This will add 2GB to the image, but it will not resize the partition. 
+This just added 2GB of free space to the fisk image, but it did not resize the partition.
 We can check that with the `virt-filesystems` command:
 ```bash
 $ virt-filesystems -h --long --all -a ./$ARCH/linux-$ARCH.qcow2
+
+➜
 Name        Type        VFS      Label  MBR  Size  Parent
 /dev/sda1   filesystem  ext4     -      -    1,8G  -
 /dev/sda14  filesystem  unknown  -      -    3,0M  -
@@ -176,20 +199,22 @@ Name        Type        VFS      Label  MBR  Size  Parent
 /dev/sda    device      -        -      -    4,0G  -
 ```
 
-We can see that the root partition is still 1.8GB.
-To resize it, we are going to mount this image as a device using the `nbd` kernel module.
+We can see that the root partition is still 1.8GB, and the new space we create is just empty space.
+To resize it, we are going to mount this image to our host machine as a device using the `nbd` kernel module.
 
 ```bash
 # enable the nbd module
-$ sudo modprobe nbd
+sudo modprobe nbd
 # mount the image as a device to /dev/nbd0
-$ sudo qemu-nbd -c /dev/nbd0 ./$ARCH/linux-$ARCH.qcow2
+sudo qemu-nbd -c /dev/nbd0 ./$ARCH/linux-$ARCH.qcow2
 ```
 
 To check if it worked, we can use the `lsblk` command.
 The output should show the partitions in the image, and should be equivalent to the output of the `virt-filesystems` command we used before:
 ```bash
-$ lsblk /dev/nbd0
+lsblk /dev/nbd0
+
+➜ 
 NAME      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
 nbd0       43:0    0    4G  0 disk
 ├─nbd0p1   43:1    0  1,9G  0 part
@@ -202,8 +227,9 @@ If you are familiat with this, you can use the tool of your choice (like gparted
 
 I will use the `parted` command line tool.
 ```bash
-$ sudo parted /dev/nbd0
+sudo parted /dev/nbd0
 
+➜ 
 GNU Parted 3.6
 Using /dev/nbd0
 Welcome to GNU Parted! Type 'help' to view a list of commands.
@@ -241,7 +267,9 @@ Alternatively, we can use 100% as the second argument, to use all available spac
 (parted) quit
 
 # check the results:
-$ lsblk /dev/nbd0
+lsblk /dev/nbd0
+
+➜
 NAME      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
 nbd0       43:0    0    4G  0 disk
 ├─nbd0p1   43:1    0  3,9G  0 part
@@ -251,7 +279,7 @@ nbd0       43:0    0    4G  0 disk
 
 Now we can disconnect the image from the nbd device and proceed to use it in the VM.
 ```bash
-$ sudo qemu-nbd -d /dev/nbd0
+sudo qemu-nbd -d /dev/nbd0
 ```
 
 ## Reading files from the VM Disk image
@@ -266,7 +294,9 @@ The file name will be different depending on the kernel version and architecture
 > Use the `virt-filesystems` command to check the name of the root partition, and use it in the following commands.
 
 ```bash
-$ virt-ls -a ./$ARCH/linux-$ARCH.qcow2 -m /dev/sda1 /boot/
+virt-ls -a ./$ARCH/linux-$ARCH.qcow2 -m /dev/sda1 /boot/
+
+➜ 
 System.map-6.1.0-18-amd64
 config-6.1.0-18-amd64
 efi
@@ -280,8 +310,8 @@ Sadly we can not use wildcards here to copy all files at once, so we will have t
 Replace the file names with the ones you got from the previous command.
 
 ``` bash
-$ virt-copy-out -a ./$ARCH/linux-$ARCH.qcow2 /boot/initrd.img-6.1.0-18-$ARCH ./$ARCH/boot
-$ virt-copy-out -a ./$ARCH/linux-$ARCH.qcow2 /boot/vmlinuz-6.1.0-18-$ARCH ./$ARCH/boot
+virt-copy-out -a ./$ARCH/linux-$ARCH.qcow2 /boot/initrd.img-6.1.0-18-$ARCH ./$ARCH/boot
+virt-copy-out -a ./$ARCH/linux-$ARCH.qcow2 /boot/vmlinuz-6.1.0-18-$ARCH ./$ARCH/boot
 ```
 
 ---
@@ -293,14 +323,14 @@ We need to start the Libvirt service, and a bridge network to connect the VM to 
 
 ```bash
 # start the libvirt system service
-$ sudo systemctl start libvirtd
+sudo systemctl start libvirtd
 # check if it is running correctly
-$ sudo systemctl status libvirtd
+sudo systemctl status libvirtd
 
 # create a default bridge network
-$ sudo virsh net-start default
+sudo virsh net-start default
 # make it start automatically
-$ sudo virsh net-autostart default #optional, but recommended
+sudo virsh net-autostart default #optional, but recommended
 ```
 
 If you want the libvirtd service to start automatically at boot, you can use the `enable` command too.
@@ -308,7 +338,7 @@ It is not something I do, because I can always start it manually when I need it.
 This way I dont incur the risk of having VMs running when I dont need them.
 
 ```bash
-$ sudo systemctl enable libvirtd # optional
+sudo systemctl enable libvirtd # optional
 ```
 
 The only persistent configuration we need to create a VM is the disk image.
@@ -405,21 +435,19 @@ From this part on, the steps are the same for both architectures again.
 With the script from the previous session saved, we can execute this with:
 
 ```bash
-$ sudo bash create_og_kernel_$ARCH.sh
+sudo bash create_og_kernel_$ARCH.sh
 ```
-You can also make it executable by itself (no need to call `bash script`). 
+You can also make it executable by itself (no need to call `bash ./script...`). 
 ```bash
-$ chmod +x create_og_kernel_$ARCH.sh`
+chmod +x create_og_kernel_$ARCH.sh`
 # and then run it with 
-$ sudo ./create_og_kernel_$ARCH.sh
+sudo ./create_og_kernel_$ARCH.sh
 ```
 
 If everything goes well, you should see the VM starting in the terminal.
 You can log in to the vm with the `root` user (no password required).
 If you get stuck, or need to stop the VM, you can use the `virsh` command to manage it. 
 Check the [Useful Commands For Managing Virsh VM](#useful-commands-for-managing-virsh-vm) section for a quick reference.
-
-```bash
 
 > ⚠️ **Possible error**. When starting the VM, it is possible to get an error message with permission denied for the disk image.
 
@@ -436,10 +464,10 @@ group = "auyer"
 
 After changing the file, you need to restart the libvirtd service.
 ```bash
-$ sudo systemctl restart libvirtd
+sudo systemctl restart libvirtd
 ```
 
-## Enabling SSH to access the VM (Recommended)
+## Enabling SSH in the VM (Recommended)
 
 If you want to access the VM with SSH, we need to enable it and change some configs.
 The first step is to configure the `openssh-server` package in the VM.
@@ -450,7 +478,7 @@ The first might ask you to
 ```bash
 # inside the VM
 # configure and generate host keys
-$ dpkg-reconfigure openssh-server
+dpkg-reconfigure openssh-server
 ```
 
 > ⚠️ **Attention**: The `dpkg-reconfigure` command might ask you to deal with conflicting configurations.
@@ -458,7 +486,7 @@ $ dpkg-reconfigure openssh-server
 > I recommend choosing **install the package maintainer's version**
 
 Now, there are two ways the sshd server can be configured: 
-1. allow (empty) password logins for the root user: simple, but less secure. Its ok for a local VM.
+1. allow (empty) password logins for the root user: simple, but less secure. It is ok for a local VM.
 2. allow only key-based logins, adding your key to the VM. This is more secure, but requires more steps.
 
 ### Option 1: Allow empty password logins for the root user
@@ -501,49 +529,66 @@ sudo virsh start --console linux-$ARCH
 ```bash
 # inside the VM
 # start and enable the sshd server, so it starts at boot
-$ systemctl enable --now sshd.service
+systemctl enable --now sshd.service
 ```
 If it fails, here a few thing to try:
 ```bash
 # run dpkg-reconfigure again, this time choosing to keep your settings
-$ dpkg-reconfigure openssh-server
+dpkg-reconfigure openssh-server
 # reload systemd configuration and restart sshd
-$ systemctl daemon-reload
-$ systemctl restart sshd.service
+systemctl daemon-reload
+systemctl restart sshd.service
 # also the good old system reboot (in the VM)
-$ reboot
+reboot
 ```
 
 Outise of the VM, you can check the IP address of the VM with the `virsh` command.
-It should be the same result as running ` ip a` inside the VM.
+It should be the same result as running `ip a` inside the VM.
 ```bash
 # check the IP address in the dhcp leases for the default network
-$ sudo virsh net-dhcp-leases default
+sudo virsh net-dhcp-leases default
 ```
 
 Now you should be able to connect to the VM with the `ssh` command.
 ```bash
-$ ssh root@192.168.122.178
+ssh root@192.168.122.178
 # or if you have an ssh key that is not added to your ssh-agent
-$ ssh -i ~/.ssh/your_key root@192.168.122.178
+ssh -i ~/.ssh/your_key root@192.168.122.178
 ```
 
 ---
 
 # Getting the Kernel Source Code
-TODO explain git branches
 
+The next step is to get the kernel source code.
+If you are used to the GitHub experience, this is going to be a bit different.
+in GitHub, it is common to have a single repository for a project.
+Inside contributors create branches in the same repository, and merge these changes to the main branch with pull requests.
+Outside contributors fork the repository, make changes in their fork, and create pull requests to the main repository.
 
-This will clone the kernel source code to the `linux` folder.
+For the Linux Kernel, the structure is more similar to the second case.
+There are several repositories (also known as trees) where the kernel is developed, and contributors send patches to the maintainers.
+The maintainers review the patches, and if they are good, they are merged into the their repository.
+I will not cover how these patches are sent and reviewed in this post, but I will show how to get the source code and build it.
+
+The tree I chose to clone is the one maintained by Linus Torvalds, the creator of the Linux Kernel.
+This is also known as the mainline tree, and it is where the Oficial Linux Releases come from.
+The repository is hosted at [git.kernel.org](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git).
+Also in this website, you can find the other trees, like the stable tree, the linux-next tree and many others.
+
+The next command will clone the kernel source code into the `linux` folder.
 It might take a, because the kernel source code is quite large.
 ```bash
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 
 cd linux
 ```
 
-When building the kernel, the arch name for amd64 is `x86_64`, and for arm64 is `arm64`.
+> ⚠️ **Attention**: In the previous steps I used a variable `ARCH` to store the architecture name and make it easy to reuse the commands for both architectures.
+> But when building the kernel, the arch name for amd64 is `x86_64`, and for arm64 is `arm64`.
+> If going back to the previous steps, you should replace the `ARCH` variable with the correct arch name.
+ 
 ```bash
-export ARCH=arm64 # or export ARCH=x86_64 
+export ARCH=x86_64 # or export ARCH=arm64 
 # todo explain
 make defconfig
 # todo explain
@@ -584,7 +629,7 @@ make -j$(nproc) modules bzImage
 
 For arm64 (if your host is amd64):
 ```bash
-$ make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image.gz modules
+make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image.gz modules
 ```
 
 ## Installing the Kernel Modules
@@ -599,32 +644,37 @@ sudo virsh shutdown linux-$ARCH # or destroy, if it hangs
 ### Option 1: sending modules over SSH
 
 We can leverage the ssh we configured to send the modules to the VM without needing to stop it.
-You can do it with `rsync` or the older standard `scp`.
+You can do it with `rsync` or the older `scp` protocol.
 `rsync` is a lot faster. It can detect existing files and send an incremental update.
 But it requires the `rsync`  command to be installed in the VM.
 You can install it with `apt-get install rsync`.
 
-```bash
 
 ```bash
 # inside the vm
 apt update && apt install rsync
-
-# in your host
-make INSTALL_MOD_PATH=../$ARCH/modules modules_install
-# rsync with -a
-rsync -rvz ./arm64/modules/lib/modules/ root@192.168.122.25:/lib/modules/
 ```
 
-### Option 2: mounting the disk image into a local folder
-These commands are run from the linux folder
+Now install the modules to the local `$ARCH/modules` folder we created.
 
 ```bash
-# create a folder to mount the disk image
-mkdir -p ../$ARCH/modules
-# mount the disk image to the folder we created
+# in your host
+make INSTALL_MOD_PATH=../$ARCH/modules modules_install
+# rsync with recursive, compress and Progress reporting options
+rsync -rzP ./arm64/modules/lib/modules/ root@192.168.122.25:/lib/modules/
+```
+
+> ⚠️ **Attention**: The modules_install command may install it to your host **if you leave the `INSTALL_MOD_PATH` variable empty**.`
+
+### Option 2: mounting the disk image into a local folder
+
+If you prefer not to use the virtual network to send the files, you can mount the disk image to a local folder and copy the files.
+These commands are run from the linux folder, and the VM needs to be offline to use the disk features.
+
+```bash
+# mount the disk image to the modules folder (created in the first section)
 guestmount ../$ARCH/modules
-# copy the modules to the VM disk
+# run the modules_install command poiting to the mounted folder
 make INSTALL_MOD_PATH=../$ARCH/modules modules_install
 # unmount the disk image, so we can start the VM
 guestunmount ../$ARCH/modules
@@ -634,8 +684,9 @@ guestunmount ../$ARCH/modules
 
 Now let's create a copy of the script we used to create the VM, and change the kernel and initrd files to the ones we just compiled.
 The idea is to keep both scripts, so we can use them to create the VM again if we need to.
+
 ```bash
-$ cp create_og_kernel_$ARCH.sh create_built_kernel_$ARCH.sh
+cp create_og_kernel_$ARCH.sh create_built_kernel_$ARCH.sh
 ```
 There is only one thing to change in the script.
 We need to point to the output files of the kernel compilation. 
@@ -647,7 +698,9 @@ If you are using a different folder structure, that should be adapted too.
 
 adm64:
 ```bash
-➜  diff create_og_kernel_amd64.sh create_built_kernel_amd64.sh
+diff create_og_kernel_amd64.sh create_built_kernel_amd64.sh
+
+➜  
 < --boot kernel=$BOOT_DIR/vmlinuz-6.1.0-18-amd64,initrd=$BOOT_DIR/initrd.img-6.1.0-18-amd64,kernel_args="console=tty0 console=ttyS0 log
 level=8 root=/dev/sda1 rootwait"
 ---
@@ -658,7 +711,9 @@ S0 loglevel=8 root=/dev/sda1 rootwait"
 
 arm64:
 ```bash
-➜  diff create_og_kernel_arm64.sh create_built_kernel_arm64.sh
+diff create_og_kernel_arm64.sh create_built_kernel_arm64.sh
+
+➜  
 < --boot kernel=$BOOT_DIR/vmlinuz-6.1.0-18-arm64,initrd=$BOOT_DIR/initrd.img-6.1.0-18-arm64,kernel_args="console=ttyAMA0 loglevel=8 roo
 t=/dev/vda1 rootwait" 
 ---
@@ -679,15 +734,19 @@ sudo virsh undefine linux-$ARCH
 
 Now we can run the script to create the VM with the new kernel and modules.
 ```bash
-$ sudo bash create_built_kernel_$ARCH.sh
+sudo bash create_built_kernel_$ARCH.sh
 
 ## Inside the VM:
 # check the version running
-$ uname -a
-Linux localhost 6.8.0-11767-g23956900041d #4 SMP PREEMPT_DYNAMIC Thu Mar 21 10:28:09 -03 2024 x86_64 GNU/Linux
+uname -a
+
+➜ 
+Linux localhost 6.8.0-11767-g23956900041d SMP PREEMPT_DYNAMIC Thu Mar 21 10:28:09 -03 2024 x86_64 GNU/Linux
 
 # check the modules installed
-$ ls /lib/modules/
+ls /lib/modules/
+
+➜ 
 6.1.0-18-amd64  6.8.0-11767-g23956900041d
 
 ```
@@ -707,13 +766,39 @@ After that, we will cover how to use a tool called `kworkflow` to automate the p
 
 # Setting up Clangd LSP
 
-TODO
+One common tool for development is the Language Server Protocol (LSP).
+It is an editor-agnostic protocol that allows the integration of language-specific features into your code editor.
+It makes it possible to have features like "in-place errors and warning reporting", "code completion", "go to definition" and "find references" in your editor.
+
+For the C language programs, like the Linux Kernel, the most common LSP is the Clangd LSP.
+
+First thing we need to do is to install the Clangd tool.
+This is easy, but very different from one editor to another, and I will not include this step in this tutorial.
 
 For the LSP to work, we need to generate the `compile_commands.json` file, and generate a first compilation result.
+This file is used by the LSP to understand the structure and compilation flags used in the project.
+There is a Python script in the kernel source code that does it for us.
+
 ```bash
+# inside the kernel source code folder
+# generate the compile_commands.json file
 scripts/clang-tools/gen_compile_commands.py
+# build the entire kernel to get the initial results
 make -j$(nproc)
 ```
+
+By default, the kernel is built with GCC.
+Although I have not experienced any problems with this, I've seen reports of problems when not also compiling with Clang.
+If you want to compile the kernel with Clang, you can use the following commands:
+
+```bash
+make CC=clang defconfig
+make CC=clang -j$(nproc)
+```
+
+#TODO: fix `unknown argument '-femit-structure-debug-baseonly'`
+#TODO empty file generated ?
+#TODO auto format with clang-format ?
 
 # Using kworkflow
 
@@ -777,3 +862,7 @@ pacman -S aarch64-linux-gnu-gcc bc
 ```
 
 ## References
+1. FLUSP Build the Linux kernel for ARM [flusp.ime.usp.br/kernel/build-linux-for-arm](https://flusp.ime.usp.br/kernel/build-linux-for-arm/)
+2. FLUSP Kernel Compilation and Installation [flusp.ime.usp.br/kernel/Kernel-compilation-and-installation](https://flusp.ime.usp.br/kernel/Kernel-compilation-and-installation/)
+3. FLUSP Use QEMU to Play with Linux Kernel [flusp.ime.usp.br/kernel/use-qemu-to-play-with-linux](https://flusp.ime.usp.br/kernel/use-qemu-to-play-with-linux/)
+4. KernelNewbies Kernel Build [kernelnewbies.org/KernelBuild](https://kernelnewbies.org/KernelBuild)
