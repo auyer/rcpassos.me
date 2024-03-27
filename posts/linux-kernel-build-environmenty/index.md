@@ -781,10 +781,26 @@ There is a Python script in the kernel source code that does it for us.
 
 ```bash
 # inside the kernel source code folder
+# build the entire kernel to get the initial build results and artifacts
+make -j$(nproc)
 # generate the compile_commands.json file
 scripts/clang-tools/gen_compile_commands.py
-# build the entire kernel to get the initial results
-make -j$(nproc)
+```
+
+Let's check if the file was generated correctly.
+The output should be a list of compilation commands, with the directory and file being compiled.
+```bash
+# check if the file was generated successfully
+head compile_commands.json
+
+➜ 
+[
+  {
+    "command": "gcc -Wp,-MMD,./..vmlinux.export.o.d ... -D__KBUILD_MODNAME=kmod_.vmlinux.export -c -o .vmlinux.export.o .vmlinux.export.c",
+    "directory": "/home/auyer/kernel-dev/linux",
+    "file": "/home/auyer/kernel-dev/linux/.vmlinux.export.c"
+  },
+...
 ```
 
 By default, the kernel is built with GCC.
@@ -794,11 +810,12 @@ If you want to compile the kernel with Clang, you can use the following commands
 ```bash
 make CC=clang defconfig
 make CC=clang -j$(nproc)
+# generate the compile_commands.json file with the clangd compiler
+scripts/clang-tools/gen_compile_commands.py
 ```
 
-#TODO: fix `unknown argument '-femit-structure-debug-baseonly'`
-#TODO empty file generated ?
-#TODO auto format with clang-format ?
+If the previous step worked, code formatting should also work with Clangd.
+This makes it easier to adhere to the kernel coding style.
 
 # Using kworkflow
 
