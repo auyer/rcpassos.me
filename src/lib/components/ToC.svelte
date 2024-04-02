@@ -3,9 +3,12 @@
 	import { onMount } from 'svelte';
 	import Card from './Card.svelte';
 
+	/** @type {Array<{headings: { depth: Number, value: String, id: String}}>} */
 	export let post;
 
+	/** @type {Array<HTMLInputElement>} */
 	let elements = [];
+
 	let headings = post.headings;
 
 	onMount(() => {
@@ -20,6 +23,7 @@
 	// when scroling down, the headings will be ommited from the top
 	let visibleHeadings = headings;
 
+	/** @type {Number} */
 	let scrollY;
 
 	function updateHeadings() {
@@ -35,20 +39,15 @@
 	function setActiveHeading() {
 		scrollY = window.scrollY;
 
-		const visibleIndex =
-			elements.findIndex((element) => element.offsetTop + element.clientHeight > scrollY) - 1;
+		const visibleIndex = elements.findIndex(
+			(element) => element.offsetTop + element.clientHeight > scrollY
+		);
 
 		activeHeading = headings[visibleIndex];
 
-		const pageHeight = document.body.scrollHeight;
-		const scrollProgress = (scrollY + window.innerHeight) / pageHeight;
 
-		if (!activeHeading) {
-			if (scrollProgress > 0.9) {
-				activeHeading = headings[headings.length + 1];
-			} else {
-				activeHeading = headings[0];
-			}
+		if (visibleIndex === -1) {
+			activeHeading = headings[headings.length - 1];
 		}
 		// if the active heading is below the 10th heading, start omitting headings from the top
 		if (visibleIndex > 10) {
