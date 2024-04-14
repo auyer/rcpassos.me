@@ -3,23 +3,26 @@ title: DRAFT -  A Solid Environment For Building And Developing The Linux Kernel
 date: 2024-03-20
 ---
 
+# Preface
+In my last [post](https://rcpassos.me/post/compiling-debugging-riscv-xv6-kernel), I talked about my sudies on Kernel Development with a simpler Unix like OS, called xv6.
+After finishing the MIT course [6.S081 Operating System Engineering](https://learncs.me/mit/6.s081) (available online), I decided it was time to learn how to build the Linux Kernel, and hopefully contribute to it.
+I joined a free software group ([FLUSP](https://flusp.ime.usp.br)) at the University of São Paulo (USP), and started taking a course on Free Software and the Linux Kernel Development.
+In this post, I will cover the setup of the environment for building and contributing to it.
+
 # Introduction
 
-In my last post ["Compiling and Debugging a Kernel - Xv6 for the RISC-V Architecture"](https://rcpassos.me/post/compiling-debugging-riscv-xv6-kernel), I talked about my sudies on Kernel Development.
-After finishing the MIT course [6.S081 Operating System Engineering](https://learncs.me/mit/6.s081) (available online), I decided it was time to learn how to build the Linux Kernel, and hopefully contribute to it.
-I joined a free software group ([FLUSP](https://flusp.ime.usp.br)) at the University of São Paulo (USP), and started taking a course on Linux Kernel Development.
-
 The Linux Kernel is the most important open source project in the world.
-It had lot of history and a lot of code.
+It is the result of collaboration between thousands of developers, and it is the core of the most used operating systems in the world.
+
+It is a very big and complex project.
 To build it, you need a good environment, with the right tools and configurations.
 It is very important to have a good workflow, so you can build, test, and debug the kernel efficiently.
 
-In this post, I will cover the setup of the environment for building and contributing to the Linux Kernel.
-We will create a virtual machine with a Debian Cloud Image, build the kernel on our host machine, and deploy it to the VM.
+To accomplish thiw, we will create a virtual machine with a Debian Cloud Image, build the kernel on our host machine, and deploy it to the VM.
 This configuration was largely inspired by the guides provided by the FLUSP community, and my experience with them and their workshops.
 I also contributed some improvements I am sharing here back to their guides.
 
-What we will cover:
+What I will cover:
 - Creating a Virtual Machine using a Debian Cloud Image
 - Enabling SSH to access the virtual machine
 - Installing the necessary packages for building the kernel
@@ -233,6 +236,7 @@ sudo parted /dev/nbd0
 GNU Parted 3.6
 Using /dev/nbd0
 Welcome to GNU Parted! Type 'help' to view a list of commands.
+
 (parted) print
 Model: Unknown (unknown)
 Disk /dev/nbd0: 4295MB
@@ -572,7 +576,7 @@ The maintainers review the patches, and if they are good, they are merged into t
 I will not cover how these patches are sent and reviewed in this post, but I will show how to get the source code and build it.
 
 The tree I chose to clone is the one maintained by Linus Torvalds, the creator of the Linux Kernel.
-This is also known as the mainline tree, and it is where the Oficial Linux Releases come from.
+This is also known as the mainline tree, and it is where the Official Linux Releases come from.
 The repository is hosted at [git.kernel.org](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git).
 Also in this website, you can find the other trees, like the stable tree, the linux-next tree and many others.
 
@@ -674,7 +678,7 @@ These commands are run from the linux folder, and the VM needs to be offline to 
 ```bash
 # mount the disk image to the modules folder (created in the first section)
 guestmount ../$ARCH/modules
-# run the modules_install command poiting to the mounted folder
+# run the modules_install command pointing to the mounted folder
 make INSTALL_MOD_PATH=../$ARCH/modules modules_install
 # unmount the disk image, so we can start the VM
 guestunmount ../$ARCH/modules
@@ -721,7 +725,7 @@ t=/dev/vda1 rootwait"
 vel=8 root=/dev/vda1 rootwait"
 ```
 
-Before running this script, we need to make shure the VM is off, and remove it from the list of configured VMs (so we can re-create it). 
+Before running this script, we need to make sure the VM is off, and remove it from the list of configured VMs (so we can re-create it). 
 ```bash
 # attempt the shutdown
 sudo virsh shutdown linux-$ARCH
@@ -819,6 +823,24 @@ This makes it easier to adhere to the kernel coding style.
 
 # Using kworkflow
 
+
+```bash
+kw init
+
+kw env create arm64_vm # or kw env -c arm64_vm
+kw env use arm64_vm # or kw env -u arm64_vm
+
+export ARCH=arm64
+make defconfig
+make LSMOD=../modules_list_$ARCH localmodconfig
+# config cross compilation for arm64
+kw config build.arch arm64
+kw config build.cross_compile aarch64-linux-gnu-
+
+kw remote create arm64_vm root@<vm_ip>:22
+kw remote --set-default=arm64_vm
+
+```
 TODO
 
 # Appendix
@@ -858,7 +880,7 @@ For compiling the Linux Kernel:
 pacman -S base-devel 
 ```
 
-Or using the dependencies spcecified in the [Linux PKGBUILD](https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/blob/main/PKGBUILD):
+Or using the dependencies specified in the [Linux PKGBUILD](https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/blob/main/PKGBUILD):
 ```bash
 pacman -S \
   make \
