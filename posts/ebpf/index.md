@@ -329,7 +329,27 @@ https://elixir.bootlin.com/linux/latest/source/tools/include/uapi/linux/bpf.h#L1
 
 ## What is happening in the Kernel
 
+The Syscall `SYS_BPF` selects what it shoul
 ```c
+static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
+{
+    ...
+	switch (cmd) {
+	case BPF_MAP_CREATE:
+		err = map_create(&attr);
+		break;
+    ...
+    case BPF_LINK_CREATE:
+		err = link_create(&attr, uattr);
+		break;
+    ...
+    default:
+		err = -EINVAL;
+		break;
+	}
+
+```
+
 # SHOW HOW ADDRESSES ARE REPLACED
 attach_kprobe
 
