@@ -935,7 +935,8 @@ Always keep in mind that the Kernel offers some tools to check for coding style,
 
 ```bash
 # check the coding style of the files
-scripts/checkpatch.pl kernel/bpf/arena.c
+scripts/checkpatch.pl kernel/bpf/arena.c 
+# or kw c <file>, if you have kworkflow installed
 
 ➜
 total: 0 errors, 0 warnings, 590 lines checked
@@ -943,6 +944,8 @@ total: 0 errors, 0 warnings, 590 lines checked
 kernel/bpf/arena.c has no obvious style problems and is ready for submission.
 ```
 Using the auto-format feature of Clangd, you can cause changes that are not actually better or easier to read.
+So always check the changes before committing them, and only commit the changes you want to send.
+If you make a patch, you can also run the `checkpatch.pl` script to check for style problems introduced by you, to fix before sending it.
 
 # Conclusion
 
@@ -954,7 +957,6 @@ One thing that I usually do, that helps me a lot, is to not just follow a guide,
 It is usually doing this that I get thing wrong, and also where I learn the most.
 
 Thanks!
-
 ---
 
 # Appendix
