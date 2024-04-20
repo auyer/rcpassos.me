@@ -1,6 +1,6 @@
 ---
-title: DRAFT - A Solid Environment For Building And Developing The Linux Kernel
-date: 2024-03-20
+title: A Solid Environment For Building And Developing The Linux Kernel
+date: 2024-04-20
 ---
 
 # Preface
@@ -578,7 +578,7 @@ cd linux
 ```
 
 You can clone only the last commit of the repository with the `--depth 1` option.
-But I dont do it, because it is usefull to have the full history of the code.
+But I dont do it, because it is useful to have the full history of the code.
 For instance, you can use the `git blame <file>` command to see who wrote a specific line of code, and when it was written.
 Or what I usually do, use the `git log <file>` command to see the history of a specific file.
 It helps me to understand what was changed, and why.
@@ -679,7 +679,7 @@ kw deploy
 ```
 This works for most target Linux Distros, and also works for real machines.
 But in the rare case the VM does not use the Kernel you built after you reboot it, you will need to check the documentation for the Distro it uses.
-Or if it is a VM, you can pass the Kernel and initrd files using the techiques I will show next.
+Or if it is a VM, you can pass the Kernel and initrd files using the techniques I will show next.
 
 ### Option 2 (Modules): mounting the disk image into a local folder
 
@@ -735,7 +735,7 @@ You would need to update the configs in the VM to boot the new Kernel.
 
 ### Method 4 (Kernel): overwriting the Kernel with libvirt
 
-If you had problemas with the above, you may force the VM to boot with a specific kernel adding the boot option in the script and recreate it.
+If you had problems with the above, you may force the VM to boot with a specific kernel adding the boot option in the script and recreate it.
 
 ```bash
 # copy the original script to a new one
@@ -863,7 +863,7 @@ ARM64:
 ```
 
 If you decide to edit the existing VM:
-Run the virsh edit command, chosing the editor you prefer.
+Run the virsh edit command, choosing the editor you prefer.
 ```bash
 sudo EDITOR=nvim virsh edit linux-amd64
 ```
@@ -942,7 +942,7 @@ total: 0 errors, 0 warnings, 590 lines checked
 
 kernel/bpf/arena.c has no obvious style problems and is ready for submission.
 ```
-Using the auto-format feature of Clangd, you can cause changes that are not acctually better or easier to read.
+Using the auto-format feature of Clangd, you can cause changes that are not actually better or easier to read.
 
 # Conclusion
 
@@ -1023,4 +1023,7 @@ pacman -S aarch64-linux-gnu-gcc bc
 2. FLUSP Kernel Compilation and Installation [flusp.ime.usp.br/kernel/Kernel-compilation-and-installation](https://flusp.ime.usp.br/kernel/Kernel-compilation-and-installation/)
 3. FLUSP Use QEMU to Play with Linux Kernel [flusp.ime.usp.br/kernel/use-qemu-to-play-with-linux](https://flusp.ime.usp.br/kernel/use-qemu-to-play-with-linux/)
 4. KernelNewbies Kernel Build [kernelnewbies.org/KernelBuild](https://kernelnewbies.org/KernelBuild)
-5. Kernel/Upgrade - Gentoo wiki [wiki.gentoo.org](https://wiki.gentoo.org/wiki/Kernel/Upgrade/en#Adjusting_the_.config_file_for_the_new_kernel)
+5. The Linux Kernel documentation [docs.kernel.org](https://docs.kernel.org/)
+6. Write and Submit your first Linux kernel Patch, Greg Kroah-Hartman [YouTube.com](https://www.youtube.com/watch?v=LLBrBBImJt4)
+7. Linux Kernel Development, Greg Kroah-Hartman [YouTube.com](https://www.youtube.com/watch?v=vyenmLqJQjs)
+7. Kernel/Upgrade - Gentoo wiki [wiki.gentoo.org](https://wiki.gentoo.org/wiki/Kernel/Upgrade/en#Adjusting_the_.config_file_for_the_new_kernel)
