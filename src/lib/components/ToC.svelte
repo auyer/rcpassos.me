@@ -45,7 +45,6 @@
 
 		activeHeading = headings[visibleIndex];
 
-
 		if (visibleIndex === -1) {
 			activeHeading = headings[headings.length - 1];
 		}

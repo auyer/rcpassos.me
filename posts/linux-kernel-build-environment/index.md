@@ -334,7 +334,8 @@ I will show both commands here, and explain the differences.
 ## A script to create the VM
 
 <!-- The first script will create the VM and run it with the original kernel and initrd files (the two files we got with `virt-copy-out`). -->
-This create is nothing more than a 
+
+This create is nothing more than a
 Instead of running a script every time
 I will keep them and this script in my environment folder, so I can use them to create the VM again if I need to.
 
@@ -344,7 +345,7 @@ I will keep them and this script in my environment folder, so I can use them to 
 - Shortcuts like `$HOME` or `~` wont work because we will execute this script with the root user.
 - The `--disk` parameter should point to the disk image you created or resized.
 - If your network is different from `virbr0`, you should change the `--network` parameter to match your network.
-- If you **decide to set boot parameters** with the `--boot` option, add the root partition as well: `root=/dev/sda1`, and this should also match the root partition you got from the `virt-filesystems` command. I have examples latter in this post. 
+- If you **decide to set boot parameters** with the `--boot` option, add the root partition as well: `root=/dev/sda1`, and this should also match the root partition you got from the `virt-filesystems` command. I have examples latter in this post.
 
 I created this as a bash script called `create_vm_amd64.sh`.
 It stands for "create original kernel amd64", and it should be clear what it does when I look at it again in the future.
@@ -373,7 +374,6 @@ virt-install \
     --import \
     --disk path=$VM_DIR/linux-amd64.qcow2
 ```
-
 
 - the root device is different from the one we found in the `virt-filesystems` command. It must be referred here as `vdaX` where X is the same id. Ex: `/dev/sda1` -> `/dev/vda1`
 - the architecture is different (arm64) here is referred as `aarch64`
@@ -651,32 +651,36 @@ make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules Image.gz
 
 At this point, we have a compiled kernel and modules.
 For the VM to use them, we need to either put them inside the VM (using SSH, or mounting the disk image), or configure the VM to boot from the new kernel by passing it to libvirt.
-I will show a few methods, but some of them are not complete. 
+I will show a few methods, but some of them are not complete.
 In these cases, you can combine them to deploy the both the Kernel and its modules.
 
 ### Method 1 (Modules + Kernel): using the kworkflow tool
 
 The kworkflow tool is a tool that helps you streamline the process of building and testing the kernel.
 This is the easiest way to install everything to the VM.
-Its features help with Kernel development in various ways (and I will mention some later). 
+Its features help with Kernel development in various ways (and I will mention some later).
 
 To install it, check [kworkflow.org](https://kworkflow.org) for instructions.
-Assuming you have it installed, you can configure it to deploy the  
+Assuming you have it installed, you can configure it to deploy the
+
 ```bash
 # inside the linux folder, create kw local configuration
 kw init
 ```
 
 Add the VM as a remote target using its IP address.
+
 ```bash
 kw remote --add amd64-vm root@192.168.122.163:22
 kw remote --set-default=amd64-vm
 ```
 
 Now you can deploy both the Kernel and modules to the VM with the `kw deploy` command.
+
 ```bash
 kw deploy
 ```
+
 This works for most target Linux Distros, and also works for real machines.
 But in the rare case the VM does not use the Kernel you built after you reboot it, you will need to check the documentation for the Distro it uses.
 Or if it is a VM, you can pass the Kernel and initrd files using the techniques I will show next.
@@ -684,12 +688,14 @@ Or if it is a VM, you can pass the Kernel and initrd files using the techniques 
 ### Option 2 (Modules): mounting the disk image into a local folder
 
 This section requires the VM to be offline.
+
 ```bash
 sudo virsh shutdown linux-$ARCH # or destroy, if it hangs
 ```
 
 If you prefer not to use the virtual network to send the files, you can mount the disk image to a local folder and copy the files.
 These commands are run from the linux folder, and the VM needs to be offline to use the disk features.
+
 ```bash
 # mount the ROOT partition of the image, to the mountpoint folder (created in the first section)
 guestmount -w -a ../$ARCH/linux-$ARCH.qcow2 -m /dev/sda1 ../$ARCH/mountpoint
@@ -704,7 +710,6 @@ make INSTALL_PATH=../$ARCH/mount install
 guestunmount ../$ARCH/mountpoint
 
 ```
-
 
 ### Method 3 (Modules): sending modules over SSH
 
@@ -758,6 +763,7 @@ Before running this script, we need to make sure the VM is off, and remove it fr
 The `undefine` command will remove the VM from the list of configured VMs.
 But since all the files are still there, we can recreate it with the same name.
 The IP address can change, however, so we need to check it again.
+
 ```bash
 # attempt the shutdown
 sudo virsh shutdown linux-$ARCH
@@ -780,11 +786,13 @@ AMD64:
 ```
 
 ARM64:
+
 ```bash
 --boot kernel=$BOOT_DIR/Image.gz,initrd=$BOOT_DIR/initrd.img-6.1.0-18-arm64,kernel_args="console=ttyAMA0 loglevel=8 root=/dev/vda1 rootwait"
 ```
 
 ## Checking the new Kernel and Modules in the VM
+
 Now we can run the new script to create the VM with the new kernel and modules.
 
 ```bash
@@ -793,8 +801,8 @@ Now we can run the new script to create the VM with the new kernel and modules.
 cat /proc/version
 
 ➜
-Linux version 6.9.0-rc3-dirty (auyer@darkforce) 
-    (gcc (GCC) 13.2.1 20230801, GNU ld (GNU Binutils) 2.42.0) 
+Linux version 6.9.0-rc3-dirty (auyer@darkforce)
+    (gcc (GCC) 13.2.1 20230801, GNU ld (GNU Binutils) 2.42.0)
     #1 SMP PREEMPT_DYNAMIC Mon Apr  8 22:33:15 -03 2024
 
 ```
@@ -804,7 +812,7 @@ Linux version 6.9.0-rc3-dirty (auyer@darkforce)
 ls /lib/modules
 
 ➜
-6.1.0-18-amd64          
+6.1.0-18-amd64
 6.9.0-rc3-dirty
 ```
 
@@ -817,11 +825,13 @@ The basic development loop is ready to take place:
 3. install the modules in the VM
 4. run the VM and test the changes
 
-## Restoring the original Kernel 
+## Restoring the original Kernel
 
 If your VM no longer boots, we can read the original kernel and initrd files from the disk image, and tell libvirtd to use them in the next boot.
 With the next command, we are listing the files in the boot directory of the image.
+
 <!-- We are looking for the kernel and initrd files, so we can copy them to the host and use them in the VM we are going to . -->
+
 The file name will be different depending on the kernel version and architecture, but it will be similar to `vmlinuz-6.1.0-18-amd64` and `initrd.img-6.1.0-18-amd64`.
 
 > ⚠️ **Attention**: Depending on the method used to expand the disk, your root partition might have a different name.
@@ -854,22 +864,27 @@ With these files copied to the host, we can create a new script to re-create the
 In case you decide to recreate using the script, add this section to the last line of the script created when starting the VM for the first time.
 
 AMD64:
+
 ```bash
 --boot kernel=$BOOT_DIR/vmlinuz-6.1.0-18-arm64,initrd=$BOOT_DIR/initrd.img-6.1.0-18-arm64,kernel_args="console=tty0 console=ttyS0 root=/dev/sda1 rootwait"
 ```
-ARM64: 
+
+ARM64:
+
 ```bash
 --boot kernel=$BOOT_DIR/vmlinuz-6.1.0-18-arm64,initrd=$BOOT_DIR/initrd.img-6.1.0-18-arm64,kernel_args="console=ttyAMA0 root=/dev/sda1 rootwait"
 ```
 
 If you decide to edit the existing VM:
 Run the virsh edit command, choosing the editor you prefer.
+
 ```bash
 sudo EDITOR=nvim virsh edit linux-amd64
 ```
 
 Look for a line that starts with `<os>`, and add the following lines inside the `<os>` tag (keeping other tags intact).
-You need to put the path that matches your environment. Note that Libvirt requires the full path here. 
+You need to put the path that matches your environment. Note that Libvirt requires the full path here.
+
 ```xml
 <kernel>/home/auyer/kernel-dev/amd64/boot/vmlinuz-6.1.0-18-amd64</kernel>
 <initrd>/home/auyer/kernel-dev/amd64/boot/initrd.img-6.1.0-18-amd64</initrd>
@@ -935,7 +950,7 @@ Always keep in mind that the Kernel offers some tools to check for coding style,
 
 ```bash
 # check the coding style of the files
-scripts/checkpatch.pl kernel/bpf/arena.c 
+scripts/checkpatch.pl kernel/bpf/arena.c
 # or kw c <file>, if you have kworkflow installed
 
 ➜
@@ -943,6 +958,7 @@ total: 0 errors, 0 warnings, 590 lines checked
 
 kernel/bpf/arena.c has no obvious style problems and is ready for submission.
 ```
+
 Using the auto-format feature of Clangd, you can cause changes that are not actually better or easier to read.
 So always check the changes before committing them, and only commit the changes you want to send.
 If you make a patch, you can also run the `checkpatch.pl` script to check for style problems introduced by you, to fix before sending it.
@@ -956,8 +972,7 @@ I hope it can be useful to someone else, and I know it can be useful to me in th
 One thing that I usually do, that helps me a lot, is to not just follow a guide, but to also change things in the way to make it my own.
 It is usually doing this that I get thing wrong, and also where I learn the most.
 
-Thanks!
----
+## Thanks!
 
 # Appendix
 
@@ -1028,4 +1043,4 @@ pacman -S aarch64-linux-gnu-gcc bc
 5. The Linux Kernel documentation [docs.kernel.org](https://docs.kernel.org/)
 6. Write and Submit your first Linux kernel Patch, Greg Kroah-Hartman [YouTube.com](https://www.youtube.com/watch?v=LLBrBBImJt4)
 7. Linux Kernel Development, Greg Kroah-Hartman [YouTube.com](https://www.youtube.com/watch?v=vyenmLqJQjs)
-7. Kernel/Upgrade - Gentoo wiki [wiki.gentoo.org](https://wiki.gentoo.org/wiki/Kernel/Upgrade/en#Adjusting_the_.config_file_for_the_new_kernel)
+8. Kernel/Upgrade - Gentoo wiki [wiki.gentoo.org](https://wiki.gentoo.org/wiki/Kernel/Upgrade/en#Adjusting_the_.config_file_for_the_new_kernel)
