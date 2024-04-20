@@ -20,7 +20,7 @@
 	// the current heading in view
 	let activeHeading = headings[0];
 	// a subset of headings that are visible in the toc
-	// when scroling down, the headings will be ommited from the top
+	// when scroling down, the headings will be omitted from the top
 	let visibleHeadings = headings;
 
 	/** @type {Number} */

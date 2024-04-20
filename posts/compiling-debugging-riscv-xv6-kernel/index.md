@@ -106,7 +106,7 @@ make fs.img
 ```
 
 It will and create the default `fs.img` file.
-If you loook at the Makefile, you will notice that it adds the README file and all the user programs to the image.
+If you look at the Makefile, you will notice that it adds the README file and all the user programs to the image.
 These are the files you will see once you boot into the system.
 
 Now you can run the system with `make qemu`. This will run the QEMU emulator with the kernel we compiled, and the disk image we created.
