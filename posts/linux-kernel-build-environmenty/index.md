@@ -33,7 +33,7 @@ What I will cover:
 - Booting the kernel in the virtual machine
 - Setting up the Clangd LSP for a better experience navigating the source code
 
-# Preparing a Virtual Machine Disk and Files
+# Preparing a Virtual Machine Disk
 
 The first step in my environment setup was to create a virtual machine.
 The reasoning here is that I can have a clean intalation target to test the kernel I am building, and I wont negatively affect my machine util I tested it in the VM.
@@ -44,9 +44,9 @@ The packages I list here are for arch linux, but you can use the package manager
 
 > **⚠️ Note**: In this guide, I refer to the machine I am using to build the kernel as the host machine, and the virtual machine as the VM.
 > The Host is where the VM is running, but you may also chose to build the Kernel in a different machine that is not the host.
-> If that is the case, only the outputs from the Build step need to be sent from your build machine to the Host machine.
+> If that is the case, only the outputs from the build step need to be sent from your build machine to the Host machine.
 
-## My folder setup for this project
+## My folder structure
 
 To make it easier for anyone following this setup, here is, this is the folder structure I used in this project.
 You may adapt it to your liking, but I will use these paths in the commands I will show.
@@ -68,10 +68,12 @@ tree . w
 ➜
 .
 ├── amd64
+│   ├── mountpoint
 │   ├── boot
 │   │   └── boot files for amd64
 │   └── linux-amd64.qcow2
 ├── arm64
+│   ├── mountpoint
 │   ├── boot
 │   │   └── boot files for arm64
 │   └── linux-arm64.qcow2
@@ -149,7 +151,7 @@ qemu-img create -f qcow2 -o preallocation=metadata ./$ARCH/linux-$ARCH.qcow2 4G
 virt-resize --expand /dev/sda1 debian-12-nocloud-$ARCH-daily.qcow2 ./$ARCH/linux-$ARCH.qcow2
 ```
 
-If this step is successful, we can proceed to the next step [Reading files from the VM Disk image](#reading-files-from-the-vm-disk-image).
+If this step is successful, we can proceed to the next step [Creating the Virtual Machine](#creating-the-virtual-machine).
 
 For a yet unknown reason, I experienced an error when running the `virt-resize` command.
 Since I had it working before, I included it in the tutorial, hoping it will work for you.
@@ -331,19 +333,18 @@ I will show both commands here, and explain the differences.
 
 ## A script to create the VM
 
-The first script will create the VM and run it with the original kernel and initrd files (the two files we got with `virt-copy-out`).
+<!-- The first script will create the VM and run it with the original kernel and initrd files (the two files we got with `virt-copy-out`). -->
+This create is nothing more than a 
+Instead of running a script every time
 I will keep them and this script in my environment folder, so I can use them to create the VM again if I need to.
 
 > ⚠️ **Attention**: Some parameters might need to be changed to fit your environment.
 
 - The VM_DIR variable needs to point to your workdir folder.
 - Shortcuts like `$HOME` or `~` wont work because we will execute this script with the root user.
-- The last line contains the path to the kernel and initrd files. These should match the files you got from the `virt-copy-out` command.
-- The same line also contains the root partition `root=/dev/sda1`, and this should also match the root partition you got from the `virt-filesystems` command.
 - The `--disk` parameter should point to the disk image you created or resized.
 - If your network is different from `virbr0`, you should change the `--network` parameter to match your network.
-
-### amd64
+- If you **decide to set boot parameters** with the `--boot` option, add the root partition as well: `root=/dev/sda1`, and this should also match the root partition you got from the `virt-filesystems` command. I have examples latter in this post. 
 
 I created this as a bash script called `create_vm_amd64.sh`.
 It stands for "create original kernel amd64", and it should be clear what it does when I look at it again in the future.
@@ -358,8 +359,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # this should point to your project path
-VM_DIR=/home/code/kernel-dev/amd64
-BOOT_DIR=$VM_DIR/boot
+VM_DIR=/home/auyer/kernel-dev/amd64
 
 virt-install \
     --name "linux-amd64" \
@@ -368,17 +368,12 @@ virt-install \
     --osinfo detect=on,require=off \
     --check path_in_use=off \
     --features acpi=off \
-    --import \
     --graphics none \
     --network bridge:virbr0 \
-    --disk path=$VM_DIR/linux-amd64.qcow2 \
-    --boot kernel=$BOOT_DIR/vmlinuz-6.1.0-18-amd64,initrd=$BOOT_DIR/initrd.img-6.1.0-18-amd64,kernel_args="console=tty0 console=ttyS0 loglevel=8 root=/dev/sda1 rootwait"
+    --import \
+    --disk path=$VM_DIR/linux-amd64.qcow2
 ```
 
-### arm64
-
-Most things are the same as the previous script.
-What changed:
 
 - the root device is different from the one we found in the `virt-filesystems` command. It must be referred here as `vdaX` where X is the same id. Ex: `/dev/sda1` -> `/dev/vda1`
 - the architecture is different (arm64) here is referred as `aarch64`
@@ -395,7 +390,6 @@ fi
 
 # this should point to your project path
 VM_DIR=/home/auyer/kernel-dev/arm64
-BOOT_DIR=$VM_DIR/boot
 
 virt-install \
     --name "linux-arm64" \
@@ -405,10 +399,9 @@ virt-install \
     --check path_in_use=off \
     --features acpi=off \
     --graphics none \
-    --import \
     --network bridge:virbr0 \
-    --disk path=$VM_DIR/linux-arm64.qcow2 \
-    --boot kernel=$BOOT_DIR/vmlinuz-6.1.0-18-arm64,initrd=$BOOT_DIR/initrd.img-6.1.0-18-arm64,kernel_args="console=ttyAMA0 loglevel=8 root=/dev/vda1 rootwait"
+    --import \
+    --disk path=$VM_DIR/linux-arm64.qcow2
 ```
 
 ## Starting the VM
@@ -556,31 +549,39 @@ ssh -i ~/.ssh/your_key root@192.168.122.178
 
 ---
 
-# Getting the Kernel Source Code
+# Accessing the Kernel Source Code
 
 The next step is to get the kernel source code.
-If you are used to the GitHub experience, this is going to be a bit different.
-in GitHub, it is common to have a single repository for a project.
-Inside contributors create branches in the same repository, and merge these changes to the main branch with pull requests.
-Outside contributors fork the repository, make changes in their fork, and create pull requests to the main repository.
+If you are used to the GitHub/GitLab/BitBucket experience, this is going to be a bit different.
+In these sites, it is common to have a single **repository** for a project.
+Inside contributors create **branches** in the same repository, and merge these changes to the main branch with pull requests.
+Outside contributors **fork** the repository, make changes in their fork, and create pull requests to the main repository.
 
-For the Linux Kernel, the structure is more similar to the second case.
-There are several repositories (also known as trees) where the kernel is developed, and contributors send patches to the maintainers.
+For the Linux Kernel, the process is a bit different.
+The codebase is so large and complex, that there are multiple levels of maintainers, that create a chain of trust.
+There are several repositories (also known as trees) for different subsystems.
+Each tree might have different branches, depending on the development stage.
+Developers will usually clone a tree for a specific subsystem, and send patches to the maintainer of that tree.
 The maintainers review the patches, and if they are good, they are merged into the their repository.
+Thee patches eventually make their way to the mainline tree, where Linus Torvalds will review them and merge them into what will be the next release.
 I will not cover how these patches are sent and reviewed in this post, but I will show how to get the source code and build it.
 
-The tree I chose to clone is the one maintained by Linus Torvalds, the creator of the Linux Kernel.
-This is also known as the mainline tree, and it is where the Official Linux Releases come from.
-The repository is hosted at [git.kernel.org](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git).
-Also in this website, you can find the other trees, like the stable tree, the linux-next tree and many others.
+I chose to clone two trees. The Torvalds (mainline), and the BPF tree (where the BPF subsystem is developed).
+Both repositories are hosted at [git.kernel.org](https://git.kernel.org/), where you can find most trees, like the stable tree, the linux-next tree and many others.
 
 The next command will clone the kernel source code into the `linux` folder.
-It might take a, because the kernel source code is quite large.
+It might take a while, because the kernel source code is quite large.
 
 ```bash
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 cd linux
 ```
+
+You can clone only the last commit of the repository with the `--depth 1` option.
+But I dont do it, because it is usefull to have the full history of the code.
+For instance, you can use the `git blame <file>` command to see who wrote a specific line of code, and when it was written.
+Or what I usually do, use the `git log <file>` command to see the history of a specific file.
+It helps me to understand what was changed, and why.
 
 > ⚠️ **Attention**: In the previous steps I used a variable `ARCH` to store the architecture name and make it easy to reuse the commands for both architectures.
 > But when building the kernel, the arch name for amd64 is `x86_64`, and for arm64 is `arm64`.
@@ -588,35 +589,48 @@ cd linux
 
 ```bash
 export ARCH=x86_64 # or export ARCH=arm64
-# todo explain
+# generates the default configuration for the Kernel and ARCH provided
 make defconfig
-# todo explain
+# keeps onptions set in .config, and set the new options to their recommended values
+# if you dont run this, it will ask you for every new/unset option
 make olddefconfig
 ```
 
-## Choosing what modules to build
+## Kernel Modules
 
-You could build all kernel modules, but it would take a long time.
+The Linux Kernel has a lot of parts that can bebuilt as removable parts, called modules.
+I have an analogy I used to better explain this in class.
+If you consider a Laptop is a single piece of hardware, it can have a WebCam as a pre-built part, or it can be an external module that you can plug in or remove.
+The same goes for the Kernel.
+There are features you can chose to build as parte of the Kernel, or as modules, or not build at all.
+
+The VM we downloaded probably does depends on only a few modules.
+To have a Kernel working for it, we could build all kernel modules, but it would take a long time.
 Instead, we will read what modules your VM needs, and build only those.
+You can also toggle them on and off in the kernel configuration menu with `make menuconfig`.
 
 Get the current IP address of the VM with the `virsh` command, and run this `lsmod` command over ssh.
 The result will be written to your current folder in your host machine.
 
-> ⚠️ **Attention**: The `lsmod` command will not work if the VM is not running.
+> ⚠️ **Attention**: The `lsmod` command has to be run inside the VM.
 
-> ⚠️ **Attention**: The `make LSMOD=...` command might ask you to set parameters for the modules you are building.
+> ⚠️ **Attention**: The `make LSMOD=...` command might ask you to set extra/new parameters for the modules you are building.
 > You are most like going to be fine by pressing enter and using the default values.
 > If it fails, you might need to search for the root cause of the error message elsewhere.
 
 ```bash
-ssh root@192.168.122.178 lsmod > modules_list_$ARCH
+ssh root@192.168.122.178 lsmod > modules_list
 # and this will configure the kernel to build only the modules you need
-make LSMOD=../modules_list_$ARCH localmodconfig
+make LSMOD=./modules_list localmodconfig
 ```
 
 The next step will build the kernel with all available cores.
 This will speed up the process a lot, but it will also consume a lot of resources.
 If you are using a resource limited machine, you can use the `-j` parameter with a lower number.
+
+> ⚠️ **Attention**: If you are building the Kernel for the first time, you might need to get extra dependencies.
+> I put the ones I needed in the Appendix, but if your system is different, you might need to search for them.
+> Trying to compile, and googling the error if it fails is a good strategy.
 
 > ⚠️ **Attention**: The next command might ask you to set parameters for the modules you are building.
 > You are most like going to be fine by pressing enter and using the default values.
@@ -630,15 +644,17 @@ make -j$(nproc) modules bzImage
 For arm64 (if your host is amd64):
 
 ```bash
-make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image.gz modules
+make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules Image.gz
 ```
 
 ## Installing the Kernel and Modules
 
 At this point, we have a compiled kernel and modules.
 For the VM to use them, we need to either put them inside the VM (using SSH, or mounting the disk image), or configure the VM to boot from the new kernel by passing it to libvirt.
+I will show a few methods, but some of them are not complete. 
+In these cases, you can combine them to deploy the both the Kernel and its modules.
 
-### Option 1: using the kworkflow tool
+### Method 1 (Modules + Kernel): using the kworkflow tool
 
 The kworkflow tool is a tool that helps you streamline the process of building and testing the kernel.
 This is the easiest way to install everything to the VM.
@@ -657,12 +673,15 @@ kw remote --add amd64-vm root@192.168.122.163:22
 kw remote --set-default=amd64-vm
 ```
 
-Now you can deploy the kernel and modules to the VM with the `kw deploy` command.
+Now you can deploy both the Kernel and modules to the VM with the `kw deploy` command.
 ```bash
 kw deploy
 ```
+This works for most target Linux Distros, and also works for real machines.
+But in the rare case the VM does not use the Kernel you built after you reboot it, you will need to check the documentation for the Distro it uses.
+Or if it is a VM, you can pass the Kernel and initrd files using the techiques I will show next.
 
-### Option 2: mounting the disk image into a local folder
+### Option 2 (Modules): mounting the disk image into a local folder
 
 This section requires the VM to be offline.
 ```bash
@@ -687,7 +706,7 @@ guestunmount ../$ARCH/mountpoint
 ```
 
 
-### Option 3: sending modules over SSH
+### Method 3 (Modules): sending modules over SSH
 
 We can leverage the ssh we configured to send the modules to the VM without needing to stop it.
 You can do it with `rsync` or the older `scp` protocol.
@@ -709,9 +728,12 @@ make INSTALL_MOD_PATH=../$ARCH/mountpoint modules_install
 rsync -rzP ./arm64/mountpoint/lib/modules/ root@192.168.122.25:/lib/modules/
 ```
 
+You can probably also send the Kernel this way, but I have not tested it.
+You would need to update the configs in the VM to boot the new Kernel.
+
 > ⚠️ **Attention**: The modules_install command may install it to your host **if you leave the `INSTALL_MOD_PATH` variable empty**.`
 
-### Option 4: forcing the Kernel with libvirt
+### Method 4 (Kernel): overwriting the Kernel with libvirt
 
 If you had problemas with the above, you may force the VM to boot with a specific kernel adding the boot option in the script and recreate it.
 
@@ -766,20 +788,24 @@ ARM64:
 Now we can run the new script to create the VM with the new kernel and modules.
 
 ```bash
-sudo bash create_built_kernel_$ARCH.sh
-
 ## Inside the VM:
 # check the version running
-uname -a # or cat /proc/version
+cat /proc/version
 
 ➜
-Linux localhost 6.8.0-11767-g23956900041d SMP PREEMPT_DYNAMIC Thu Mar 21 10:28:09 -03 2024 x86_64 GNU/Linux
+Linux version 6.9.0-rc3-dirty (auyer@darkforce) 
+    (gcc (GCC) 13.2.1 20230801, GNU ld (GNU Binutils) 2.42.0) 
+    #1 SMP PREEMPT_DYNAMIC Mon Apr  8 22:33:15 -03 2024
 
-# check the modules installed
-ls /lib/modules/
+```
+
+```bash
+## also check the Modules
+ls /lib/modules
 
 ➜
-6.1.0-18-amd64  6.8.0-11767-g23956900041d
+6.1.0-18-amd64          
+6.9.0-rc3-dirty
 ```
 
 Great !
@@ -851,9 +877,6 @@ You need to put the path that matches your environment. Note that Libvirt requir
 
 ---
 
-The next sections will cover how to set up a development environment for the kernel, and how to use the LSP for the kernel source code.
-After that, we will cover how to use a tool called `kworkflow` to automate the process of building and running the kernel in the VM.
-
 # Setting up Clangd LSP
 
 One common tool for development is the Language Server Protocol (LSP).
@@ -907,28 +930,32 @@ scripts/clang-tools/gen_compile_commands.py
 
 If the previous step worked, code formatting should also work with Clangd.
 This makes it easier to adhere to the kernel coding style.
-
-# Using kworkflow
+But it is not perfect, and you might need to adjust some things manually.
+Always keep in mind that the Kernel offers some tools to check for coding style, and you can use them to check your code.
 
 ```bash
-kw init
+# check the coding style of the files
+scripts/checkpatch.pl kernel/bpf/arena.c
 
-kw env create arm64_vm # or kw env -c arm64_vm
-kw env use arm64_vm # or kw env -u arm64_vm
+➜
+total: 0 errors, 0 warnings, 590 lines checked
 
-export ARCH=arm64
-make defconfig
-make LSMOD=../modules_list_$ARCH localmodconfig
-# config cross compilation for arm64
-kw config build.arch arm64
-kw config build.cross_compile aarch64-linux-gnu-
-
-kw remote create arm64_vm root@<vm_ip>:22
-kw remote --set-default=arm64_vm
-
+kernel/bpf/arena.c has no obvious style problems and is ready for submission.
 ```
+Using the auto-format feature of Clangd, you can cause changes that are not acctually better or easier to read.
 
-TODO
+# Conclusion
+
+This was more of a guide than an article.
+My goal was to document all steps I took to build the Linux Kernel and set up a development environment.
+I hope it can be useful to someone else, and I know it can be useful to me in the future (I will forget some things, and come back here too).
+
+One thing that I usually do, that helps me a lot, is to not just follow a guide, but to also change things in the way to make it my own.
+It is usually doing this that I get thing wrong, and also where I learn the most.
+
+Thanks!
+
+---
 
 # Appendix
 
@@ -951,6 +978,7 @@ sudo virsh undefine linux-amd64
 
 ## List of Packages I needed to install
 
+I use Arch linux, and these packages only fit Arch and its derivatives.
 For the VM:
 
 ```bash
@@ -965,14 +993,10 @@ sudo pacman -S guestfs-tools \
 
 For compiling the Linux Kernel:
 
-```bash
-pacman -S base-devel
-```
-
 Or using the dependencies specified in the [Linux PKGBUILD](https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/blob/main/PKGBUILD):
 
 ```bash
-pacman -S \
+pacman -S base-devel \
   make \
   bc \
   cpio \
@@ -991,9 +1015,12 @@ For cross compilation:
 pacman -S aarch64-linux-gnu-gcc bc
 ```
 
-## References
+---
+
+# References
 
 1. FLUSP Build the Linux kernel for ARM [flusp.ime.usp.br/kernel/build-linux-for-arm](https://flusp.ime.usp.br/kernel/build-linux-for-arm/)
 2. FLUSP Kernel Compilation and Installation [flusp.ime.usp.br/kernel/Kernel-compilation-and-installation](https://flusp.ime.usp.br/kernel/Kernel-compilation-and-installation/)
 3. FLUSP Use QEMU to Play with Linux Kernel [flusp.ime.usp.br/kernel/use-qemu-to-play-with-linux](https://flusp.ime.usp.br/kernel/use-qemu-to-play-with-linux/)
 4. KernelNewbies Kernel Build [kernelnewbies.org/KernelBuild](https://kernelnewbies.org/KernelBuild)
+5. Kernel/Upgrade - Gentoo wiki [wiki.gentoo.org](https://wiki.gentoo.org/wiki/Kernel/Upgrade/en#Adjusting_the_.config_file_for_the_new_kernel)
