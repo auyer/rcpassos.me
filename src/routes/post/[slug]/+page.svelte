@@ -54,8 +54,8 @@
 	<meta name="twitter:image" content={ogImage} />
 </svelte:head>
 
-<div class="root max-w-8xl mx-auto lg:max-w-none">
-	<div class="hidden lg:block pt-8">
+<div class="flex mx-auto lg:max-w-none">
+	<div class="hidden lg:w-1/6 lg:block pt-8">
 		<div class="sticky top-0 w-full flex justify-end pt-11 pr-8">
 			<svelte:element
 				this={canGoBack ? 'button' : 'a'}
@@ -75,8 +75,8 @@
 		</div>
 	</div>
 
-	<div class="w-full mx-auto overflow-x-hidden">
-		<article class="prose">
+	<div class="w-full justify-center lg:w-4/6 mx-auto overflow-x-hidden">
+		<article class="prose max-w-none">
 			<header class="flex flex-col">
 				<h1
 					class="mt-4 font-bold tracking-tight text-zinc-800 dark:text-zinc-100 text-2xl lg:text-4xl md:text-3xl"
@@ -87,7 +87,7 @@
 			</header>
 
 			<!-- render the post -->
-			<div class="prose dark:prose-invert">
+			<div class="prose max-w-5xl dark:prose-invert">
 				<svelte:component this={data.component} />
 			</div>
 		</article>
@@ -116,7 +116,7 @@
 	</div>
 
 	<!-- table of contents -->
-	<div class="hidden xl:block pt-10">
+	<div class="hidden items-start xl:w-2/6 lg:w-fit xl:block pt-10">
 		{#if data.post.headings.length > 0}
 			<aside class="sticky hidden w-48 ml-8 xl:block top-8" aria-label="Table of Contents">
 				<ToC post={data.post} />
@@ -124,17 +124,3 @@
 		{/if}
 	</div>
 </div>
-
-<style lang="postcss">
-	.root {
-		display: grid;
-		grid-template-columns: 1fr;
-	}
-
-	@media screen(lg) {
-		.root {
-			/* 42rem matches max-w-2xl */
-			grid-template-columns: 1fr 42rem 1fr;
-		}
-	}
-</style>

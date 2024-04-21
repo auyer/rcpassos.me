@@ -36,6 +36,9 @@
 			console.log('elements', elements);
 		}
 	}
+
+	const heading_visible_threshold = 5;
+
 	function setActiveHeading() {
 		scrollY = window.scrollY;
 
@@ -49,10 +52,10 @@
 			activeHeading = headings[headings.length - 1];
 		}
 		// if the active heading is below the 10th heading, start omitting headings from the top
-		if (visibleIndex > 10) {
+		if (visibleIndex > heading_visible_threshold) {
 			tocFullyVisible = false;
-			visibleHeadings = headings.slice(visibleIndex - 10);
-		} else if (visibleIndex <= 10) {
+			visibleHeadings = headings.slice(visibleIndex - heading_visible_threshold);
+		} else if (visibleIndex <= heading_visible_threshold) {
 			tocFullyVisible = true;
 			visibleHeadings = headings;
 		}
