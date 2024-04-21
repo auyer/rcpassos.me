@@ -473,7 +473,7 @@ Now, there are two ways the sshd server can be configured:
 
 Inside the VM, edit the `/etc/ssh/sshd_config` file, and set the following parameters (they are commented by default):
 
-```
+```bash
 PermitRootLogin yes
 PasswordAuthentication yes
 PermitEmptyPasswords yes
@@ -483,7 +483,7 @@ PermitEmptyPasswords yes
 
 Inside the VM, edit the `/etc/ssh/sshd_config` file, and set the following parameter (commented by default):
 
-```
+```bash
 PermitRootLogin yes
 ```
 

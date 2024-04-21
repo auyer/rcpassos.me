@@ -48,7 +48,7 @@ You can also use the pre-compiled binaries provided by MIT. A guide is available
 These are the tools needed to compile the kernel and user programs for the RISC-V architecture.
 Clone the repository with
 
-```
+```bash
 git clone --recurse-submodules  git@github.com:riscv-collab/riscv-gnu-toolchain.git
 ```
 
@@ -140,7 +140,7 @@ It provides some basic configuration that allows GDB to work on our code base.
 But we need to allow GDB to use it explicitly.
 I had to create a file `$HOME/.config/gdb/gdbinit` file with the following content:
 
-```
+```bash
 set auto-load safe-path <path to you local xv6-riscv codebase>
 ```
 

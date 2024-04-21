@@ -3,6 +3,10 @@ import autolinkHeadings from 'rehype-autolink-headings';
 import slugPlugin from 'rehype-slug';
 import relativeImages from 'mdsvex-relative-images';
 import remarkHeadings from '@vcarl/remark-headings';
+// other option to investigate
+// import rehypeShiki from '@shikijs/rehype'
+
+import { codeToHtml } from 'shiki';
 
 export default {
 	extensions: ['.svx', '.md'],
@@ -10,9 +14,29 @@ export default {
 		quotes: true,
 		dashes: 'oldschool'
 	},
+	highlight: {
+		highlighter: async (code, lang) => {
+			const codeHtml = await codeToHtml(code, {
+				lang: lang,
+				themes: {
+					light: 'catppuccin-latte',
+					dark: 'catppuccin-mocha'
+				}
+			});
+			//
+			// workarround for the desired trailing /
+			// inpired by https://github.com/pngwn/MDsveX/issues/224 but mixed with shiki
+			if (lang === 'bash') {
+				return `{@html ${JSON.stringify(codeHtml)}}`;
+			}
+
+			return `{@html \`${codeHtml}\` }`;
+		}
+	},
 	remarkPlugins: [videos, relativeImages, headings],
 	rehypePlugins: [
 		slugPlugin,
+		// rehypeShiki,
 		[
 			autolinkHeadings,
 			{
