@@ -33,7 +33,6 @@
 			elements = headings.map((heading) => {
 				return document.getElementById(heading.id);
 			});
-			console.log('elements', elements);
 		}
 	}
 
