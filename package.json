@@ -13,6 +13,7 @@
 		"update": "npx npm-check-updates -u"
 	},
 	"devDependencies": {
+		"@giscus/svelte": "^3.0.0",
 		"@skeletonlabs/skeleton": "2.9.1",
 		"@skeletonlabs/tw-plugin": "0.4.0",
 		"@sveltejs/adapter-static": "^3.0.1",

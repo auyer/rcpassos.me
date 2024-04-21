@@ -3,6 +3,7 @@
 	import ToC from '$lib/components/ToC.svelte';
 	import ArrowLeftIcon from '$lib/components/ArrowLeftIcon.svelte';
 	import SocialLinks from '$lib/components/SocialLinks.svelte';
+	import Comments from '$lib/components/Comments.svelte';
 	import { afterNavigate } from '$app/navigation';
 	import PostDate from '$lib/components/PostDate.svelte';
 
@@ -95,6 +96,8 @@
 		<!-- bio -->
 		<hr />
 		<div class="py-8">
+			<Comments />
+			<hr />
 			<div class="grid gap-8">
 				<div class="flex justify-center order-1 col-span-2 gap-6 md:order-2">
 					<SocialLinks />
