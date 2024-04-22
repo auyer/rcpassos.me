@@ -4,7 +4,7 @@
 	let giscusTheme = 'dark_dimmed';
 </script>
 
-<div class="comments-container">
+<div class="comments-container dark:bg-surface-900 bg-slate-500 p-5 rounded-lg">
 	<Giscus
 		id="comments"
 		repo="auyer/rcpassos.me"
@@ -28,3 +28,4 @@
 		overflow-y: scroll;
 	}
 </style>
+
