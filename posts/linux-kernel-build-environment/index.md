@@ -1,25 +1,25 @@
 ---
-title: A Solid Environment For Building And Developing The Linux Kernel
+title: A Robust Environment for Building, Testing, and Developing the Linux Kernel
 date: 2024-04-20
 ---
 
 # Preface
 
-In my last [post](https://rcpassos.me/post/compiling-debugging-riscv-xv6-kernel), I talked about my sudies on Kernel Development with a simpler Unix like OS, called xv6.
-After finishing the MIT course [6.S081 Operating System Engineering](https://learncs.me/mit/6.s081) (available online), I decided it was time to learn how to build the Linux Kernel, and hopefully contribute to it.
-I joined a free software group ([FLUSP](https://flusp.ime.usp.br)) at the University of São Paulo (USP), and started taking a course on Free Software and the Linux Kernel Development.
-In this post, I will cover the setup of the environment for building and contributing to it.
+In my previous [post](https://rcpassos.me/post/compiling-debugging-riscv-xv6-kernel), I talked about my studies on Kernel Development with a simpler Unix-like OS, called xv6.
+After finishing the MIT course [6.S081 Operating System Engineering](https://learncs.me/mit/6.s081) (available online), I decided it was time to learn how to build the Linux Kernel.
+I joined a free software group ([FLUSP](https://flusp.ime.usp.br)) at the University of São Paulo (USP) and started taking a course on Free Software and Linux Kernel Development.
+In this post, I'll detail the environment setup I utilized for creating and testing my first contributions to the Linux Kernel.
 
 # Introduction
 
-The Linux Kernel is the most important open source project in the world.
+The Linux Kernel is the most important open-source project in the world.
 It is the result of collaboration between thousands of developers, and it is the core of the most used operating systems in the world.
 
 It is a very big and complex project.
 To build it, you need a good environment, with the right tools and configurations.
 It is very important to have a good workflow, so you can build, test, and debug the kernel efficiently.
 
-To accomplish thiw, we will create a virtual machine with a Debian Cloud Image, build the kernel on our host machine, and deploy it to the VM.
+To accomplish this, we will create a virtual machine with a Debian Cloud Image, build the kernel on our host machine, and deploy it to the VM.
 This configuration was largely inspired by the guides provided by the FLUSP community, and my experience with them and their workshops.
 I also contributed some improvements I am sharing here back to their guides.
 
@@ -36,19 +36,16 @@ What I will cover:
 # Preparing a Virtual Machine Disk
 
 The first step in my environment setup was to create a virtual machine.
-The reasoning here is that I can have a clean intalation target to test the kernel I am building, and I wont negatively affect my machine util I tested it in the VM.
-This will also make it easier to backup the environment and roll back to a previous state if something goes wrong.
-
-I use Arch Linux as my main OS, so I will use it as the host for the virtual machine.
-The packages I list here are for arch linux, but you can use the package manager of your choice to install the equivalent packages for your OS.
+The reasoning here is that I can have a clean installation target to test the kernel I am building, and I won't negatively affect my machine until I test it in the VM.
+This will also make it easier to back up the environment and roll back to a previous state if something goes wrong.
 
 > **⚠️ Note**: In this guide, I refer to the machine I am using to build the kernel as the host machine, and the virtual machine as the VM.
-> The Host is where the VM is running, but you may also chose to build the Kernel in a different machine that is not the host.
+> The Host is where the VM is running, but you may also choose to build the Kernel in a different machine that is not the host.
 > If that is the case, only the outputs from the build step need to be sent from your build machine to the Host machine.
 
 ## My folder structure
 
-To make it easier for anyone following this setup, here is, this is the folder structure I used in this project.
+To make it easier for anyone following this setup, is the folder structure I used in this project.
 You may adapt it to your liking, but I will use these paths in the commands I will show.
 All folders will be created here with these two `mkdir` commands.
 
@@ -84,9 +81,9 @@ tree . w
 └── debian-12-nocloud-arm64-daily.qcow2
 ```
 
-## Downloading a Ready to Use Debian Image
+## Downloading a Ready-to-Use Debian Image
 
-The Debian Cloud Team provides daily built images that a ready to use, no installation step required: [Debian Official Cloud Images](https://cloud.debian.org/images/cloud/).
+The Debian Cloud Team provides daily built images that a ready to use, with no installation step required: [Debian Official Cloud Images](https://cloud.debian.org/images/cloud/).
 There are a few variations, and the "nocloud" variant is a perfect fit for this use case.
 It is a minimal image that requires no configuration to use.
 It allows root login without a password, and it is perfect for quick testing and development.
@@ -96,7 +93,7 @@ The first one will be for the amd64 (x86_64) architecture, and the second one wi
 You may choose to create only one of them, or even create more VMs for different architectures, as most things will be the same for all of them.
 
 The daily built images can be found at [cdimage.debian.org](http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/).
-At the moment, they offer images for the `amd64`, `arm64`, `ppc64` and `ppc64el` architectures.
+At the moment, they offer images for the `amd64`, `arm64`, `ppc64`, and `ppc64el` architectures.
 
 Downloading the base images in qcow2 format (a format that is easy to work with in QEMU and Libvirt):
 
@@ -111,7 +108,7 @@ wget http://cdimage.debian.org/cdimage/cloud/bookworm/daily/latest/debian-12-noc
 If we peek into these files, we can see the partitions inside.
 It is expected for any Linux system to have at least two partitions: one for the root filesystem, and one for the boot filesystem.
 The boot is usually a small `vfat` or `fat32` partition.
-The root partition is larger, and can usually come in the `ext4`, `btrfs` or other less common partition types.
+The root partition is larger, and can usually come in the `ext4`, `btrfs`, or other less common partition types.
 
 ```bash
 virt-filesystems -h --long -a ./debian-12-nocloud-amd64-daily.qcow2
@@ -131,7 +128,7 @@ Name        Type        VFS   Label  Size  Parent
 ```
 
 From here, most steps will be identical for both architectures (besides the arch name in files).
-I will use the `ARCH` variable to store the architecture name, and use it in the commands.
+I will use the `ARCH` variable to store the architecture name and use it in the commands.
 When there are differences, I will make it clear.
 
 ## Resizing the Disk Image with virt-resize (Option 1)
@@ -154,10 +151,10 @@ virt-resize --expand /dev/sda1 debian-12-nocloud-$ARCH-daily.qcow2 ./$ARCH/linux
 If this step is successful, we can proceed to the next step [Creating the Virtual Machine](#creating-the-virtual-machine).
 
 For a yet unknown reason, I experienced an error when running the `virt-resize` command.
-Since I had it working before, I included it in the tutorial, hoping it will work for you.
-In case it does not, follow the next step to resize the disk manually.
+Since I had it working before, I included it in the tutorial, hoping it would work for you.
+In the other case, the following steps will be an alternative. It is a way to resize the disk manually.
 
-The error message I got was:
+I got the following error message when running the `virt-resize` command:
 
 ```bash
 [  44.8] Copying /dev/sda1
@@ -181,7 +178,7 @@ complete output:
 
 If the previous step did not work, we can resize the disk manually.
 This is a more complex process, but it is a good learning experience.
-We will use the `qemu-img` command to resize the image, and the `qemu-nbd` command to mount the image as a device, so we can resize the partition as if it was a normal device.
+We will use the `qemu-img` command to resize the image, and the `qemu-nbd` command to mount the image as a device, so we can resize the partition as if it were a normal device.
 
 The image we downloaded is about 2GB in total.
 To achieve the same 4GB size from the previous step, I will add 2GB to the image.
@@ -193,7 +190,7 @@ cp debian-12-nocloud-$ARCH-daily.qcow2 ./$ARCH/linux-$ARCH.qcow2
 qemu-img resize ./$ARCH/linux-$ARCH.qcow2 +2G
 ```
 
-This just added 2GB of free space to the fisk image, but it did not resize the partition.
+This just added 2GB of free space to the disk image, but it did not resize the partition.
 We can check that with the `virt-filesystems` command:
 
 ```bash
@@ -210,7 +207,7 @@ Name        Type        VFS      Label  MBR  Size  Parent
 /dev/sda    device      -        -      -    4,0G  -
 ```
 
-We can see that the root partition is still 1.8GB, and the new space we create is just empty space.
+We can see that the root partition is still 1.8GB, and the new space we created is just unallocated space.
 To resize it, we are going to mount this image to our host machine as a device using the `nbd` kernel module.
 
 ```bash
@@ -235,7 +232,7 @@ nbd0       43:0    0    4G  0 disk
 ```
 
 At this point, resizing the partition can be done in a plethora of ways.
-If you are familiat with this, you can use the tool of your choice (like gparted, gnome-disk-utility).
+If you are familiar with this, you can use the tool of your choice (like GParted, gnome-disk-utility).
 
 I will use the `parted` command line tool.
 
@@ -260,7 +257,7 @@ Number  Start   End     Size    File system  Name  Flags
  1      134MB   2146MB  2012MB  ext4
 ```
 
-If you see a warning like this, you can use `Fix`, but it wont resize the partition we want.
+If you see a warning like this, you can use `Fix`, but it won't resize the partition we want.
 
 ```bash
 Warning: Not all of the space available to /dev/nbd0 appears to be used, you can fix the GPT to use all of the space (an extra 4194304 blocks) or continue with
@@ -271,8 +268,8 @@ Fix/Ignore? Fix
 We can resize the partition with the `resizepart` command inside the `parted` shell.
 For this command, the first argument is the partition number, and the second is the new size of the partition.
 Both values can be copied from the previous output.
-The partition number is 1, because it is the root partition (with the ext4 filesystem).
-The size is 4295MB, because it is the size noted on the "Disk" line.
+The partition number is 1 because it is the root partition (with the ext4 filesystem).
+The size is 4295MB because it is the size noted on the "Disk" line.
 Alternatively, we can use 100% as the second argument, to use all available space.
 
 ```bash
@@ -318,7 +315,7 @@ sudo virsh net-autostart default #optional, but recommended
 
 If you want the libvirtd service to start automatically at boot, you can use the `enable` command too.
 It is not something I do, because I can always start it manually when I need it.
-This way I dont incur the risk of having VMs running when I dont need them.
+This way I don't incur the risk of having VMs running when I don't need them.
 
 ```bash
 sudo systemctl enable libvirtd # optional
@@ -342,7 +339,7 @@ I will keep them and this script in my environment folder, so I can use them to 
 > ⚠️ **Attention**: Some parameters might need to be changed to fit your environment.
 
 - The VM_DIR variable needs to point to your workdir folder.
-- Shortcuts like `$HOME` or `~` wont work because we will execute this script with the root user.
+- Shortcuts like `$HOME` or `~` won't work because we will execute this script with the root user.
 - The `--disk` parameter should point to the disk image you created or resized.
 - If your network is different from `virbr0`, you should change the `--network` parameter to match your network.
 - If you **decide to set boot parameters** with the `--boot` option, add the root partition as well: `root=/dev/sda1`, and this should also match the root partition you got from the `virt-filesystems` command. I have examples latter in this post.
@@ -578,7 +575,7 @@ cd linux
 ```
 
 You can clone only the last commit of the repository with the `--depth 1` option.
-But I dont do it, because it is useful to have the full history of the code.
+But I don't do it, because it is useful to have the full history of the code.
 For instance, you can use the `git blame <file>` command to see who wrote a specific line of code, and when it was written.
 Or what I usually do, use the `git log <file>` command to see the history of a specific file.
 It helps me to understand what was changed, and why.
@@ -592,19 +589,19 @@ export ARCH=x86_64 # or export ARCH=arm64
 # generates the default configuration for the Kernel and ARCH provided
 make defconfig
 # keeps onptions set in .config, and set the new options to their recommended values
-# if you dont run this, it will ask you for every new/unset option
+# if you don't run this, it will ask you for every new/unset option
 make olddefconfig
 ```
 
 ## Kernel Modules
 
-The Linux Kernel has a lot of parts that can bebuilt as removable parts, called modules.
+The Linux Kernel has a lot of parts that can be built as removable parts, called modules.
 I have an analogy I used to better explain this in class.
-If you consider a Laptop is a single piece of hardware, it can have a WebCam as a pre-built part, or it can be an external module that you can plug in or remove.
+If you consider a Laptop to be a single piece of hardware, it can have a WebCam as a pre-built part, or it can be an external module that you can plug in or remove.
 The same goes for the Kernel.
-There are features you can chose to build as parte of the Kernel, or as modules, or not build at all.
+There are features you can choose to build as part of the Kernel, or as modules, or not build at all.
 
-The VM we downloaded probably does depends on only a few modules.
+The VM we downloaded probably depends on only a few modules.
 To have a Kernel working for it, we could build all kernel modules, but it would take a long time.
 Instead, we will read what modules your VM needs, and build only those.
 You can also toggle them on and off in the kernel configuration menu with `make menuconfig`.
@@ -650,17 +647,17 @@ make -j$(nproc) ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- modules Image.gz
 ## Installing the Kernel and Modules
 
 At this point, we have a compiled kernel and modules.
-For the VM to use them, we need to either put them inside the VM (using SSH, or mounting the disk image), or configure the VM to boot from the new kernel by passing it to libvirt.
+For the VM to use them, we need to either put them inside the VM (using SSH, or mounting the disk image) or configure the VM to boot from the new kernel by passing it to libvirt.
 I will show a few methods, but some of them are not complete.
-In these cases, you can combine them to deploy the both the Kernel and its modules.
+In these cases, you can combine them to deploy both the Kernel and its modules.
 
-### Method 1 (Modules + Kernel): using the kworkflow tool
+### Method 1 (Modules + Kernel): using the KWorkflow tool
 
-The kworkflow tool is a tool that helps you streamline the process of building and testing the kernel.
-This is the easiest way to install everything to the VM.
+The KWorkflow tool is a tool that helps you streamline the process of building and testing the kernel.
+This is the easiest way to install everything on the VM.
 Its features help with Kernel development in various ways (and I will mention some later).
 
-To install it, check [kworkflow.org](https://kworkflow.org) for instructions.
+To install it, check [KWorkflow.org](https://KWorkflow.org) for instructions.
 Assuming you have it installed, you can configure it to deploy the
 
 ```bash
@@ -675,14 +672,14 @@ kw remote --add amd64-vm root@192.168.122.163:22
 kw remote --set-default=amd64-vm
 ```
 
-Now you can deploy both the Kernel and modules to the VM with the `kw deploy` command.
+Now you can deploy both the Kernel and modules on the VM with the `kw deploy` command.
 
 ```bash
 kw deploy
 ```
 
-This works for most target Linux Distros, and also works for real machines.
-But in the rare case the VM does not use the Kernel you built after you reboot it, you will need to check the documentation for the Distro it uses.
+This works for most target Linux Distros and also works for real machines.
+But in the rare case that the VM does not use the Kernel you built after you reboot it, you will need to check the documentation for the Distro it uses.
 Or if it is a VM, you can pass the Kernel and initrd files using the techniques I will show next.
 
 ### Option 2 (Modules): mounting the disk image into a local folder
@@ -694,7 +691,7 @@ sudo virsh shutdown linux-$ARCH # or destroy, if it hangs
 ```
 
 If you prefer not to use the virtual network to send the files, you can mount the disk image to a local folder and copy the files.
-These commands are run from the linux folder, and the VM needs to be offline to use the disk features.
+These commands are run from the Linux folder, and the VM needs to be offline to use the disk features.
 
 ```bash
 # mount the ROOT partition of the image, to the mountpoint folder (created in the first section)
@@ -740,7 +737,7 @@ You would need to update the configs in the VM to boot the new Kernel.
 
 ### Method 4 (Kernel): overwriting the Kernel with libvirt
 
-If you had problems with the above, you may force the VM to boot with a specific kernel adding the boot option in the script and recreate it.
+If you had problems with the above, you may force the VM to boot with a specific kernel including the boot option in the script, and recreate it.
 
 ```bash
 # copy the original script to a new one
@@ -816,7 +813,7 @@ ls /lib/modules
 6.9.0-rc3-dirty
 ```
 
-Great !
+Great!
 Now we have a VM running with the kernel and modules we just compiled.
 The basic development loop is ready to take place:
 
@@ -829,8 +826,6 @@ The basic development loop is ready to take place:
 
 If your VM no longer boots, we can read the original kernel and initrd files from the disk image, and tell libvirtd to use them in the next boot.
 With the next command, we are listing the files in the boot directory of the image.
-
-<!-- We are looking for the kernel and initrd files, so we can copy them to the host and use them in the VM we are going to . -->
 
 The file name will be different depending on the kernel version and architecture, but it will be similar to `vmlinuz-6.1.0-18-amd64` and `initrd.img-6.1.0-18-amd64`.
 
@@ -859,7 +854,7 @@ virt-copy-out -a ./$ARCH/linux-$ARCH.qcow2 /boot/initrd.img-6.1.0-18-$ARCH ./$AR
 virt-copy-out -a ./$ARCH/linux-$ARCH.qcow2 /boot/vmlinuz-6.1.0-18-$ARCH ./$ARCH/boot
 ```
 
-With these files copied to the host, we can create a new script to re-create the VM using these files, or edit the vm configuration file.
+With these files copied to the host, we can create a new script to re-create the VM using these files or edit the VM configuration file.
 
 In case you decide to recreate using the script, add this section to the last line of the script created when starting the VM for the first time.
 
@@ -900,10 +895,10 @@ It makes it possible to have features like "in-place errors and warning reportin
 
 For the C language programs, like the Linux Kernel, the most common LSP is the Clangd LSP.
 
-First thing we need to do is to install the Clangd tool.
+The first thing we need to do is to install the Clangd tool.
 This is easy, but very different from one editor to another, and I will not include this step in this tutorial.
 
-For the LSP to work, we need to generate the `compile_commands.json` file, and generate a first compilation result.
+For the LSP to work, we need to generate the `compile_commands.json` file and generate the first compilation result.
 This file is used by the LSP to understand the structure and compilation flags used in the project.
 There is a Python script in the kernel source code that does it for us.
 
@@ -951,7 +946,7 @@ Always keep in mind that the Kernel offers some tools to check for coding style,
 ```bash
 # check the coding style of the files
 scripts/checkpatch.pl kernel/bpf/arena.c
-# or kw c <file>, if you have kworkflow installed
+# or kw c <file>, if you have KWorkflow installed
 
 ➜
 total: 0 errors, 0 warnings, 590 lines checked
@@ -961,16 +956,16 @@ kernel/bpf/arena.c has no obvious style problems and is ready for submission.
 
 Using the auto-format feature of Clangd, you can cause changes that are not actually better or easier to read.
 So always check the changes before committing them, and only commit the changes you want to send.
-If you make a patch, you can also run the `checkpatch.pl` script to check for style problems introduced by you, to fix before sending it.
+If you make a patch, you can also run the `checkpatch.pl` script to check for style problems introduced by you, to fix them before sending it.
 
 # Conclusion
 
 This was more of a guide than an article.
-My goal was to document all steps I took to build the Linux Kernel and set up a development environment.
+My goal was to document all the steps I took to build the Linux Kernel and set up a development environment.
 I hope it can be useful to someone else, and I know it can be useful to me in the future (I will forget some things, and come back here too).
 
-One thing that I usually do, that helps me a lot, is to not just follow a guide, but to also change things in the way to make it my own.
-It is usually doing this that I get thing wrong, and also where I learn the most.
+One thing that I usually do, that helps me a lot, is to not just follow a guide, but to also change things in a way to make them my own.
+It is usually doing this that I get things wrong, and also where I learn the most.
 
 ## Thanks!
 
@@ -995,7 +990,7 @@ sudo virsh undefine linux-amd64
 
 ## List of Packages I needed to install
 
-I use Arch linux, and these packages only fit Arch and its derivatives.
+I use Arch Linux, and these packages only fit Arch and its derivatives.
 For the VM:
 
 ```bash
