@@ -40,7 +40,7 @@ Skipping the origin story, eBPF is a technology that allows us to run small prog
 This could have seemd uninteresting before my introduction.
 But now that we remeber the Kernel's power, we can start to imagine why this is a big deal.
 
-These programs can be loaded into the Kernel at runtime without rebooting or stopping anuthing, and without the need to recompile (the kernel).
+These programs can be loaded into the Kernel at runtime without rebooting or stopping anything, and without the need to recompile (the kernel).
 They are, however, limited in several ways.
 They are not equivalent to a Kernel module, and not as powerful.
 But they are also simpler and safer writing Kernel code, while being able to do things not accessible to User-Space programs (or in some cases, just in a more efficient manner than user prorams).
@@ -329,7 +329,7 @@ https://elixir.bootlin.com/linux/latest/source/tools/include/uapi/linux/bpf.h#L1
 
 ## What is happening in the Kernel
 
-The Syscall `SYS_BPF` selects what it shoul
+The Syscall `SYS_BPF` selects what it should do based on a command passed as input.
 ```c
 static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
 {
@@ -351,10 +351,10 @@ static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
 ```
 
 # SHOW HOW ADDRESSES ARE REPLACED
+
 attach_kprobe
 
 attach_uprobe
-```
 
 
 
@@ -376,7 +376,6 @@ echo "deb https://deb.debian.org/debian experimental main" >> /etc/apt/sources.l
 apt install -t experimental libc-bin
 ```
 
-vim /
 
 # TODO:
 
