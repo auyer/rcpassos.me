@@ -79,7 +79,7 @@
 						Math.max(0, heading.depth - 1)
 					}`}
 				>
-					{#if heading.depth == 1}•{:else}{'-'.repeat(heading.depth - 1)}{/if}
+					{#if heading.depth >= 1}{'-'.repeat(heading.depth - 1)}{/if}
 					<a href={`#${heading.id}`}>{heading.value}</a>
 				</li>
 			{/each}
