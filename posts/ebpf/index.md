@@ -402,6 +402,14 @@ This Syscall `SYS_BPF` selects what it should do based on a command passed as in
 ```c
 static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
 {
+	union bpf_attr attr;
+  // I omitted some checks, including one that guarantees the Kernel 
+  // will only use data it knows from its current version
+	...
+  /* copy attributes from user space, may be less than sizeof(bpf_attr) */
+	memset(&attr, 0, sizeof(attr));
+	if (copy_from_bpfptr(&attr, uattr, size) != 0)
+		return -EFAULT;
   ...
   switch (cmd) {
   case BPF_MAP_CREATE:
@@ -419,6 +427,86 @@ static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
 
 ```
 
+And this is the function that will be called when the command is `BPF_LINK_CREATE`:
+
+```c
+#define BPF_LINK_CREATE_LAST_FIELD link_create.uprobe_multi.pid
+static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+{
+	struct bpf_prog *prog;
+	...
+  switch (prog->type) {
+	case BPF_PROG_TYPE_TRACING:
+		if (attr->link_create.attach_type != prog->expected_attach_type) {
+			ret = -EINVAL;
+			goto out;
+		}
+		if (prog->expected_attach_type == BPF_TRACE_RAW_TP)
+			ret = bpf_raw_tp_link_attach(prog, NULL);
+		else if (prog->expected_attach_type == BPF_TRACE_ITER)
+			ret = bpf_iter_link_attach(attr, uattr, prog);
+		else if (prog->expected_attach_type == BPF_LSM_CGROUP)
+			ret = cgroup_bpf_link_attach(attr, prog);
+		else
+			ret = bpf_tracing_prog_attach(prog,
+						      attr->link_create.target_fd,
+						      attr->link_create.target_btf_id,
+						      attr->link_create.tracing.cookie);
+		break;
+  ...
+	case BPF_PROG_TYPE_PERF_EVENT:
+	case BPF_PROG_TYPE_TRACEPOINT:
+		ret = bpf_perf_link_attach(attr, prog);
+		break;
+	case BPF_PROG_TYPE_KPROBE:
+		if (attr->link_create.attach_type == BPF_PERF_EVENT)
+			ret = bpf_perf_link_attach(attr, prog);
+		else if (attr->link_create.attach_type == BPF_TRACE_KPROBE_MULTI)
+      ret = bpf_kprobe_multi_link_attach(attr, prog);
+		else if (attr->link_create.attach_type == BPF_TRACE_UPROBE_MULTI)
+  ...
+  }
+
+```
+For a given event, the kernel creates a list of programs that will be executed.
+When the event occurs, the Kernel will execute all the programs in the list.
+There is a maximum number of programs that can be attached to an event, and this is checked before adding a new one.
+
+```c
+static DEFINE_MUTEX(bpf_event_mutex);
+
+#define BPF_TRACE_MAX_PROGS 64
+int perf_event_attach_bpf_prog(struct perf_event *event,
+             struct bpf_prog *prog,
+             u64 bpf_cookie)
+{
+  ...
+  mutex_lock(&bpf_event_mutex);
+
+  // read the array of programs attached to the event
+  old_array = bpf_event_rcu_dereference(event->tp_event->prog_array);
+  if (old_array &&
+      bpf_prog_array_length(old_array) >= BPF_TRACE_MAX_PROGS) {
+    ret = -E2BIG;
+    goto unlock;
+  }
+  // copy to a new array, that will be used from now on
+  ret = bpf_prog_array_copy(old_array, NULL, prog, bpf_cookie, &new_array);
+  if (ret < 0)
+  goto unlock;
+
+  /* set the new array to event->tp_event and set event->prog */
+  event->prog = prog;
+  event->bpf_cookie = bpf_cookie;
+  rcu_assign_pointer(event->tp_event->prog_array, new_array);
+  bpf_prog_array_free_sleepable(old_array);
+
+unlock:
+  mutex_unlock(&bpf_event_mutex);
+  return ret;
+}```
+
+
 # SHOW HOW ADDRESSES ARE REPLACED
 
 attach_kprobe
@@ -432,6 +520,7 @@ attach_uprobe
 Kernel-tree/tools/include/uapi/linux/bpf.h
 
 ## Testing inside a VM:
+Run bpf in vm
 
 ```bash
 apt update
