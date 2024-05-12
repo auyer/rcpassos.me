@@ -221,36 +221,40 @@ Both tools use the Clang (LLVM) compiler to do this, but in different ways.
 <!-- This is not the accurate implementation, but it is a simplified version of how it could be implemented. -->
 <!-- The real implementation is in [github.com/cilium/ebpf/link/kprobe.go](https://github.com/cilium/ebpf/blob/main/link/kprobe.go). -->
 
-The Cilium ebpf library [[5](#references)], takes a approach with code generation to reduce manual work.
-There are three stages to this process:
+The Cilium ebpf library [[5](#references)], takes a approach with code generation to reduce manual work and achieve a high performance implementation.
+To understand their approach, is useful to know that their use case is to assist Container networking with eBPF.
+And for this, having a performant and less bug prone way to interact with the Kernel is crucial.
 
-1. BPF compilation (clang) and Go "glue" code generation, 
-2. Tool development using the generated code,
-3. GO compilation (our code + generated code) and embedding of the BPF program into the binary.
+The process behind it is quite interesting. These are the stages in it:
 
-For the first step, assuming the BPF program is in a local file called `kprobe.c`, the following `go:generate` directive needs to be added to a Go file:
+1. Writing the BPF program (with the same C-Like syntax),
+2. The bpf2go tool is used to generate GO "glue" code,
+3. The BPF programm is compiled (using Clang under the hood),
+4. GO compilation (our code + generated code) and embedding of the compiled BPF program into the GO binary.
+
+For the first two steps, assuming the BPF program is in a local file called `kprobe.c`, the `bpf2go` tool must be invoked.
+Is can be done directly, or with a `go:generate` directive that can be added to a Go file, like the following.:
+
 ```go
 package main
 
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go bpf kprobe.c -- -I../headers
 ```
-Now the `go generate` command can be issued.
-It is also possible to call the bpf2go direclty.
 
+With this in our current directory, the `go generate` command can be issued.
 It compiles the BPF program with Clang, and generates the GO code that will be used to load the program into the Kernel, and interact with it.
-One part of this glue code uses a `go:embed` directive to include the compiled BPF program into the final binary (used in step 3):
+One part of this glue code uses a `go:embed` directive.
+It instructs the compiler to include the data from the binary generated in step 2 into a variable in the GO binary (step 4):
+
 ```go
 //go:embed bpf_bpfel.o
 var _BpfBytes []byte
 ```
 
-The code below is a very simplified version of the calls made by the cilium-ebpf library.
-The represent how it loads the compiled BPF program is loaded to the Kernel.
+Now, I will show the GO code that is called by the "glue" code in our behalf.
 
-> **Note**: 
-> While in normal programs we just call a function with the parameters we want,
-> when calling the Kernel, we need to store all the parameters in a struct and pass a pointer to it.
-> The kernel will then look at the pointer, and "decode" it into its own representation of the struct.
+> **Note**:
+> The code snippets below are a simplified version of the calls made by the cilium-ebpf library.
 
 ```go
 attr := &sys.ProgLoadAttr{
