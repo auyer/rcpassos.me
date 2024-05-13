@@ -215,34 +215,137 @@ The steps both libraries will take are roughly equivalent to:
 This program has to be compiled into BPF Bytecode.
 Both tools use the Clang (LLVM) compiler to do this, but in different ways.
 
+### Python and BCC
+
+The Python BPF Compiler Collection (BCC) [[6](#references)] implementation takes the program either as a string or a file, and compiles it right before loading it into the Kernel.
+It needs to be compiled every time the tool is run (unlike the GO library in the next section).
+Because of this, and also because of how Python works, it is expected to have all these all dependencies to run a tool built with BCC: Python, BCC, Clang/llvm & Linux Headers.
+
+> **Note**:
+> The code snippets below are a simplified version of the calls made by the BCC library.
+
+For the user writing the BPF tool, this is as simple as running the following Python code.
+
+```python
+from bcc import BPF
+
+# where bpf_text is a program similar written in the BPF C-like language
+b = BPF(text=bpf_text)
+# OR, point to a file
+b = BPF(src_file=bpf_file)
+
+... #(more details later)
+```
+
+This BPF Python Class takes the program as input, and loads it into memory.
+It will parse it, detect features in use, and even modify it adding default headers.
+
+```python
+# bcc/src/__init__.py - BPF class
+
+def __init__(self, src_file=b"", hdr_file=b"", text=None, debug=0,
+            cflags=[], usdt_contexts=[], allow_rlimit=True, device=None,
+            attach_usdt_ignore_pid=False):
+...
+self.module = lib.bpf_module_create_c_from_string(text,
+                                                  self.debug,
+                                                  cflags_array, len(cflags_array),
+                                                  allow_rlimit, device)
+```
+
+The `bpf_module_create_c_from_string` function is a call to its C++ function implementation with the same name.
+It uses Clang as a library to compile the BPF program into BPF bytecode.
+
+```c++
+// bcc/src/cc/bpf_module.cc
+
+BPFModule::BPFModule(unsigned flags, TableStorage *ts, bool rw_engine_enabled,
+                     const std::string &maps_ns, bool allow_rlimit,
+                     const char *dev_name)
+...
+
+// load an entire c file as a module
+int BPFModule::load_cfile(const string &file, bool in_memory, const char *cflags[], int ncflags) {
+  ClangLoader clang_loader(&*ctx_, flags_);
+  if (clang_loader.parse(&mod_, *ts_, file, in_memory, cflags, ncflags, id_,
+                         *prog_func_info_, mod_src_, maps_ns_, fake_fd_map_,
+                         perf_events_))
+    return -1;
+  return 0;
+}
+```
+
+Once compiled, the BPF program (now in bytecode) can be loaded into the Kernel.
+I will not go too deep here, because it is mostly the same as the next section.
+
+```c++
+int bpf_btf_load(const void *btf_data, size_t btf_size, const struct bpf_btf_load_opts *opts)
+  union bpf_attr attr;
+  // fd is a file descriptor to the BPF program (like a file ID)
+  // it is a way for the user-space and kernel to reference the program when it is loaded
+  int fd;
+  ...
+  // links the BPF bytecode to the attr structure
+  attr.btf = ptr_to_u64(btf_data);
+
+  // this is a SYSCALL. In other words, the User-Space calling a Kernel API.
+  fd = sys_bpf_fd(BPF_BTF_LOAD, &attr, attr_sz);
+}
+```
+
+Back to the Python code, the next step is to attach the program to the desired event.
+The functions `attach_kprobe` and `attach_kretprobe` both instrument the Kernel function `execve_fnname`.
+They attach the function with name passed to `fn_name` to the start and end of `execve_fnname` respectively.
+The `fn_name` function names need to match the ones in the BPF program loaded earlier.
+
+```python
+# returns the corresponding kernel function name of the syscall 
+# (for the specific architecture/version running)
+execve_fnname = b.get_syscall_fnname("execve")
+
+# These functions are also SYSCALLS, that will reference the file descriptor of the BPF program
+b.attach_kprobe(event=execve_fnname, fn_name="syscall__execve")
+b.attach_kretprobe(event=execve_fnname, fn_name="do_ret_sys_execve")
+```
+
+At this point, the user space part of this tool is ready to collect the data recorded, and report to the user.
+
+
+
+
 ### GO and cilium-ebpf
 
 
 <!-- This is not the accurate implementation, but it is a simplified version of how it could be implemented. -->
 <!-- The real implementation is in [github.com/cilium/ebpf/link/kprobe.go](https://github.com/cilium/ebpf/blob/main/link/kprobe.go). -->
 
-The Cilium ebpf library [[5](#references)], takes a approach with code generation to reduce manual work and achieve a high performance implementation.
-To understand their approach, is useful to know that their use case is to assist Container networking with eBPF.
+The Cilium eBPF library [[5](#references)], takes a approach with code generation to reduce manual work and achieve a high performance implementation.
+The Cilium project uses eBPF to handle container networking in Kubernetes (aiming to be more performant than user-space tools).
 And for this, having a performant and less bug prone way to interact with the Kernel is crucial.
 
-The process behind it is quite interesting. These are the stages in it:
+Their implementation creates an API for each BPF program, covering only the capabilities that are needed.
+In the Python implementation, the user had to had to manually call `attach_kprobe` and `attach_kretprobe` after loading the program, referencing the function names to be loaded.
+This is direclty coupled to the BPF program we provided, and can be error prone. What if the function name changes? What if it is no longer using a kprobe?
+The cilium-ebpf library creates a GO API that abstracts these details, and makes it easier to use the BPF program.
 
+The process behind it is quite interesting. These are the stages in it:
 1. Writing the BPF program (with the same C-Like syntax),
 2. The bpf2go tool is used to generate GO "glue" code,
 3. The BPF programm is compiled (using Clang under the hood),
 4. GO compilation (our code + generated code) and embedding of the compiled BPF program into the GO binary.
 
 For the first two steps, assuming the BPF program is in a local file called `kprobe.c`, the `bpf2go` tool must be invoked.
-Is can be done directly, or with a `go:generate` directive that can be added to a Go file, like the following.:
+Is can be done directly, or with a `go:generate` directive that can be added to a Go file, like the following:
 
 ```go
 package main
 
-//go:generate go run github.com/cilium/ebpf/cmd/bpf2go bpf kprobe.c -- -I../headers
+//go:generate go run github.com/cilium/ebpf/cmd/bpf2go bpf kprobe.c -- -I../path_to_headers
 ```
 
 With this in our current directory, the `go generate` command can be issued.
-It compiles the BPF program with Clang, and generates the GO code that will be used to load the program into the Kernel, and interact with it.
+The `bpf2go` program will automatically detect from out BPF program, what functions it uses to interact with the Kernel, and also the data structures it uses to communicate back to user-space.
+It will compile our BPF program with Clang, and generate the GO code that will load it into the Kernel, and Access the data it produces.
 One part of this glue code uses a `go:embed` directive.
 It instructs the compiler to include the data from the binary generated in step 2 into a variable in the GO binary (step 4):
 
@@ -280,7 +383,8 @@ When we compile everything, the resulting binary will contain the eBPF program, 
 This means once you have the resulting binary, it can run on any Linux machine with a compatible Kernel.
 There are some other thins that need to happen, but I wont cover deeply:
 - the library needs to also load the structures that will be used to interact with the program, like the map used in this example
-- the library might need to check if the addresses we got when compiling the BPF program are valid in the Kernel we are running on. If they are different, it can map them. This is refered to as CO-RE (compile once, run everywhere).
+- the library might need to check if the addresses we got when compiling the BPF program are valid in the Kernel we are running on. If they are different, it can map them. 
+This is refered to as CO-RE (compile once, run everywhere).
 like the Kernel version, the BPF version, and the Kernel configuration.
 
 Now that we have the program loaded into the Kernel, we need to attach it to the desired event.
@@ -300,7 +404,7 @@ attr = unix.PerfEventAttr{
     }
 
 rawFd, _, e1 := Syscall6(SYS_PERF_EVENT_OPEN, uintptr(unsafe.Pointer(attr)), uintptr(pid), uintptr(cpu), uintptr(groupFd), uintptr(flags), 0)
-// r0 is the file descriptor of the perf event
+// rawFd is the file descriptor of the perf event
 // ... check error e1
 
 // this is the file descriptor of the perf event we want to trace
@@ -313,7 +417,7 @@ This is done with the `SYS_BPF` syscall, with the `BPF_LINK_CREATE` command.
 ```go
 // code from: attachPerfEventLink
 
-rawFd2, _, errNo := unix.Syscall(unix.SYS_BPF, uintptr(BPF_LINK_CREATE), uintptr(attr), size) // SYS_BPF = 321, BPF_LINK_CREATE = 28
+rawFd2, _, errNo := unix.Syscall(unix.SYS_BPF, uintptr(BPF_LINK_CREATE), uintptr(attr), size) 
 // ... check error errNo
 
 ebpfProgramLinkFd, err := sys.NewFD(int(rawFd2))
@@ -321,106 +425,37 @@ ebpfProgramLinkFd, err := sys.NewFD(int(rawFd2))
 
 TODO: finish GOLANG integration part
 
-### Python and BCC
-
-In this part, I will not go as deep as I did with the cilium-ebpf library, beacause doing the syscalls is mostly the same (just in C/C++ instead of GO).
-The Python BPF Compiler Collection (BCC) [[6](#references)] implementation takes the program either as a string or a file, and compiles it right before loading it into the Kernel.
-And there is no pre-compulation step, like the cilium-ebpf library.
-It need to do it every time it is runs.
-Because of this, and also because of how Python works, it is expected to have all these all dependencies to run a tool built with BCC: Python, BCC, Clang/llvm & Linux Headers.
-<!-- The upside, is that it is simpler to implement versatile tools, by changing the BPF code at will. -->
-
-For the user writing the BPF tool, this is as simple as running the following Python code.
-
-```python
-from bcc import BPF
-
-# where bpf_text is a program similar written in the BPF C-like language
-b = BPF(text=bpf_text)
-# OR, point to a file
-b = BPF(src_file=bpf_file)
-
-... #(more details later)
-```
-
-This BPF Python Class takes the program as input, and .
-
-```python
-# bcc/src/__init__.py - BPF class
-
-def __init__(self, src_file=b"", hdr_file=b"", text=None, debug=0,
-            cflags=[], usdt_contexts=[], allow_rlimit=True, device=None,
-            attach_usdt_ignore_pid=False):
-...
-self.module = lib.bpf_module_create_c_from_string(text,
-                                                  self.debug,
-                                                  cflags_array, len(cflags_array),
-                                                  allow_rlimit, device)
-```
-
-The `bpf_module_create_c_from_string` function is a call to its C++ function implementation with the same name.
-
-```c++
-// bcc/src/cc/bpf_module.cc
-
-BPFModule::BPFModule(unsigned flags, TableStorage *ts, bool rw_engine_enabled,
-                     const std::string &maps_ns, bool allow_rlimit,
-                     const char *dev_name)
-...
-
-// load an entire c file as a module
-int BPFModule::load_cfile(const string &file, bool in_memory, const char *cflags[], int ncflags) {
-  ClangLoader clang_loader(&*ctx_, flags_);
-  if (clang_loader.parse(&mod_, *ts_, file, in_memory, cflags, ncflags, id_,
-                         *prog_func_info_, mod_src_, maps_ns_, fake_fd_map_,
-                         perf_events_))
-    return -1;
-  return 0;
-}
-```
-
-Back to the Python code, the next step is to attach the program to the desired event.
-The functions `attach_kprobe` and `attach_kretprobe` both instrument the Kernel function `execve_fnname`.
-They attach the function with name passed to `fn_name` to the start and end of `execve_fnname` respectively.
-The `fn_name` function names need to match the ones in the BPF program loaded earlier.
-
-```python
-# returns the corresponding kernel function name of the syscall (for the specific architecture/version running)
-execve_fnname = b.get_syscall_fnname("execve")
-
-b.attach_kprobe(event=execve_fnname, fn_name="syscall__execve")
-b.attach_kretprobe(event=execve_fnname, fn_name="do_ret_sys_execve")
-```
-
-At this point, the user space part of this tool is ready to collect the data recorded, and report to the user.
-
-
 ## What happens in the Kernel
-
-https://elixir.bootlin.com/linux/latest/source/tools/include/uapi/linux/bpf.h#L122
 
 In the Go example, I showed the `SYS_BPF` Syscall being used two times.
 Each one, with a different command: `BPF_PROG_LOAD` and `BPF_LINK_CREATE`.
 This Syscall `SYS_BPF` selects what it should do based on a command passed as input.
+It expects the command and a pointer to a structure that contains the attributes needed to execute the command.
 
+There is one interesting check that is made before the command is executed.
+Since a program compiled with a newer version of the Kernel can be sent to run in an older version, the kernel sets to Zero all extra memory space it does not know about.
+This guarantees that if the program still works, it wont depend on features that are not available in the Kernel it is running on.
 ```c
 static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
 {
-	union bpf_attr attr;
-  // I omitted some checks, including one that guarantees the Kernel 
-  // will only use data it knows from its current version
-	...
+  union bpf_attr attr;
+  err = bpf_check_uarg_tail_zero(uattr, sizeof(attr), size);
+  ... // other checks
   /* copy attributes from user space, may be less than sizeof(bpf_attr) */
-	memset(&attr, 0, sizeof(attr));
-	if (copy_from_bpfptr(&attr, uattr, size) != 0)
-		return -EFAULT;
+  memset(&attr, 0, sizeof(attr));
+  if (copy_from_bpfptr(&attr, uattr, size) != 0)
+    return -EFAULT;
   ...
   switch (cmd) {
   case BPF_MAP_CREATE:
     err = map_create(&attr);
     break;
     ...
-    case BPF_LINK_CREATE:
+  case BPF_PROG_LOAD:
+    err = bpf_prog_load(&attr, uattr, size);
+    break;
+    ...
+  case BPF_LINK_CREATE:
     err = link_create(&attr, uattr);
     break;
     ...
