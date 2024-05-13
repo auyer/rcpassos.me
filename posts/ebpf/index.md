@@ -476,7 +476,7 @@ I found quite interesting that the Kernel code expects the program to provide it
 
 ```c
 /* last field in 'union bpf_attr' used by this command */
-#define	BPF_PROG_LOAD_LAST_FIELD log_true_size
+#define BPF_PROG_LOAD_LAST_FIELD log_true_size
 
 static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 {
@@ -512,7 +512,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
     goto free_used_maps;
   ...
   err = bpf_prog_alloc_id(prog);
-	if (err)
+  if (err)
     goto free_used_maps;
 
   /* Upon success of bpf_prog_alloc_id(), the BPF prog is
@@ -534,14 +534,18 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
   bpf_prog_kallsyms_add(prog);
   ...
   // creates the file descriptor for the program
-	err = bpf_prog_new_fd(prog);
-	if (err < 0)
-		bpf_prog_put(prog);
-	return err;
+  err = bpf_prog_new_fd(prog);
+  if (err < 0)
+    bpf_prog_put(prog);
+  return err;
   ... // error handling fir the previous goto statements
 }
 ```
 
+Now let's take a look at the `BPF_LINK_CREATE` command.
+This is the one that will attach the program to the desired event.
+It's behaviour changes for each type of program that is being attached.
+I will only show the part that is relevant to the `kprobe` example.
 And this is the function that will be called when the command is `BPF_LINK_CREATE`:
 
 ```c
@@ -551,6 +555,7 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
   struct bpf_prog *prog;
   ...
   switch (prog->type) {
+  ...
   case BPF_PROG_TYPE_TRACING:
     if (attr->link_create.attach_type != prog->expected_attach_type) {
       ret = -EINVAL;
