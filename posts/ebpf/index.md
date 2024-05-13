@@ -466,46 +466,121 @@ static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
 
 ```
 
+In the `BPF_PROG_LOAD` command function, the kernel will load to program into memory for each CPU, check if it is safe to run, add it to the Kernel's symbol table, 
+and create a file descriptor for the program.
+
+I found quite interesting that the Kernel code expects the program to provide its license, and checks if it is compatible with the GPL (used by the Kernel).
+
+> **Note**:
+> There are some comments from the original code that I left in, and they start with `/*`, while mine are all `//`.
+
+```c
+/* last field in 'union bpf_attr' used by this command */
+#define	BPF_PROG_LOAD_LAST_FIELD log_true_size
+
+static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
+{
+  enum bpf_prog_type type = attr->prog_type;
+  struct bpf_prog *prog, *dst_prog = NULL;
+  struct btf *attach_btf = NULL;
+  int err;
+  char license[128];
+  ... // permission checks and code validation
+  if (attr->attach_prog_fd) {
+    // reads the program from the file descriptor
+    dst_prog = bpf_prog_get(attr->attach_prog_fd);
+    ...
+  }
+  // allocates memory for the program for each CPU (core)
+  prog = bpf_prog_alloc(bpf_prog_size(attr->insn_cnt), GFP_USER);
+  if (!prog) { ... // error handling }
+  ... // copies the relevant data from attr struct to the new prog structure
+  /* copy eBPF program license from user space */
+    if (strncpy_from_bpfptr(license,
+          make_bpfptr(attr->license, uattr.is_kernel),
+          sizeof(license) - 1) < 0)
+      goto free_prog_sec;
+
+  /* eBPF programs must be GPL compatible to use GPL-ed functions */
+  prog->gpl_compatible = license_is_gpl_compatible(license) ? 1 : 0;
+  ...
+  /* run eBPF verifier */
+  // this is a security check to make sure the program is safe to run
+  // is is important but complex.  I will not cover it here
+  err = bpf_check(&prog, attr, uattr, uattr_size);
+  if (err < 0)
+    goto free_used_maps;
+  ...
+  err = bpf_prog_alloc_id(prog);
+	if (err)
+    goto free_used_maps;
+
+  /* Upon success of bpf_prog_alloc_id(), the BPF prog is
+    * effectively publicly exposed. However, retrieving via
+    * bpf_prog_get_fd_by_id() will take another reference,
+    * therefore it cannot be gone underneath us.
+    *
+    * Only for the time /after/ successful bpf_prog_new_fd()
+    * and before returning to userspace, we might just hold
+    * one reference and any parallel close on that fd could
+    * rip everything out. Hence, below notifications must
+    * happen before bpf_prog_new_fd().
+    *
+    * Also, any failure handling from this point onwards must
+    * be using bpf_prog_put() given the program is exposed.
+    */
+  // creates an entry in the Kernel's symbol table available under /proc/kallsyms
+  // it contains the memory address, the type of the symbol, and its name
+  bpf_prog_kallsyms_add(prog);
+  ...
+  // creates the file descriptor for the program
+	err = bpf_prog_new_fd(prog);
+	if (err < 0)
+		bpf_prog_put(prog);
+	return err;
+  ... // error handling fir the previous goto statements
+}
+```
+
 And this is the function that will be called when the command is `BPF_LINK_CREATE`:
 
 ```c
 #define BPF_LINK_CREATE_LAST_FIELD link_create.uprobe_multi.pid
 static int link_create(union bpf_attr *attr, bpfptr_t uattr)
 {
-	struct bpf_prog *prog;
-	...
-  switch (prog->type) {
-	case BPF_PROG_TYPE_TRACING:
-		if (attr->link_create.attach_type != prog->expected_attach_type) {
-			ret = -EINVAL;
-			goto out;
-		}
-		if (prog->expected_attach_type == BPF_TRACE_RAW_TP)
-			ret = bpf_raw_tp_link_attach(prog, NULL);
-		else if (prog->expected_attach_type == BPF_TRACE_ITER)
-			ret = bpf_iter_link_attach(attr, uattr, prog);
-		else if (prog->expected_attach_type == BPF_LSM_CGROUP)
-			ret = cgroup_bpf_link_attach(attr, prog);
-		else
-			ret = bpf_tracing_prog_attach(prog,
-						      attr->link_create.target_fd,
-						      attr->link_create.target_btf_id,
-						      attr->link_create.tracing.cookie);
-		break;
+  struct bpf_prog *prog;
   ...
-	case BPF_PROG_TYPE_PERF_EVENT:
-	case BPF_PROG_TYPE_TRACEPOINT:
-		ret = bpf_perf_link_attach(attr, prog);
-		break;
-	case BPF_PROG_TYPE_KPROBE:
-		if (attr->link_create.attach_type == BPF_PERF_EVENT)
-			ret = bpf_perf_link_attach(attr, prog);
-		else if (attr->link_create.attach_type == BPF_TRACE_KPROBE_MULTI)
+  switch (prog->type) {
+  case BPF_PROG_TYPE_TRACING:
+    if (attr->link_create.attach_type != prog->expected_attach_type) {
+      ret = -EINVAL;
+      goto out;
+    }
+    if (prog->expected_attach_type == BPF_TRACE_RAW_TP)
+      ret = bpf_raw_tp_link_attach(prog, NULL);
+    else if (prog->expected_attach_type == BPF_TRACE_ITER)
+      ret = bpf_iter_link_attach(attr, uattr, prog);
+    else if (prog->expected_attach_type == BPF_LSM_CGROUP)
+      ret = cgroup_bpf_link_attach(attr, prog);
+    else
+      ret = bpf_tracing_prog_attach(prog,
+                  attr->link_create.target_fd,
+                  attr->link_create.target_btf_id,
+                  attr->link_create.tracing.cookie);
+    break;
+  ...
+  case BPF_PROG_TYPE_PERF_EVENT:
+  case BPF_PROG_TYPE_TRACEPOINT:
+    ret = bpf_perf_link_attach(attr, prog);
+    break;
+  case BPF_PROG_TYPE_KPROBE:
+    if (attr->link_create.attach_type == BPF_PERF_EVENT)
+      ret = bpf_perf_link_attach(attr, prog);
+    else if (attr->link_create.attach_type == BPF_TRACE_KPROBE_MULTI)
       ret = bpf_kprobe_multi_link_attach(attr, prog);
-		else if (attr->link_create.attach_type == BPF_TRACE_UPROBE_MULTI)
+    else if (attr->link_create.attach_type == BPF_TRACE_UPROBE_MULTI)
   ...
   }
-
 ```
 For a given event, the kernel creates a list of programs that will be executed.
 When the event occurs, the Kernel will execute all the programs in the list.
@@ -543,7 +618,8 @@ int perf_event_attach_bpf_prog(struct perf_event *event,
 unlock:
   mutex_unlock(&bpf_event_mutex);
   return ret;
-}```
+}
+```
 
 
 # SHOW HOW ADDRESSES ARE REPLACED
