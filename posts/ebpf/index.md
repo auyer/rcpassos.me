@@ -182,25 +182,25 @@ This is the code for the cilium's `kprobe` example (similar to `execsnoop`, but 
 char __license[] SEC("license") = "Dual MIT/GPL";
 
 struct bpf_map_def SEC("maps") kprobe_map = {
-	.type        = BPF_MAP_TYPE_ARRAY,
-	.key_size    = sizeof(u32),
-	.value_size  = sizeof(u64),
-	.max_entries = 1,
+  .type        = BPF_MAP_TYPE_ARRAY,
+  .key_size    = sizeof(u32),
+  .value_size  = sizeof(u64),
+  .max_entries = 1,
 };
 
 SEC("kprobe/sys_execve")
 int kprobe_execve() {
-	u32 key     = 0;
-	u64 initval = 1, *valule_pointer;
+  u32 key     = 0;
+  u64 initval = 1, *valule_pointer;
 
-	valule_pointer = bpf_map_lookup_elem(&kprobe_map, &key);
-	if (!valule_pointer) {
-		bpf_map_update_elem(&kprobe_map, &key, &initval, BPF_ANY);
-		return 0;
-	}
-	__sync_fetch_and_add(valule_pointer, 1);
+  valule_pointer = bpf_map_lookup_elem(&kprobe_map, &key);
+  if (!valule_pointer) {
+    bpf_map_update_elem(&kprobe_map, &key, &initval, BPF_ANY);
+    return 0;
+  }
+  __sync_fetch_and_add(valule_pointer, 1);
 
-	return 0;
+  return 0;
 }
 ```
 
@@ -362,7 +362,7 @@ Now, I will show the GO code that is called by the "glue" code in our behalf.
 ```go
 attr := &sys.ProgLoadAttr{
     // bytecode: the compiled instructions for the function
-	Insns :             sys.NewSlicePointer(bytecode), 
+    Insns :             sys.NewSlicePointer(bytecode), 
     ProgType:           sys.ProgType(spec.Type),
     ProgFlags:          spec.Flags,
     ExpectedAttachType: sys.AttachType(spec.AttachType),
