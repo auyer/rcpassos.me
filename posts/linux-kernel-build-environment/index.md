@@ -621,6 +621,9 @@ ssh root@192.168.122.178 lsmod > modules_list
 make LSMOD=./modules_list localmodconfig
 ```
 
+There is also a way to get the entire `.config` file that was originally used to build the Kernel running in a system.
+It is usually available as the `/boot/config*` file, or `/proc/config.gz` file. In this Debian case, I found it in the boot folder as `/boot/config-6.1.0-21-amd64`.
+
 The next step will build the kernel with all available cores.
 This will speed up the process a lot, but it will also consume a lot of resources.
 If you are using a resource limited machine, you can use the `-j` parameter with a lower number.
