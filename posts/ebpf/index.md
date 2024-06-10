@@ -57,11 +57,7 @@ Some of the most common use cases are:
 - Security: detect or even block malicious behavior;
 - Networking: monitoring and controlling network traffic.
 
-In the following sections, we will take a brief look at how eBPF works and how it can be used to trace events in the Linux Kernel.
-I will use two simple but powerful programs built with it to demonstrate how it works under the hood.
-
-- `execsnoop` traces the `exec()` system call to track every program being run;
-- `gethostlatency` log DNS resolution latency across all processes.
+In the following sections, we will take a brief look at what BPF is, how it works, what is provided by the Kernel, and how these interact.
 
 ## How does eBPF work?
 
@@ -70,11 +66,6 @@ The User-Space part is responsible for setting up the BPF program (the Kernel-Sp
 But the power comes from being able to push all decision making to the code running in Kernel.
 It avoids the need to constantly switch for running mode, and guarantees our code will be there to handle every event that happens.
 There can even be programs that run entirely in Kernel-Space, and the user space is only used to configure the Kernel space part.
-
-<!--- Programs with two components: one in User-Space, one in Kernel-Space.-->
-<!--- The Kernel-space component is compiled to eBPF bytecode and loaded into the kernel.-->
-<!--- It will be executed by the Kernel when a specific event occurs.-->
-<!--- The user-space component is responsible for setting up the eBPF program and handling the data it produces.-->
 
 For a given BPF tool to run, these are the basic steps that need to happen (also shown in the picture below):
 
@@ -148,15 +139,13 @@ This is also how kernel live patching works. It replaces the first instruction o
 Kprobes are used to trace Kernel functions.
 Since every interaction with the hardware goes through the Kernel, this means we can trace almost anything every program does.
 We can also monitor the Kernel itself, by probing its internal functions.
+Uprobes are the same concept, but for User-Space programs and shared libraries.
 
 A instruction can be replaced with a call to a function that will execute a BPF program.
 When a kprobe is attached to a function start or end (kretprobe), the Kernel will save the original instruction and replace it with a breakpoint-like instruction.
 This instructions calls the kprobe handler, which will execute the eBPF program.
 After the eBPF program is executed, the original instruction is called from where it was saved and the function is executed normally.
-When the probe is removed, the original instruction is restored.
-
-Uprobes are the same concept, but the modify User-Space programs and shared libraries.
-[[3]](#references)
+When the probe is removed, the original instruction is restored. [[3]](#references)
 
 ## Perf events
 
@@ -187,22 +176,20 @@ trace-cmd report # or open the trace.dat file with KernelShark
 
 In this section, I will walk go through the steps two libraries take to load an eBPF program into the Kernel: cilium-ebpf (GO) and BCC (C/Python) [[8,9](#references)].
 
-
-The examples I will use are: `execsnoop` for the BCC, and `kprobe` for the cilium-ebpf library.
+The examples I will use are: `execsnoop` for the BCC, and the `kprobe` example for the cilium-ebpf library (from their repository).
 They are both used to trace the `exec()` system call, which is used to run programs in Linux.
-
-<!-- What the example programs do is not the same, but this is not important for what I will cover.  -->
-<!-- For the curious that will run them, the first prints every call, the second just counts them). -->
 
 The first step is to write the eBPF program.
 It must contain the function(s) that will be executed, and the map(s) that will be used to store data and communicate with user-space.
-This is the code for the cilium's `kprobe` example (similar to `execsnoop`, but simpler):
+This is the code for the cilium's `kprobe` example. Is is similar to `execsnoop`, but simpler. 
+It just counts calls instead if reporting what was called:
 
 ```c
 #include "common.h" // provided by cilium-ebpf
 
 char __license[] SEC("license") = "Dual MIT/GPL";
 
+// the map that will be used to store the number of calls
 struct bpf_map_def SEC("maps") kprobe_map = {
   .type        = BPF_MAP_TYPE_ARRAY,
   .key_size    = sizeof(u32),
@@ -210,7 +197,9 @@ struct bpf_map_def SEC("maps") kprobe_map = {
   .max_entries = 1,
 };
 
+// the event that will be traced
 SEC("kprobe/sys_execve")
+// the function that will be executed when the event happens
 int kprobe_execve() {
   u32 key     = 0;
   u64 initval = 1, *valule_pointer;
@@ -220,8 +209,8 @@ int kprobe_execve() {
     bpf_map_update_elem(&kprobe_map, &key, &initval, BPF_ANY);
     return 0;
   }
+  // a simple increment to the value stored in the map
   __sync_fetch_and_add(valule_pointer, 1);
-
   return 0;
 }
 ```
@@ -231,7 +220,7 @@ The steps both libraries will take are roughly equivalent to:
 
 - Compile the BPF program
 - Load the BPF program into the Kernel
-- Load the iterfaces to interact with the program (like the map in this example)
+- Load the interfaces to interact with the program (like the map in this example)
 - Attach the program to the desired event
 
 This program has to be compiled into BPF Bytecode.
@@ -241,7 +230,7 @@ Both tools use the Clang (LLVM) compiler to do this, but in different ways.
 
 The Python BPF Compiler Collection (BCC) [[10](#references)] implementation takes the program either as a string or a file, and compiles it right before loading it into the Kernel.
 It needs to be compiled every time the tool is run (unlike the GO library in the next section).
-Because of this, and also because of how Python works, it is expected to have all these all dependencies to run a tool built with BCC: Python, BCC, Clang/llvm & Linux Headers.
+Because of this, it is expected to have all these all dependencies to run a tool built with BCC: Python, BCC, Clang/llvm & Linux Headers.
 
 > **Note**:
 > The code snippets below are a simplified version of the calls made by the BCC library.
@@ -255,8 +244,6 @@ from bcc import BPF
 b = BPF(text=bpf_text)
 # OR, point to a file
 b = BPF(src_file=bpf_file)
-
-... #(more details later)
 ```
 
 This BPF Python Class takes the program as input, and loads it into memory.
@@ -278,7 +265,7 @@ self.module = lib.bpf_module_create_c_from_string(text,
 The `bpf_module_create_c_from_string` function is a call to its C++ function implementation with the same name.
 It uses Clang as a library to compile the BPF program into BPF bytecode.
 
-```c++
+```cpp
 // bcc/src/cc/bpf_module.cc
 
 BPFModule::BPFModule(unsigned flags, TableStorage *ts, bool rw_engine_enabled,
@@ -289,9 +276,7 @@ BPFModule::BPFModule(unsigned flags, TableStorage *ts, bool rw_engine_enabled,
 // load an entire c file as a module
 int BPFModule::load_cfile(const string &file, bool in_memory, const char *cflags[], int ncflags) {
   ClangLoader clang_loader(&*ctx_, flags_);
-  if (clang_loader.parse(&mod_, *ts_, file, in_memory, cflags, ncflags, id_,
-                         *prog_func_info_, mod_src_, maps_ns_, fake_fd_map_,
-                         perf_events_))
+  if (clang_loader.parse(...))
     return -1;
   return 0;
 }
@@ -300,7 +285,7 @@ int BPFModule::load_cfile(const string &file, bool in_memory, const char *cflags
 Once compiled, the BPF program (now in bytecode) can be loaded into the Kernel.
 I will not go too deep here, because it is mostly the same as the next section.
 
-```c++
+```cpp
 int bpf_btf_load(const void *btf_data, size_t btf_size, const struct bpf_btf_load_opts *opts)
   union bpf_attr attr;
   // fd is a file descriptor to the BPF program (like a file ID)
@@ -335,7 +320,6 @@ At this point, the user space part of this tool is ready to collect the data rec
 ### GO and cilium-ebpf
 
 <!-- This is not the accurate implementation, but it is a simplified version of how it could be implemented. -->
-<!-- The real implementation is in [github.com/cilium/ebpf/link/kprobe.go](https://github.com/cilium/ebpf/blob/main/link/kprobe.go). -->
 
 The Cilium eBPF library [[8](#references)], takes a approach with code generation to reduce manual work and achieve a high performance implementation.
 The Cilium project uses eBPF to handle container networking in Kubernetes (aiming to be more performant than user-space tools).
@@ -343,18 +327,19 @@ And for this, having a performant and less bug prone way to interact with the Ke
 
 Their implementation creates an API for each BPF program, covering only the capabilities that are needed.
 In the Python implementation, the user had to had to manually call `attach_kprobe` and `attach_kretprobe` after loading the program, referencing the function names to be loaded.
-This is direclty coupled to the BPF program we provided, and can be error prone. What if the function name changes? What if it is no longer using a kprobe?
+This is however directly coupled to the BPF program we provided, and can be error prone. What if the function name changes? What if it is no longer using a kprobe?
 The cilium-ebpf library creates a GO API that abstracts these details, and makes it easier to use the BPF program.
 
-The process behind it is quite interesting. These are the stages in it:
+The process behind it is quite interesting. These are the stages to it:
 
 1. Writing the BPF program (with the same C-Like syntax),
 2. The bpf2go tool is used to generate GO "glue" code,
 3. The BPF programm is compiled (using Clang under the hood),
-4. GO compilation (our code + generated code) and embedding of the compiled BPF program into the GO binary.
+4. GO compilation (our code + generated code), and the compiled BPF program gets embedded into the GO binary.
 
 For the first two steps, assuming the BPF program is in a local file called `kprobe.c`, the `bpf2go` tool must be invoked.
-Is can be done directly, or with a `go:generate` directive that can be added to a Go file, like the following:
+Is can be done directly, or with a `go:generate` directive that can be added to a Go file (like the next code block).
+With this in our current directory, the `go generate` command can be issued.
 
 ```go
 package main
@@ -362,9 +347,9 @@ package main
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go bpf kprobe.c -- -I../path_to_headers
 ```
 
-With this in our current directory, the `go generate` command can be issued.
 The `bpf2go` program will automatically detect from out BPF program, what functions it uses to interact with the Kernel, and also the data structures it uses to communicate back to user-space.
 It will compile our BPF program with Clang, and generate the GO code that will load it into the Kernel, and Access the data it produces.
+
 One part of this glue code uses a `go:embed` directive.
 It instructs the compiler to include the data from the binary generated in step 2 into a variable in the GO binary (step 4):
 
@@ -377,6 +362,20 @@ Now, I will show the GO code that is called by the "glue" code in our behalf.
 
 > **Note**:
 > The code snippets below are a simplified version of the calls made by the cilium-ebpf library.
+> The actual implementation is in [github.com/cilium/ebpf/link/kprobe.go](https://github.com/cilium/ebpf/blob/main/link/kprobe.go).
+
+When we compile everything, the resulting binary will contain the BPF program, the GO code to load it into the Kernel, and the code to interact with it.
+This means once you have the resulting binary, it can run on any Linux machine with a compatible Kernel.
+There are some other things that need to happen that I wont cover:
+
+- the library needs to also load the structures that will be used to interact with the program, like the map used in this example
+- the library might need to check if the addresses we got when compiling the BPF program are valid in the Kernel we are running on. If they are different, it can map them.
+  This is refered to as CO-RE (compile once, run everywhere).
+
+The first important section is the initial load of the BPF program into the Kernel.
+Is is done with the SYS_BPF syscall, using the BPF_BTF_LOAD command, and a set of parameters in a structure.
+It is after this call that the Kernel runs the Verifier, to check if the program is safe to run.
+If it is, the program is loaded into memory, and we get a file descriptor that points to it.
 
 ```go
 attr := &sys.ProgLoadAttr{
@@ -391,21 +390,8 @@ attr := &sys.ProgLoadAttr{
 
 // code from : ProgLoad
 programRawFD, _, errNo := unix.Syscall(unix.SYS_BPF, uintptr(BPF_BTF_LOAD), unsafe.Pointer(attr), unsafe.Sizeof(*attr))
-, _, errNo := unix.Syscall(unix.SYS_BPF, uintptr(cmd), uintptr(attr), size)
-if err != nil {
-    return nil, err
-}
 return NewFD(int(fd))
 ```
-
-When we compile everything, the resulting binary will contain the eBPF program, the GO code to load it into the Kernel, and the GO code to interact with it.
-This means once you have the resulting binary, it can run on any Linux machine with a compatible Kernel.
-There are some other thins that need to happen, but I wont cover deeply:
-
-- the library needs to also load the structures that will be used to interact with the program, like the map used in this example
-- the library might need to check if the addresses we got when compiling the BPF program are valid in the Kernel we are running on. If they are different, it can map them.
-  This is refered to as CO-RE (compile once, run everywhere).
-  like the Kernel version, the BPF version, and the Kernel configuration.
 
 Now that we have the program loaded into the Kernel, we need to attach it to the desired event.
 The library will first check if the desired event is available in the Kernel.
@@ -423,7 +409,7 @@ attr = unix.PerfEventAttr{
             ...
     }
 
-rawFd, _, e1 := Syscall6(SYS_PERF_EVENT_OPEN, uintptr(unsafe.Pointer(attr)), uintptr(pid), uintptr(cpu), uintptr(groupFd), uintptr(flags), 0)
+rawFd, _, e1 := unix.Syscall(unix.SYS_BPF, SYS_PERF_EVENT_OPEN, uintptr(unsafe.Pointer(attr)), uintptr(pid), uintptr(cpu), uintptr(groupFd), uintptr(flags), 0)
 // rawFd is the file descriptor of the perf event
 // ... check error e1
 
@@ -431,7 +417,7 @@ rawFd, _, e1 := Syscall6(SYS_PERF_EVENT_OPEN, uintptr(unsafe.Pointer(attr)), uin
 kprobeFd, err := sys.NewFD(int(rawFd))
 ```
 
-If this was successful, we know whe can ask the kernel to add a probe there.
+If this was successful, we know we can ask the kernel to add a probe there.
 This is done with the `SYS_BPF` syscall, with the `BPF_LINK_CREATE` command.
 
 ```go
