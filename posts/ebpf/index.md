@@ -183,10 +183,10 @@ trace-cmd record -p function_graph -g __sys_bpf -F ./program
 trace-cmd report # or open the trace.dat file with KernelShark
 ```
 
+# Diving into the implementation
 
-## Diving into the implementation
+In this section, I will walk go through the steps two libraries take to load an eBPF program into the Kernel: cilium-ebpf (GO) and BCC (C/Python) [[8,9](#references)].
 
-In this section, I will wlak go through the steps two libraries take to load an eBPF program into the Kernel: cilium-ebpf (GO) and BCC (C/Python).
 
 The examples I will use are: `execsnoop` for the BCC, and `kprobe` for the cilium-ebpf library.
 They are both used to trace the `exec()` system call, which is used to run programs in Linux.
@@ -239,7 +239,7 @@ Both tools use the Clang (LLVM) compiler to do this, but in different ways.
 
 ### Python and BCC
 
-The Python BPF Compiler Collection (BCC) [[6](#references)] implementation takes the program either as a string or a file, and compiles it right before loading it into the Kernel.
+The Python BPF Compiler Collection (BCC) [[10](#references)] implementation takes the program either as a string or a file, and compiles it right before loading it into the Kernel.
 It needs to be compiled every time the tool is run (unlike the GO library in the next section).
 Because of this, and also because of how Python works, it is expected to have all these all dependencies to run a tool built with BCC: Python, BCC, Clang/llvm & Linux Headers.
 
@@ -337,7 +337,7 @@ At this point, the user space part of this tool is ready to collect the data rec
 <!-- This is not the accurate implementation, but it is a simplified version of how it could be implemented. -->
 <!-- The real implementation is in [github.com/cilium/ebpf/link/kprobe.go](https://github.com/cilium/ebpf/blob/main/link/kprobe.go). -->
 
-The Cilium eBPF library [[5](#references)], takes a approach with code generation to reduce manual work and achieve a high performance implementation.
+The Cilium eBPF library [[8](#references)], takes a approach with code generation to reduce manual work and achieve a high performance implementation.
 The Cilium project uses eBPF to handle container networking in Kubernetes (aiming to be more performant than user-space tools).
 And for this, having a performant and less bug prone way to interact with the Kernel is crucial.
 
@@ -600,7 +600,7 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
     break;
   case BPF_PROG_TYPE_KPROBE:
     if (attr->link_create.attach_type == BPF_PERF_EVENT)
-      ret = bpf_perf_link_attach(attr, prog);
+      ret = bpf_perf_link_attach(attr, prog);  // OUR CASE
     else if (attr->link_create.attach_type == BPF_TRACE_KPROBE_MULTI)
       ret = bpf_kprobe_multi_link_attach(attr, prog);
     else if (attr->link_create.attach_type == BPF_TRACE_UPROBE_MULTI)
@@ -608,48 +608,68 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
   }
 ```
 
+At this point, the Kernel will chose what infrastructure to use to attach the program.
+A few that are available here are tracepoints, perf events, and fprobe.
+Our case is the `BPF_PERF_EVENT` attach type, which will use the perf infrastructure.
+It is simpler than the fprobe infrastructure.
+
+```c
+static int bpf_perf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+{
+  struct bpf_link_primer link_primer;
+  struct bpf_perf_link *link;
+  struct perf_event *event;
+  struct file *perf_file;
+  int err;
+
+  if (attr->link_create.flags)
+    return -EINVAL;
+
+  perf_file = perf_event_get(attr->link_create.target_fd);
+  if (IS_ERR(perf_file))
+    return PTR_ERR(perf_file);
+
+  link = kzalloc(sizeof(*link), GFP_USER);
+  if (!link) {
+    err = -ENOMEM;
+    goto out_put_file;
+  }
+  bpf_link_init(&link->link, BPF_LINK_TYPE_PERF_EVENT, &bpf_perf_link_lops, prog);
+  link->perf_file = perf_file;
+
+  // this is a important step. It prepates the bpf_link to be exposed to user space.
+  // in short, it creates the inode that will be linked to a file descriptor when the bpf_link_settle is called.
+  err = bpf_link_prime(&link->link, &link_primer);
+  if (err) {
+    kfree(link);
+    goto out_put_file;
+  }
+
+  event = perf_file->private_data;
+  err = perf_event_set_bpf_prog(event, prog, attr->link_create.perf_event.bpf_cookie);
+  if (err) {
+    bpf_link_cleanup(&link_primer);
+    goto out_put_file;
+  }
+  /* perf_event_set_bpf_prog() doesn't take its own refcnt on prog */
+  bpf_prog_inc(prog);
+
+  return bpf_link_settle(&link_primer);
+
+out_put_file:
+  fput(perf_file);
+  return err;
+}
+
+```
+
 For a given event, the kernel creates a list of programs that will be executed.
 When the event occurs, the Kernel will execute all the programs in the list.
 There is a maximum number of programs that can be attached to an event, and this is checked before adding a new one.
 
-// TODO: show perf, tracepoint or kprobe ?
-
-```c
-static DEFINE_MUTEX(bpf_event_mutex);
-
-#define BPF_TRACE_MAX_PROGS 64
-int perf_event_attach_bpf_prog(struct perf_event *event,
-             struct bpf_prog *prog,
-             u64 bpf_cookie)
-{
-  ...
-  mutex_lock(&bpf_event_mutex);
-
-  // read the array of programs attached to the event
-  old_array = bpf_event_rcu_dereference(event->tp_event->prog_array);
-  if (old_array &&
-      bpf_prog_array_length(old_array) >= BPF_TRACE_MAX_PROGS) {
-    ret = -E2BIG;
-    goto unlock;
-  }
-  // copy to a new array, that will be used from now on
-  ret = bpf_prog_array_copy(old_array, NULL, prog, bpf_cookie, &new_array);
-  if (ret < 0)
-  goto unlock;
-
-  /* set the new array to event->tp_event and set event->prog */
-  event->prog = prog;
-  event->bpf_cookie = bpf_cookie;
-  rcu_assign_pointer(event->tp_event->prog_array, new_array);
-  bpf_prog_array_free_sleepable(old_array);
-
-unlock:
-  mutex_unlock(&bpf_event_mutex);
-  return ret;
-}
-```
-
 kprobe
+
+// TODO rewrite to bpf_perf_link_attach
 
 ```c
 int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
@@ -722,7 +742,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
 In the last lines of the previous block, we registered the `link->fprobe` to be called by the fprobe/ftrace infrastructure.
 The wrappers `kprobe_multi_link_handler` and `kprobe_multi_link_exit_handler` will handle the reference from `fp` back to the `link` structure using the `container_of` macro.
 This macro is used everywhere in the Kernel.
-It gets the parent struct by subtracting from the known pointer the offset of memory required to store all fields that came before it in the parent struct [[7](#references)].
+It gets the parent struct by subtracting from the known pointer the offset of memory required to store all fields that came before it in the parent struct [[10](#references)].
 This is analogous to a `super()` function in Python and other OO languages.
 
 `kprobe_multi_link_handler` returns `int 0` instead of void
@@ -773,7 +793,7 @@ static void fprobe_init(struct fprobe *fp)
 // registers in ops.func the following function
 
 static void fprobe_kprobe_handler(unsigned long ip, unsigned long parent_ip,
-				  struct ftrace_ops *ops, struct ftrace_regs *fregs)
+      struct ftrace_ops *ops, struct ftrace_regs *fregs)
 {
   struct fprobe *fp;
   int bit;
@@ -807,13 +827,13 @@ static void fprobe_kprobe_handler(unsigned long ip, unsigned long parent_ip,
   kprobe_busy_end();
 
 recursion_unlock:
-	ftrace_test_recursion_unlock(bit);
+ ftrace_test_recursion_unlock(bit);
 }
 
 // CALLS ->
 
 static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
-		struct ftrace_ops *ops, struct ftrace_regs *fregs)
+  struct ftrace_ops *ops, struct ftrace_regs *fregs)
 {
   struct fprobe *fp;
   int bit;
@@ -863,33 +883,6 @@ attach_uprobe
 ## SYSCALLS
 
 Kernel-tree/tools/include/uapi/linux/bpf.h
-
-# Ftrace and FProbes
-
-Ftrace is another tracing tool that is built into the Kernel.
-It is designed to debugging and performance analysis, by providing a way to trace the Kernel functions that are being called.
-The BPF use this existing infrastructure to add our own function to the callbacks.
-How Functon tracing works:
-- puts nop instruction at the start of every function (this is very quick, and should take only one clock cycle)
-- when Function Tracing is enabled, it replaces the nop with a call to the tracing function
-- this is also how kernel live patching works. It replaces the first instruction of a function with a jump to the new function, and it just never returns to the original one.
-[[8](#references)]
-
-Fprobe is built on top of Ftrace, being itself a simplified version of it. It provides a way to attach callbacks to function entry and/or exit.
-[[9](#references)]
-
-One way to use Ftrace is to use the `trace-cmd` tool. It interacts with the Ftrace files in `/sys/kernel/tracing` virtual filesystem.
-```bash
-trace-cmd record -p function_graph -g __sys_bpf -F ./kprobe
-# record a function graph of the __sys_bpf function
-#                                   (the BPF syscall)
-#              -F: only follow calls from the ./kprobe binary
-#                                   (the cilium-ebpf example)
-trace-cmd report # or open the trace.dat file with KernelShark
-```
-
-
-
 
 ## Testing inside a VM
 
