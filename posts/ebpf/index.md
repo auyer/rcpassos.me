@@ -913,14 +913,15 @@ check SYS_PERF_EVENT_OPEN (298)
 
 - [1] A. S. Tanenbaum and H. J. Bos, Modern Operating Systems, 4th Edition. Pearson Higher Education, 2015.
 - [2] D. M. Ritchie and K. Thompson, “The UNIX time-sharing system,” Communications of the ACM, vol. 17, no. 7, pp. 365–375, Jul. 1974
-- [3] “BPF Documentation — The Linux Kernel documentation,” kernel.org. [kernel.org/doc/html/latest/bpf/index.html](https://kernel.org/doc/html/latest/bpf/index.html).
 - [3] B. Gregg, Bpf performance tools: Linux system and application observability, 1st ed. Hoboken: Pearson Education, Inc, 2019.
-- [4] S. Brand, “How C++ Debuggers work,” CppCon.org, Oct. 20, 2018. [youtube.com/watch?v=0DDrseUomfU](https://www.youtube.com/watch?v=0DDrseUomfU)
-- [5] “cilium/ebpf,” GitHub, [github.com/cilium/ebpf](https://github.com/iovisor/bcc)
-- [6] “iovisor/bcc,” GitHub, [github.com/iovisor/bcc](https://github.com/iovisor/bcc)
-- [7] G. Kroah-Hartman, “container_of()” kroah.com, Feb. 18, 2005. [kroah.com/log/linux/container_of.html](http://www.kroah.com/log/linux/container_of.html)
-- [8] S. Rostedt, “Learning the Linux Kernel with tracing”, Oct 31, 2018  [youtube.com/watch?v=JRyrhsx-L5Y](https://www.youtube.com/watch?v=JRyrhsx-L5Y)
-- [9] “Fprobe - Function entry/exit probe — The Linux Kernel documentation,” kernel.org. [kernel.org/doc/html/latest/trace/fprobe.html](https://kernel.org/doc/html/latest/trace/fprobe.html)
+- [4] “Tracepoints Documentation — The Linux Kernel documentation,” kernel.org. [docs.kernel.org/trace/tracepoints.html](https://docs.kernel.org/trace/tracepoints.html).
+- [5] S. Rostedt, “Learning the Linux Kernel with tracing”, Oct 31, 2018 [youtube.com/watch?v=JRyrhsx-L5Y](https://www.youtube.com/watch?v=JRyrhsx-L5Y)
+- [6] “Perf Wiki,” perf.wiki.kernel.org. [perf.wiki.kernel.org/](https://perf.wiki.kernel.org/)
+- [7] “Fprobe - Function entry/exit probe — The Linux Kernel documentation,” kernel.org. [kernel.org/doc/html/latest/trace/fprobe.html](https://kernel.org/doc/html/latest/trace/fprobe.html)
+- [8] “cilium/ebpf,” GitHub, [github.com/cilium/ebpf](https://github.com/iovisor/bcc)
+- [9] “iovisor/bcc,” GitHub, [github.com/iovisor/bcc](https://github.com/iovisor/bcc)
+- [10] G. Kroah-Hartman, “container_of()” kroah.com, Feb. 18, 2005. [kroah.com/log/linux/container_of.html](http://www.kroah.com/log/linux/container_of.html)
+- [11] “BPF Documentation — The Linux Kernel documentation,” kernel.org. [kernel.org/doc/html/latest/bpf/index.html](https://kernel.org/doc/html/latest/bpf/index.html).
 
 # Appendix
 
