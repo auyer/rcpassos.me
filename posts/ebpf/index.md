@@ -3,63 +3,59 @@ title: 'DRAFT - eBPF : A brief look at how it works'
 date: 2024-03-30
 ---
 
-In this article, I will give a brief overview of eBPF, what it can be used for, and go through the steps two libraries take to load an eBPF program into the Kernel. TODO: and what happens in the Kernel when the program is executed.
+My first contact with eBPF was month ago, when reading about a networking tool for Kubernetes (Cilium).
+They advertised interesting performance improvements when compared to similar tools, and it was all thanks to eBPF: a technology that allows us to run small programs inside the Linux Kernel.
+This short description gave me a high level understanding that allowed me to explore, without really understanding how it worked (which is totally fine).
 
-### TL;DR # todo remove
+But the time came when I wanted to know more.
+And I could not find a good explanation for it.
+Most of the articles and documentation I found, are aimed at developers that will use BPF to create a tool. I wanted to see the other side: how the Kernel provides this functionality.
 
-- Programs with two components: one in User-Space, one in Kernel-Space.
-- The Kernel-space component is compiled to eBPF bytecode and loaded into the kernel.
-- It will be executed by the Kernel when a specific event occurs.
-- The user-space component is responsible for setting up the eBPF program and handling the data it produces.
-
-Who is this article for: programmers trying to understand how eBPF works at a Kernel Level.
-How the programs are loaded and executed, and how they interact with the Kernel.
+In this article, I will give a brief overview of eBPF, what it can be used for, and go through the steps two libraries take to load an eBPF program into the Kernel, and what the Kernel does with it.
+This article if for programmers trying to understand how eBPF works at a Kernel Level.
 
 # Introduction
 
 If you are a programmer used to working in high level applications, like I am, it becomes easy to forget that for every interaction with the hardware a "program" makes, the Kernel is involved.
 This includes reading and writing to files, network communication, memory allocation, and even the simple "printing logs to a terminal", among other things [[1](#references)].
-
-And it is more complex than that.
 The Kernel has control over the programs it executes at an instruction level.
-While the CPU is the one responsible for executing the instructions, the Kernel is the one that decides which instructions are available for the CPU to see at.
+While the CPU is the one responsible for executing the instructions, the Kernel is the one that decides which instructions are available for the CPU to see.
 It can pause and resume the execution at any time, known as time-sharing or multi-tasking.
 It is how we computers can have many programs running "at the same time" with a limited number of cores [[2](#references)].
-
-<!-- And it does not matter what language was used to write the program. -->
-<!-- In the end it all comes down to a sequence of instructions that the CPU will execute. keep or delete?-->
 
 The reason I am saying all this is to remind us some of the responsibilities the Kernel has.
 It is itself a program that runs on the same CPU as the programs we write.
 When it is running, it has access to all the hardware resources and can do anything it wants.
-We can call it Kernel-mode.
+It runs in the so called Kernel-mode.
 When our programs are running, they run in User-Space, and they access resources through the Kernel, requesting them with what is called system calls.
-The important thing to take note here, is that when your program wants to access something, it asks the Kernel, and stops running for a while.
+The important takeaway, is that a program makes System Call and gets interrupted.
 At this time, the Kernel code is running to provide what was requested.
-Only then, your program can continue running.
+Only after completed, the program can continue running.
+**And there is always a cost to switch between the Kernel and User-Space.**
 
-<!-- Another thing to remember, is that there is always a cost to switch between the Kernel and User-Space. # put it elsewhere-->
+We can take advantage of this.
+With BPF, we can hijack this flow, and run our own programs in the Kernel.
+This can bring us a more efficient way to trace, monitor and even control what is happening in the system, and it can also mitigate switching cost by doing it all in Kernel-Space. No switching required.
 
 ## What is eBPF?
 
 It is the extension of the original BPF (Berkeley Packet Filter) that was used to filter packets in the network stack.
-They are the same technology now, and both BPF and eBPF names can be used interchangeably to refer to the same thing.
+They are the same technology now, and both the **BPF** and **eBPF** names can be used interchangeably to **refer to the same thing**.
 Skipping the origin story, eBPF is a technology that allows us to run small programs inside the Linux Kernel.
 This could have seemed uninteresting before my introduction.
-But now that we remeber the Kernel's power, we can start to imagine why this is a big deal.
+But now, I bet you can imagine why this is a big deal.
 
 These programs can be loaded at runtime without rebooting or stopping anything, and clearly, without the need to recompile (the kernel).
 They are, however, limited in several ways.
-They are not equivalent to a Kernel module, and not as powerful.
-But this is a good thing.
+They are not equivalent to a Kernel module, and not as powerful (but this is a good thing).
 It makes them a lot simpler and safer than actual Kernel code, while being able to do things not accessible to User-Space programs, or providing the efficiency of running in Kernel-Space to improve performance-critical tasks.
 
 Like most tools, what it can do will depends only on the creativity of its users.
 Some of the most common use cases are:
 
-- Tracing and monitoring: log what is being run in the Kernel or in User programs;
+- Tracing and monitoring: see what is being run in the Kernel or in User programs;
 - Security: detect or even block malicious behavior;
-- Networking: monitoring and controlling network traffic
+- Networking: monitoring and controlling network traffic.
 
 In the following sections, we will take a brief look at how eBPF works and how it can be used to trace events in the Linux Kernel.
 I will use two simple but powerful programs built with it to demonstrate how it works under the hood.
@@ -70,29 +66,33 @@ I will use two simple but powerful programs built with it to demonstrate how it 
 ## How does eBPF work?
 
 In a high level view, BPF tools are composed of two parts: one in User-Space, and one in Kernel-Space.
-The User-Space part is responsible for setting up the BPF program (that is the Kernel-Space part), and if it produces any data, handling it.
+The User-Space part is responsible for setting up the BPF program (the Kernel-Space part), handling communication between both parts, and if the BPF part produces any data, it must handle it.
+But the power comes from being able to push all decision making to the code running in Kernel.
+It avoids the need to constantly switch for running mode, and guarantees our code will be there to handle every event that happens.
+There can even be programs that run entirely in Kernel-Space, and the user space is only used to configure the Kernel space part.
+
+<!--- Programs with two components: one in User-Space, one in Kernel-Space.-->
+<!--- The Kernel-space component is compiled to eBPF bytecode and loaded into the kernel.-->
+<!--- It will be executed by the Kernel when a specific event occurs.-->
+<!--- The user-space component is responsible for setting up the eBPF program and handling the data it produces.-->
 
 For a given BPF tool to run, these are the basic steps that need to happen (also shown in the picture below):
 
 1. The User-Space part is started by the user;
 2. It compiles the BPF program to the BPF bytecode (a instruction set create for this purpose), and sends it to the Kernel;
-3. The program is recieved, and processed by the Verifier (a security mechanism that checks if the program is safe to run);
+3. The program is received, and processed by the Verifier (a security mechanism that checks if the program is safe to run);
 4. The program is loaded into the Kernel, and attached to the desired event (defined in the program itself);
 5. It can now be executed by the BPF interpreter, or compiled to native code by a JIT (just in time compiler) to run faster;
-6. When the event occurs, the Kernel will execute the BPF program, and the User-Space part can read the data produced by it (if its the case).
+6. When the event occurs, the Kernel will execute the BPF program. Is can also store information in a shared data space, that the User-Space part can read;
+7. If there is shared data space, the User-Space part can read from it to communicate, but it is not in sync with the kernel events.
 
-![BPF Tracing technologies, Figure 2-1 from the book 3](./fig2-1-bpf-tracing.png)
-_BPF Tracing technologies, Figure 2-1 from the book [[3](#references)]_
+![Figure 2-1 from the book 'Bpf performance tools: Linux system and application observability' by Gregg Brendan](./bpf-tracing-technologies-fig2-1.png)
+_Figure 2-1 from the book "Bpf performance tools: Linux system and application observability" by Gregg Brendan [[3](#references)]_
 
-## Dynamic Instrumentation
-
-DynamicTracing has zero-cost when not in use. Software can run unmodified until tracing is needed.
-It is similar to how a debugger works, where a instruction is replaced by a breakpoint instruction.
-But it is done in a way that is transparent to the user-space application. [[3]](#references)
-
-uprobes and kprobes are examples of dynamic instrumentation. eBPF can use them to trace user-space and Kernel-space events respectively.
-
-uprobe:/bin/bash:readline
+I was most curious about how the Kernel attaches our program to the desired event.
+This felt like an alien concept to me at first.
+Turns out there are a couple ways it can happen, and it is not exclusive to BPF.
+The Kernel had infrastructures for tracing and performance analysis that BPF can use, and there is even hardware features baked into processors.
 
 ## Why use eBPF instead of existing Kernel APIs?
 
@@ -110,60 +110,79 @@ Using event-based tracing guarantees we will see what is being executed, because
 [[3](#references)]
 
 Consider the following example: we want to trace every process that is being run in a system.
-The Kernel provides an API for this.
-Programs like `ps` and `top` use it.
+The Kernel provides an API that programs like `ps` and `top` use.
 The first returns a snapshot at the time it was called, and the second updates the information at a configurable interval (3s by default).
 The `execsnoop` BPF program I mentioned before, will trace every `exec()` system call, and print the information as it happens.
-Since the Kernel itself reports the event, and saves it into a accessible memory space, we can be sure we will see every event that happens.
-The downside is, you need to know what you are looking for.
-
-## kprobes
-
-...
-
-When a kprobe is attached to a function, the Kernel will save the original instruction and replace it with a breakpoint-like instruction.
-This instructions calls the kprobe handler, which will execute the eBPF program.
-After the eBPF program is executed, the original instruction is called from where it was saved and the function is executed normally.
-
-When the probe is removed, the original instruction is restored.
-
-The default mode for eBPF programs is to run only while the user-space program that started it is still running.
-There is a pinning mechanism that allows the eBPF program to run even after the user-space program that started it has finished.
-BPF_OBJ_PIN
+Since the Kernel itself reports the event, and saves it into a shared memory space, we can be sure we will see every event that happens.
 
 # What the Kernel provides
 
 Previously I mentioned how powerful the Kernel is.
-I also mentioned that eBPF programs are limited, and dont have access to all the Kernel's power.
-Let's take a look at a non-exhaustive list of things that the Kernel provides to eBPF programs.
-Some of these are available to other tools as well, but BPF can use all of them in a very simple and efficient way.
+I also mentioned that BPF programs are limited, and dont have access to all the Kernel's power.
+Let's take a look at a non-exhaustive list of things that the Kernel provides to BPF programs.
+Some of these are available to other tools as well, but BPF can use all of them in an efficient way.
 
-## Uprobes
+## Tracepoints (static tracing)
 
-Uprobes are used to trace User-Space functions.
-This means we can trace any function in any program or libraries, as long as we know the address of the function.
+Tracepoints are pre-defined points in the Kernel source code that can be used to hook a call to a function (like BPF programs) [[4]](#references).
+They can be turned on and off at runtime.
+But the Kernel always checks if the Tracepoint is enabled when executing a function that has it.
+So there is a (tiny) cost to them, even when not is use.
+But it is a reason why they cant be implemented in all functions of the Kernel.
+**They can be used by Kernel Modules and by BPF programs.**
 
-## kprobes
+## Dynamic Instrumentation
+
+Dynamic Tracing methods have zero-cost when not in use. There is no pre-defined code to check if some function should be called.
+Instead, the running software (the Kernel or a User-Space program) will be modified, replacing an address with a call to the tracing function.
+
+All instructions that will be executed by the CPU are stored in memory by the Kernel (including its own functions).
+This gives it the power to change instructions at any time.
+It is similar to how a debugger works, where a instruction is replaced by a breakpoint instruction.
+But it is done in a way that is transparent to the applications.
+Software can run unmodified until tracing is needed [[3]](#references).
+This is also how kernel live patching works. It replaces the first instruction of a function with a jump to the new function, and it just never returns to the original one [[5]](#references).
+
+### Kprobes and Uprobes (Dybanic Tracing)
 
 Kprobes are used to trace Kernel functions.
 Since every interaction with the hardware goes through the Kernel, this means we can trace almost anything every program does.
-We can also monitor the Kernel itself, by probing functions it uses
+We can also monitor the Kernel itself, by probing its internal functions.
 
-## Ftrace
+A instruction can be replaced with a call to a function that will execute a BPF program.
+When a kprobe is attached to a function start or end (kretprobe), the Kernel will save the original instruction and replace it with a breakpoint-like instruction.
+This instructions calls the kprobe handler, which will execute the eBPF program.
+After the eBPF program is executed, the original instruction is called from where it was saved and the function is executed normally.
+When the probe is removed, the original instruction is restored.
 
-# How eBPF Kernel programs are executed
+Uprobes are the same concept, but the modify User-Space programs and shared libraries.
+[[3]](#references)
 
-This part took me a while to understand, so I will try to explain it as simply as possible.
-eBPF programs are only executed when a specific event occurs.
-This event can be a system call, a function call in the Kernel, or even a function call from libraries and programs in User-Space.
+## Perf events
 
-The key is to remember that the Kernel knows every instruction that will be executed by the CPU.
-It can also change them at any time.
-When we register an eBPF program to a given event (eg a Function call), the Kernel will replace the address of the original with the address of the eBPF program.
-When the CPU reaches that instruction, it will execute the eBPF program first, instead of the original one.
-This is quite similar to how a debugger works, but it is done in a way that is transparent to the user-space application. [[3,4](#references)]
+Perf events is another system built in to the Kernel (with a user-space tool `perf` to help).
+It can use hardware performance counters to save measurements, and can also instrument tracepoints, kprobes and uprobes. [[6]](#references)
+Perf can use the same infrastructure as BPF to attach to events, and BPF itself can use "perf_events" to some of its use cases.
+The main difference is that perf needs to either work with sampling data, or it saves all data to disk to be analysed in user-space.
+BPF can do it all in Kernel-Space.
 
-## Ftrace
+## Ftrace and FProbes
+
+Ftrace a tracing tool that is built into the Kernel that can be accessed directly (with the tracefs file system) or with the help of tools like `trace-cmd`.
+It is designed to debugging and performance analysis, by providing a way to trace the Kernel functions that are being called.
+Fprobe is built on top of Ftrace. It provides a way to attach callbacks to function entry and/or exit.
+[[7](#references)]
+
+This is quite useful for debugging. Here is an example I used to trace the BPF syscall:
+
+```bash
+trace-cmd record -p function_graph -g __sys_bpf -F ./program
+# record a function graph of the __sys_bpf function
+#                                   (the BPF syscall)
+#              -F: only follow calls from the "program"
+trace-cmd report # or open the trace.dat file with KernelShark
+```
+
 
 ## Diving into the implementation
 
