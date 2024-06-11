@@ -202,6 +202,8 @@ struct bpf_map_def SEC("maps") kprobe_map = {
 SEC("kprobe/sys_execve")
 // the function that will be executed when the event happens
 int kprobe_execve() {
+  // this key value will be used as a reference in the user-space
+  // program to read the value stored in the map.
   u32 key     = 0;
   u64 initval = 1, *valule_pointer;
 
@@ -430,7 +432,65 @@ rawFd2, _, errNo := unix.Syscall(unix.SYS_BPF, uintptr(BPF_LINK_CREATE), uintptr
 ebpfProgramLinkFd, err := sys.NewFD(int(rawFd2))
 ```
 
-TODO: finish GOLANG integration part
+At a high level, this is all that is done to load a BPF program into the Kernel.
+If the user-space part need to read data produced by BPF program (this example does), we need to lookup the map defined previously.
+A Map can store a lot of data, and its flexible.
+One of the ways to navigate it it to read "keys" by an index (like an array), and get the value stored in the map.
+This example has a single value stored in the map, and the key is defined in the BPF code at the start of this exploration.
+This is how it is done in the cilium-ebpf library:
+
+```go
+for range ticker.C { // every second
+  var value uint64
+  // passes a pointer to the "value" variable
+  // it will retrieve the value and unmarshal it into the pointer
+  // it will call a syscall to read the "mapKey" (0 in this case)
+  if err := objs.KprobeMap.Lookup(mapKey, &value); err != nil {
+    log.Fatalf("reading map: %v", err)
+  }
+  log.Printf("%s called %d times\n", fn, value)
+}
+// calls -->
+func (m *Map) Lookup(key, valueOut interface{}) error 
+// calls ->
+func (m *Map) LookupWithFlags(key, valueOut interface{}, flags MapLookupFlags) error {
+  // in case the program runs on every CPU
+  if m.typ.hasPerCPUValue() {
+      // this does the same as below, but for each CPU
+    return m.lookupPerCPU(key, valueOut, flags)
+  }
+  // created a buffer to store a copy of the bytes from the kernel map.
+  valueBytes := makeMapSyscallOutput(valueOut, m.fullValueSize)
+  // this call is expanded below
+  if err := m.lookup(key, valueBytes.Pointer(), flags); err != nil {
+    return err
+  }
+
+  // this will check the type "valueOut", and unmarshal the bytes into it
+  return m.unmarshalValue(valueOut, valueBytes)
+}
+
+// calls -->
+
+func (m *Map) lookup(key interface{}, valueOut sys.Pointer, flags MapLookupFlags) error {
+  keyPtr, err := m.marshalKey(key)
+  if err != nil {
+    return fmt.Errorf("can't marshal key: %w", err)
+  }
+
+  attr := sys.MapLookupElemAttr{
+    MapFd: m.fd.Uint(),
+    Key:   keyPtr,
+    Value: valueOut,
+    Flags: uint64(flags),
+  }
+
+  if err = sys.MapLookupElem(&attr); err != nil {
+    return fmt.Errorf("lookup: %w", wrapMapError(err))
+  }
+  return nil
+}
+```
 
 ## What happens in the Kernel
 
@@ -931,7 +991,6 @@ static inline void __fprobe_handler(unsigned long ip, unsigned long parent_ip,
 ```
 
 # Conclusion
-
 
 # References
 
