@@ -205,15 +205,15 @@ int kprobe_execve() {
   // this key value will be used as a reference in the user-space
   // program to read the value stored in the map.
   u32 key     = 0;
-  u64 initval = 1, *valule_pointer;
+  u64 initval = 1, *value_pointer;
 
-  valule_pointer = bpf_map_lookup_elem(&kprobe_map, &key);
-  if (!valule_pointer) {
+  value_pointer = bpf_map_lookup_elem(&kprobe_map, &key);
+  if (!value_pointer) {
     bpf_map_update_elem(&kprobe_map, &key, &initval, BPF_ANY);
     return 0;
   }
   // a simple increment to the value stored in the map
-  __sync_fetch_and_add(valule_pointer, 1);
+  __sync_fetch_and_add(value_pointer, 1);
   return 0;
 }
 ```
@@ -337,7 +337,7 @@ The process behind it is quite interesting. These are the stages to it:
 
 1. Writing the BPF program (with the same C-Like syntax),
 2. The bpf2go tool is used to generate GO "glue" code,
-3. The BPF programm is compiled (using Clang under the hood),
+3. The BPF program is compiled (using Clang under the hood),
 4. GO compilation (our code + generated code), and the compiled BPF program gets embedded into the GO binary.
 
 For the first two steps, assuming the BPF program is in a local file called `kprobe.c`, the `bpf2go` tool must be invoked.
@@ -373,7 +373,7 @@ There are some other things that need to happen that I wont cover:
 
 - the library needs to also load the structures that will be used to interact with the program, like the map used in this example
 - the library might need to check if the addresses we got when compiling the BPF program are valid in the Kernel we are running on. If they are different, it can map them.
-  This is refered to as CO-RE (compile once, run everywhere).
+  This is referred to as CO-RE (compile once, run everywhere).
 
 The first important section is the initial load of the BPF program into the Kernel.
 Is is done with the SYS_BPF syscall, using the BPF_BTF_LOAD command, and a set of parameters in a structure.
@@ -440,6 +440,8 @@ This example has a single value stored in the map, and the key is defined in the
 This is how it is done in the cilium-ebpf library:
 
 ```go
+// this first block is part of the program we write on top of the cilium-ebpf library
+// and the subsequent functions are part of the library itself
 for range ticker.C { // every second
   var value uint64
   // passes a pointer to the "value" variable
@@ -450,8 +452,9 @@ for range ticker.C { // every second
   }
   log.Printf("%s called %d times\n", fn, value)
 }
+
 // calls -->
-func (m *Map) Lookup(key, valueOut interface{}) error 
+func (m *Map) Lookup(key, valueOut interface{}) error
 // calls ->
 func (m *Map) LookupWithFlags(key, valueOut interface{}, flags MapLookupFlags) error {
   // in case the program runs on every CPU
@@ -477,20 +480,24 @@ func (m *Map) lookup(key interface{}, valueOut sys.Pointer, flags MapLookupFlags
   if err != nil {
     return fmt.Errorf("can't marshal key: %w", err)
   }
-
+  // input to the syscall
   attr := sys.MapLookupElemAttr{
     MapFd: m.fd.Uint(),
     Key:   keyPtr,
+    // with a pointer to where we want to store the value
     Value: valueOut,
     Flags: uint64(flags),
   }
-
-  if err = sys.MapLookupElem(&attr); err != nil {
+  // the actual syscall
+  err := unix.Syscall(unix.SYS_BPF, BPF_MAP_LOOKUP_ELEM, unsafe.Pointer(attr), unsafe.Sizeof(*attr))
+  if err != nil {
     return fmt.Errorf("lookup: %w", wrapMapError(err))
   }
   return nil
 }
 ```
+
+With this done, the user-space part can handle the data produced by the BPF program. In this case, it just prints it to the with log every second.
 
 ## What happens in the Kernel
 
