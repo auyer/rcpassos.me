@@ -995,6 +995,14 @@ static inline void __fprobe_handler(unsigned long ip, unsigned long parent_ip,
 
 # Conclusion
 
+This article explored the two facets of the Linux BPF technology.
+Starting from User-space, and digging the APIs down to the Linux Kernel was the process I went through to understand how it works.
+I hope it helps others with similar goals, and makes this path easier.
+
+There is much more to explore from here.
+The Kernel code is vast, and the BPF technology is still evolving.
+The technologies that were used here to complement BPF are also worth exploring.
+
 # References
 
 - [1] A. S. Tanenbaum and H. J. Bos, Modern Operating Systems, 4th Edition. Pearson Higher Education, 2015.
@@ -1049,3 +1057,4 @@ sudo bpftrace -e 'kprobe:do_nanosleep {
     printf ("PID %d sleeping...\n",pid);
 }'
 ```
+
