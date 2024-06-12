@@ -27,7 +27,7 @@ It is a program that runs on the same CPU as the programs we write.
 When running, it has access to all the hardware resources and can do anything it wants.
 It runs in the so-called Kernel-mode.
 When our programs are running, they run in User-Space, and they access resources through the Kernel, requesting them with what is called system calls.
-The important takeaway is that a program makes a System Call and gets interrupted.
+The important takeaway is: a program makes a System Call and gets interrupted.
 When it happens, the Kernel code starts running to provide what was requested.
 Only after completed, the program can continue running.
 **And there is always a cost to switch between the Kernel and User-Space.**
@@ -506,7 +506,7 @@ It expects the command and a pointer to a structure that contains the attributes
 
 There is one interesting check made before the command is executed.
 Since a program compiled with a newer version of the Kernel can be sent to run in an older version, the Kernel sets to Zero all extra memory space it does not know about.
-This guarantees that if the program still works, it will not depend on features not available in the Kernel it is running on.
+This guarantees the program will not depend on features not available in the Kernel it is running on.
 
 > **Note**:
 > This section has a lot of code from the Kernel, and a big part of the explanation is in the comments I added to the code.
@@ -674,7 +674,7 @@ I will expand two branches: `bpf_perf_link_attach` and `bpf_kprobe_multi_link_at
 ### Events with Perf
 
 At this point, the Kernel will choose the infrastructure to attach the program with.
-Some that are available here are tracepoints, perf events, and fprobe.
+Some available here are tracepoints, perf events, and fprobe.
 Our case is the `BPF_PERF_EVENT` attach type, which will use the perf infrastructure.
 
 ```c
@@ -1025,13 +1025,15 @@ The technologies that were used here to complement BPF are also worth exploring.
 - I ran the examples for some BPF tools, and chose two to dive into
 - When I got to the Kernel code, I had to read a lot of it to understand what was happening
 - I tried using trace-cmd to watch the execution of a BPF program, but it was not satisfactory
-- I used the Kernel's `printk(KERN_INFO ...);` to track the execution of the BPF program in the Kernel, watching the outputs with `dmseg -w` (in the VM I created in my last article)
+- I used the Kernel's `printk(KERN_INFO ...);` to track the execution of the BPF program in the Kernel, watching the outputs with `dmseg -w` (with the VM I created in [my last post](https://rcpassos.me/post/linux-kernel-build-environment).)
 - Compiled the Kernel with warning levels 1, 2, and 3 to see what kind of warnings are there in this subsystem. I also used this to make small contributions.
 
 ## Testing inside a VM
 
 I compiled my versions of the Linux Kernel to explore, adding print statements to the Kernel code.
 To test it, I ran it all in a VM, with the setup described in [my last post](https://rcpassos.me/post/linux-kernel-build-environment).
+
+To run `bpftool`, and `BCC` in the Debian VM, I had to install some dependencies:
 
 ```bash
 apt update
@@ -1042,19 +1044,15 @@ echo "deb https://deb.debian.org/debian experimental main" >> /etc/apt/sources.l
 apt install -t experimental libc-bin
 ```
 
-## Examples using bpftrace
+## Useful tool: bpftrace
 
-Listing Tracepoints
-
-```bash
-bpftrace -l 'tracepoint:syscalls:sys_enter_open*'
-```
-
-Tracing sleep
+Bpftrace is a high-level tracing tool for Linux BPF. It uses a simple language to install simple probes in the Kernel.
+One useful feature is listing all tracepoints available in the Kernel:
 
 ```bash
-sudo bpftrace -e 'kprobe:do_nanosleep {
-    printf ("PID %d sleeping...\n",pid);
-}'
+bpftrace -l 'tracepoint:*'
 ```
+
+There are some one-liner examples, and other more complex scripts that can be run with bpftrace.
+Check more in their repository [github.com/bpftrace/bpftrace](https://github.com/bpftrace/bpftrace).
 
