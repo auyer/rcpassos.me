@@ -995,13 +995,18 @@ static inline void __fprobe_handler(unsigned long ip, unsigned long parent_ip,
 
 # Conclusion
 
-This article explored the two facets of the Linux BPF technology.
-Starting from User-space, and digging the APIs down to the Linux Kernel was the process I went through to understand how it works.
-I hope it helps others with similar goals, and makes this path easier.
+This article explored the mechanics of Linux eBPF, starting from user-space libraries and diving into the Kernel-level operations.
+By digging into the APIs and the kernel's role, we've gained a deeper understanding of how eBPF functions and its potential applications.
+For me, one great discovery was how much the BPF interacts with other subsystems to provide its power.
 
-There is much more to explore from here.
-The Kernel code is vast, and the BPF technology is still evolving.
-The technologies that were used here to complement BPF are also worth exploring.
+For those curious about eBPF, this journey should hopefuly provide some guidance.
+However, our exploration only scratches the surface.
+The technologies that were used here to complement BPF should be a good next challenge do uncover.
+The Linux kernel is a vast and complex project, and BPF itself continues to evolve with new capabilities and applications.
+
+I hope this article has inspired you to delve deeper into the Linux Kernel.
+Thank you for joining me!
+Happy exploring!
 
 # References
 
