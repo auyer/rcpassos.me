@@ -1,40 +1,40 @@
 ---
-title: 'DRAFT - eBPF : A brief look at how it works'
-date: 2024-06-25
+title: 'Discovering Linux eBPF : Understanding Its Kernel-Level Mechanics'
+date: 2024-06-12
 ---
 My first contact with eBPF was reading about a networking tool for Kubernetes called Cilium.
-They advertised interesting performance improvements when compared to similar tools, and it was all thanks to eBPF: a technology that allows us to run small programs inside the Linux Kernel.
-This short description gave me a high level understanding that allowed me to explore, without really understanding how it worked (which is totally fine).
+They advertised interesting performance improvements compared to similar tools, and it was all thanks to eBPF: a technology that allows us to run small programs inside the Linux Kernel.
+This short description gave me a high-level view that allowed me to explore, without really understanding how it worked (which is fine).
 
 But the time came when I wanted to know more.
 And I could not find a good explanation for it.
-Most of the articles and documentation I found, are aimed at developers that will use BPF to create a tool. I wanted to see the other side: how the Kernel provides this functionality.
+Most of the articles and documentation I found, are aimed at developers using BPF to create a tool. I wanted to see the other side: how the Kernel provides this functionality.
 
 In this article, I will give a brief overview of eBPF, what it can be used for, and go through the steps two different libraries take to load an eBPF program into the Kernel, and what the Kernel does with it.
-This article if for programmers trying to understand how eBPF works at a Kernel Level.
+This article is for programmers trying to understand how eBPF works at a Kernel Level.
 
 # Introduction
 
-If you are a programmer used to working in high level applications, like I am, it becomes easy to forget that for every interaction with the hardware a "program" makes, the Kernel is involved.
+If you are a programmer used to working in high-level applications like I am, it becomes easy to forget that for every interaction with the hardware a "program" makes, the Kernel is involved.
 This includes reading and writing to files, network communication, memory allocation, and even the simple "printing logs to a terminal", among other things [[1](#references)].
 The Kernel has control over the programs it executes at an instruction level.
 While the CPU is the one responsible for executing the instructions, the Kernel is the one that decides which instructions are available for the CPU to see.
-It can pause and resume the execution at any time, known as time-sharing or multi-tasking.
-It is how we computers can have many programs running "at the same time" with a limited number of cores [[2](#references)].
+It can pause and resume the execution at any time, known as time-sharing or multitasking.
+It is how computers can have many programs running "at the same time" with a limited number of cores [[2](#references)].
 
-The reason I am saying all this is to remind us some of the responsibilities the Kernel has.
-It is itself a program that runs on the same CPU as the programs we write.
-When it is running, it has access to all the hardware resources and can do anything it wants.
-It runs in the so called Kernel-mode.
+The reason I am saying all this is to remind us of the responsibilities the Kernel has.
+It is a program that runs on the same CPU as the programs we write.
+When running, it has access to all the hardware resources and can do anything it wants.
+It runs in the so-called Kernel-mode.
 When our programs are running, they run in User-Space, and they access resources through the Kernel, requesting them with what is called system calls.
-The important takeaway, is that a program makes System Call and gets interrupted.
-At this time, the Kernel code is running to provide what was requested.
+The important takeaway is that a program makes a System Call and gets interrupted.
+When it happens, the Kernel code starts running to provide what was requested.
 Only after completed, the program can continue running.
 **And there is always a cost to switch between the Kernel and User-Space.**
 
 We can take advantage of this.
-With BPF, we can hijack this flow, and run our own programs in the Kernel.
-This can bring us a more efficient way to trace, monitor and even control what is happening in the system, and it can also mitigate switching cost by doing it all in Kernel-Space. No switching required.
+With BPF, we can hijack this flow, and run our programs in the Kernel.
+This can bring us a more efficient way to trace, monitor, and even control what is happening in the system, and it can also mitigate switching costs by doing it all in Kernel-Space. No context switching is required.
 
 ## What is eBPF?
 
@@ -44,15 +44,15 @@ Skipping the origin story, eBPF is a technology that allows us to run small prog
 This could have seemed uninteresting before my introduction.
 But now, I bet you can imagine why this is a big deal.
 
-These programs can be loaded at runtime without rebooting or stopping anything, and clearly, without the need to recompile (the kernel).
+These programs can be loaded at runtime without rebooting or stopping anything, and clearly, without needing to recompile (the Kernel).
 They are, however, limited in several ways.
 They are not equivalent to a Kernel module, and not as powerful (but this is a good thing).
-It makes them a lot simpler and safer than actual Kernel code, while being able to do things not accessible to User-Space programs, or providing the efficiency of running in Kernel-Space to improve performance-critical tasks.
+It makes them a lot simpler and safer than actual Kernel code while being able to do things not accessible to User-Space programs, or providing the efficiency of running in Kernel-Space to improve performance-critical tasks.
 
-Like most tools, what it can do will depends only on the creativity of its users.
+Like most tools, what it can do will depend only on the creativity of its users.
 Some of the most common use cases are:
 
-- Tracing and monitoring: see what is being run in the Kernel or in User programs;
+- Tracing and monitoring: see what is being run in the Kernel or User programs;
 - Security: detect or even block malicious behavior;
 - Networking: monitoring and controlling network traffic.
 
@@ -60,106 +60,106 @@ In the following sections, we will take a brief look at what BPF is, how it work
 
 ## How does eBPF work?
 
-In a high level view, BPF tools are composed of two parts: one in User-Space, and one in Kernel-Space.
-The User-Space part is responsible for setting up the BPF program (the Kernel-Space part), handling communication between both parts, and if the BPF part produces any data, it must handle it.
-But the power comes from being able to push all decision making to the code running in Kernel.
-It avoids the need to constantly switch for running mode, and guarantees our code will be there to handle every event that happens.
+In a high-level view, BPF tools are composed of two parts: one in User-Space, and one in Kernel-Space.
+The User-Space part is responsible for setting up the BPF program (the Kernel-Space part), and handling communication between both parts, and if the BPF part produces any data, it must handle it.
+But the power comes from the ability to push all decision-making to the code running in Kernel.
+It avoids constantly switching to running mode and guarantees our code will be there to handle every tracked event.
 There can even be programs that run entirely in Kernel-Space, and the user space is only used to configure the Kernel space part.
 
 For a given BPF tool to run, these are the basic steps that need to happen (also shown in the picture below):
 
 1. The User-Space part is started by the user;
-2. It compiles the BPF program to the BPF bytecode (a instruction set create for this purpose), and sends it to the Kernel;
+2. It compiles the BPF program to the BPF bytecode (an instruction set created for this purpose), and sends it to the Kernel;
 3. The program is received, and processed by the Verifier (a security mechanism that checks if the program is safe to run);
 4. The program is loaded into the Kernel, and attached to the desired event (defined in the program itself);
-5. It can now be executed by the BPF interpreter, or compiled to native code by a JIT (just in time compiler) to run faster;
-6. When the event occurs, the Kernel will execute the BPF program. Is can also store information in a shared data space, that the User-Space part can read;
-7. If there is shared data space, the User-Space part can read from it to communicate, but it is not in sync with the kernel events.
+5. It can now be executed by the BPF interpreter, or compiled to native code by a JIT (just-in-time compiler) to run faster;
+6. When the event occurs, the Kernel will execute the BPF program. It can also store information in a shared data space, that the User-Space part can read;
+7. If there is shared data space, the User-Space part can read from it to communicate, but it is not in sync with the Kernel events.
 
 ![Figure 2-1 from the book 'Bpf performance tools: Linux system and application observability' by Gregg Brendan](./bpf-tracing-technologies-fig2-1.png)
 _Figure 2-1 from the book "Bpf performance tools: Linux system and application observability" by Gregg Brendan [[3](#references)]_
 
 I was most curious about how the Kernel attaches our program to the desired event.
 This felt like an alien concept to me at first.
-Turns out there are a couple ways it can happen, and it is not exclusive to BPF.
-The Kernel had infrastructures for tracing and performance analysis that BPF can use, and there is even hardware features baked into processors.
+Turns out there are a couple of ways it can happen, and it is not exclusive to BPF.
+The Kernel had infrastructures for tracing and performance analysis that BPF can use, and there are even hardware features baked into processors.
 
 ## Why use eBPF instead of existing Kernel APIs?
 
-By know we know that BPF can be used to extend and monitor what is happening in a machine.
-But the Kernel already provides APIs various use cases that might be the same.
+By now we know that BPF can be used to extend and monitor what is happening in a machine.
+But the Kernel already provides APIs for various use cases that might be the same.
 If what you need is already covered by an API, why use eBPF?
 As with most things, it depends.
-There is a few clear advantage to using eBPF, they just might not matter to some use cases.
+There are a few clear advantages to using eBPF, but they might not matter in some use cases.
 
 First, BPF programs can bring the flexibility to do exactly what you want, if the API does not cover it perfectly.
 Second, it is event-based.
-If using an API-based approach, the tracing application need to probe the API at a timely manner, fetching the results.
-This can lead to missing short lived events, as they can pop in and out between the each probe in the system.
-Using event-based tracing guarantees we will see what is being executed, because the Kernel is responsible for saving the tracing information that will be read by our user-space app.
+If using an API-based approach, the tracing application needs to probe the API in a timely manner, fetching the results.
+This can lead to missing short-lived events, as they can pop in and out between each probe in the system.
+Using event-based tracing guarantees we will see what is being executed because the Kernel is responsible for saving the tracing information that will be read by our user-space app.
 [[3](#references)]
 
-Consider the following example: we want to trace every process that is being run in a system.
+Consider the following example: we want to trace every process running in a system.
 The Kernel provides an API that programs like `ps` and `top` use.
-The first returns a snapshot at the time it was called, and the second updates the information at a configurable interval (3s by default).
+The first returns a snapshot of the moment it was called, and the second updates the information at a configurable interval (3s by default).
 The `execsnoop` BPF program I mentioned before, will trace every `exec()` system call, and print the information as it happens.
 Since the Kernel itself reports the event, and saves it into a shared memory space, we can be sure we will see every event that happens.
 
 # What the Kernel provides
 
 Previously I mentioned how powerful the Kernel is.
-I also mentioned that BPF programs are limited, and dont have access to all the Kernel's power.
+I also mentioned that BPF programs are limited, and don't have access to all the Kernel's power.
 Let's take a look at a non-exhaustive list of things that the Kernel provides to BPF programs.
-Some of these are available to other tools as well, but BPF can use all of them in an efficient way.
+Some of these are available to other tools as well, but BPF can efficiently use all of them.
 
 ## Tracepoints (static tracing)
 
 Tracepoints are pre-defined points in the Kernel source code that can be used to hook a call to a function (like BPF programs) [[4]](#references).
 They can be turned on and off at runtime.
 But the Kernel always checks if the Tracepoint is enabled when executing a function that has it.
-So there is a (tiny) cost to them, even when not is use.
-But it is a reason why they cant be implemented in all functions of the Kernel.
+So there is a (tiny) cost to them, even when not in use.
+But it is a reason why they can't be implemented in all functions of the Kernel.
 **They can be used by Kernel Modules and by BPF programs.**
 
 ## Dynamic Instrumentation
 
-Dynamic Tracing methods have zero-cost when not in use. There is no pre-defined code to check if some function should be called.
+Dynamic Tracing methods have zero cost when not in use. There is no pre-defined code to check if some function should be called.
 Instead, the running software (the Kernel or a User-Space program) will be modified, replacing an address with a call to the tracing function.
 
-All instructions that will be executed by the CPU are stored in memory by the Kernel (including its own functions).
+All instructions executed by the CPU are stored in memory by the Kernel (including its functions) at some point.
 This gives it the power to change instructions at any time.
-It is similar to how a debugger works, where a instruction is replaced by a breakpoint instruction.
-But it is done in a way that is transparent to the applications.
+It is similar to how a debugger works, where an instruction is replaced by a breakpoint instruction.
+But it is done in a way transparent to the applications.
 Software can run unmodified until tracing is needed [[3]](#references).
-This is also how kernel live patching works. It replaces the first instruction of a function with a jump to the new function, and it just never returns to the original one [[5]](#references).
+This is also how Kernel live patching works. It replaces the first instruction of a function with a jump to the new function, and it just never returns to the original one [[5]](#references).
 
 ### Kprobes and Uprobes
 
 Both Kprobes and Uprobes are methods of Dynamic Tracing.
-Comparing to Tracepoints, there is no pre-defined points in the code to hook a trace call.
+Compared to Tracepoints, there are no pre-defined points in the code to hook a trace call.
 Kprobes are used to trace Kernel functions.
-Since every interaction with the hardware goes through the Kernel, this means we can trace almost anything every program does.
+Since every interaction with the hardware goes through the Kernel, it is possible to trace almost anything every program does.
 We can also monitor the Kernel itself, by probing its internal functions.
-Uprobes are the same concept, but for User-Space programs and shared libraries.
+Uprobes are the same concept but for User-Space programs and shared libraries.
 
-A instruction can be replaced with a call to a function that will execute a BPF program.
+An instruction can be replaced with a call to a function to call the BPF program.
 When a kprobe is attached to a function start or end (kretprobe), the Kernel will save the original instruction and replace it with a breakpoint-like instruction.
-This instructions calls the kprobe handler, which will execute the eBPF program.
-After the eBPF program is executed, the original instruction is called from where it was saved and the function is executed normally.
+This instruction calls the kprobe handler, which will execute the eBPF program.
+After the eBPF program is executed, the original instruction is called from where it was saved, and the function is executed normally.
 When the probe is removed, the original instruction is restored. [[3]](#references)
 
 ## Perf events
 
-Perf events is another system built in to the Kernel (with a user-space tool `perf` to help).
-It can use hardware performance counters to save measurements, and can also instrument tracepoints, kprobes and uprobes. [[6]](#references)
-Perf can use the same infrastructure as BPF to attach to events, and BPF itself can use "perf_events" to some of its use cases.
-The main difference is that perf needs to either work with sampling data, or it saves all data to disk to be analysed in user-space.
+Perf events is another system built into the Kernel (with a user-space tool `perf` to help).
+It can use hardware performance counters to save measurements, and can also instrument tracepoints, kprobes, and uprobes. [[6]](#references)
+Perf can use the same infrastructure as BPF to attach to events, and BPF itself can use "perf_events" in some of its use cases.
+The main difference is that perf needs to either work with sampling data or save all data to disk to be analyzed in user-space.
 BPF can do it all in Kernel-Space.
 
 ## Ftrace and FProbes
 
-Ftrace a tracing tool that is built into the Kernel that can be accessed directly (with the tracefs file system) or with the help of tools like `trace-cmd`.
-It is designed to debugging and performance analysis, by providing a way to trace the Kernel functions that are being called.
+Ftrace is a tracing tool built into the Kernel that can be accessed directly (with the tracefs file system) or with the help of tools like `trace-cmd`.
+It is designed for debugging and performance analysis, by providing a way to trace the Kernel functions being called.
 Fprobe is built on top of Ftrace. It provides a way to attach callbacks to function entry and/or exit.
 [[7](#references)]
 
@@ -175,15 +175,15 @@ trace-cmd report # or open the trace.dat file with KernelShark
 
 # Diving into the implementation
 
-In this section, I will walk go through the steps two libraries take to load an eBPF program into the Kernel: cilium-ebpf (GO) and BCC (C/Python) [[8,9](#references)].
+In this section, I will walk through the steps two libraries take to load an eBPF program into the Kernel: cilium-ebpf (GO) and BCC (C/Python) [[8,9](#references)].
 
-The examples I will use are: `execsnoop` for the BCC, and the `kprobe` example for the cilium-ebpf library (from their repository).
+The examples I will use are: `execsnoop` for the BCC and the `kprobe` example for the cilium-ebpf library (from their repository).
 They are both used to trace the `exec()` system call, which is used to run programs in Linux.
 
 The first step is to write the eBPF program.
 It must contain the function(s) that will be executed, and the map(s) that will be used to store data and communicate with user-space.
-This is the code for the cilium's `kprobe` example. Is is similar to `execsnoop`, but simpler.
-It just counts calls instead if reporting what was called:
+This is the code for the cilium's `kprobe` example. It is similar to `execsnoop`, but simpler.
+It just counts calls instead of reporting what was called:
 
 ```c
 #include "common.h" // provided by cilium-ebpf
@@ -227,13 +227,13 @@ The steps both libraries will take are roughly equivalent to:
 - Attach the program to the desired event
 
 This program has to be compiled into BPF Bytecode.
-Both tools use the Clang (LLVM) compiler to do this, but in different ways.
+Both tools use the Clang (LLVM) compiler but in different ways.
 
 ## Python and BCC
 
-The Python BPF Compiler Collection (BCC) [[10](#references)] implementation takes the program either as a string or a file, and compiles it right before loading it into the Kernel.
+The Python BPF Compiler Collection (BCC) [[10](#references)] implementation takes the program either as a string or a file and compiles it right before loading it into the Kernel.
 It needs to be compiled every time the tool is run (unlike the GO library in the next section).
-Because of this, it is expected to have all these all dependencies to run a tool built with BCC: Python, BCC, Clang/llvm & Linux Headers.
+Because of this, it is expected to have all these dependencies to run a tool built with BCC: Python, BCC, Clang/llvm & Linux Headers.
 
 > **Note**:
 > The code snippets below are a simplified version of the calls made by the BCC library.
@@ -249,8 +249,8 @@ b = BPF(text=bpf_text)
 b = BPF(src_file=bpf_file)
 ```
 
-This BPF Python Class takes the program as input, and loads it into memory.
-It will parse it, detect features in use, and even modify it adding default headers.
+This BPF Python Class takes the program as input and loads it into memory.
+It will parse it, detect features in use, and even modify it by adding default headers.
 
 ```python
 # bcc/src/__init__.py - BPF class
@@ -292,56 +292,54 @@ I will not go too deep here, because it is mostly the same as the next section.
 int bpf_btf_load(const void *btf_data, size_t btf_size, const struct bpf_btf_load_opts *opts)
   union bpf_attr attr;
   // fd is a file descriptor to the BPF program (like a file ID)
-  // it is a way for the user-space and kernel to reference the program when it is loaded
+  // it is a way for the user-space and Kernel to reference the program when it is loaded
   int fd;
   ...
   // links the BPF bytecode to the attr structure
   attr.btf = ptr_to_u64(btf_data);
 
-  // this is a SYSCALL. In other words, the User-Space calling a Kernel API.
+  // this is a SYSCALL. In other words, the User-Space calls a Kernel API.
   fd = sys_bpf_fd(BPF_BTF_LOAD, &attr, attr_sz);
 }
 ```
 
 Back to the Python code, the next step is to attach the program to the desired event.
 The functions `attach_kprobe` and `attach_kretprobe` both instrument the Kernel function `execve_fnname`.
-They attach the function with name passed to `fn_name` to the start and end of `execve_fnname` respectively.
+They attach the function with the name passed to `fn_name` to the start and end of `execve_fnname` respectively.
 The `fn_name` function names need to match the ones in the BPF program loaded earlier.
 
 ```python
-# returns the corresponding kernel function name of the syscall
+# returns the corresponding Kernel function name of the syscall
 # (for the specific architecture/version running)
 execve_fnname = b.get_syscall_fnname("execve")
 
-# These functions are also SYSCALLS, that will reference the file descriptor of the BPF program
+# These functions are also SYSCALLS, witch will reference the file descriptor of the BPF program
 b.attach_kprobe(event=execve_fnname, fn_name="syscall__execve")
 b.attach_kretprobe(event=execve_fnname, fn_name="do_ret_sys_execve")
 ```
 
-At this point, the user space part of this tool is ready to collect the data recorded, and report to the user.
+At this point, the user space part of this tool is ready to collect the data recorded and report to the user.
 
 ## GO and cilium-ebpf
 
-<!-- This is not the accurate implementation, but it is a simplified version of how it could be implemented. -->
-
-The Cilium eBPF library [[8](#references)], takes a approach with code generation to reduce manual work and achieve a high performance implementation.
+The Cilium eBPF library [[8](#references)], takes an approach with code generation to reduce manual work and achieve a high-performance implementation.
 The Cilium project uses eBPF to handle container networking in Kubernetes (aiming to be more performant than user-space tools).
-And for this, having a performant and less bug prone way to interact with the Kernel is crucial.
+For this, having a performant and less bug-prone way to interact with the Kernel is crucial.
 
-Their implementation creates an API for each BPF program, covering only the capabilities that are needed.
-In the Python implementation, the user had to had to manually call `attach_kprobe` and `attach_kretprobe` after loading the program, referencing the function names to be loaded.
-This is however directly coupled to the BPF program we provided, and can be error prone. What if the function name changes? What if it is no longer using a kprobe?
-The cilium-ebpf library creates a GO API that abstracts these details, and makes it easier to use the BPF program.
+Their implementation generates an API for each BPF program, covering only the capabilities compatible with it.
+In the Python implementation, the user had to manually call `attach_kprobe` and `attach_kretprobe` after loading the program, referencing the function names to be loaded.
+This is however directly coupled to the BPF program we provided and can be error-prone. What if the function name changes? What if it is no longer using a kprobe?
+The cilium-ebpf library creates a GO API that abstracts these details and makes it easier to use the BPF program.
 
 The process behind it is quite interesting. These are the stages to it:
 
-1. Writing the BPF program (with the same C-Like syntax),
+1. Writing the BPF program (with the same C-like syntax),
 2. The bpf2go tool is used to generate GO "glue" code,
 3. The BPF program is compiled (using Clang under the hood),
 4. GO compilation (our code + generated code), and the compiled BPF program gets embedded into the GO binary.
 
 For the first two steps, assuming the BPF program is in a local file called `kprobe.c`, the `bpf2go` tool must be invoked.
-Is can be done directly, or with a `go:generate` directive that can be added to a Go file (like the next code block).
+It can be done directly or with a `go:generate` directive that can be added to a Go file (like the next code block).
 With this in our current directory, the `go generate` command can be issued.
 
 ```go
@@ -350,8 +348,8 @@ package main
 //go:generate go run github.com/cilium/ebpf/cmd/bpf2go bpf kprobe.c -- -I../path_to_headers
 ```
 
-The `bpf2go` program will automatically detect from out BPF program, what functions it uses to interact with the Kernel, and also the data structures it uses to communicate back to user-space.
-It will compile our BPF program with Clang, and generate the GO code that will load it into the Kernel, and Access the data it produces.
+The `bpf2go` program will automatically detect from our BPF program, what functions it uses to interact with the Kernel, and also the data structures it uses to communicate back to user-space.
+It will compile our BPF program with Clang, generate the GO code that will load it into the Kernel, and Access the data it produces.
 
 One part of this glue code uses a `go:embed` directive.
 It instructs the compiler to include the data from the binary generated in step 2 into a variable in the GO binary (step 4):
@@ -361,7 +359,7 @@ It instructs the compiler to include the data from the binary generated in step 
 var _BpfBytes []byte
 ```
 
-Now, I will show the GO code that is called by the "glue" code in our behalf.
+Now, I will show the GO code called by the "glue" code on our behalf.
 
 > **Note**:
 > The code snippets below are a simplified version of the calls made by the cilium-ebpf library.
@@ -369,14 +367,14 @@ Now, I will show the GO code that is called by the "glue" code in our behalf.
 
 When we compile everything, the resulting binary will contain the BPF program, the GO code to load it into the Kernel, and the code to interact with it.
 This means once you have the resulting binary, it can run on any Linux machine with a compatible Kernel.
-There are some other things that need to happen that I wont cover:
+Some other things need to happen that I won't cover:
 
-- the library needs to also load the structures that will be used to interact with the program, like the map used in this example
+- the library needs to also load the structures that will be used to interact with the program, like the map used in this example. I will only show the user space part of this operation.
 - the library might need to check if the addresses we got when compiling the BPF program are valid in the Kernel we are running on. If they are different, it can map them.
   This is referred to as CO-RE (compile once, run everywhere).
 
 The first important section is the initial load of the BPF program into the Kernel.
-Is is done with the SYS_BPF syscall, using the BPF_BTF_LOAD command, and a set of parameters in a structure.
+It is done with the `SYS_BPF` syscall, using the `BPF_BTF_LOAD` command, and a set of parameters in a structure.
 It is after this call that the Kernel runs the Verifier, to check if the program is safe to run.
 If it is, the program is loaded into memory, and we get a file descriptor that points to it.
 
@@ -391,7 +389,7 @@ attr := &sys.ProgLoadAttr{
     KernVersion:        kv,
 }
 
-// code from : ProgLoad
+// code from: ProgLoad
 programRawFD, _, errNo := unix.Syscall(unix.SYS_BPF, uintptr(BPF_BTF_LOAD), unsafe.Pointer(attr), unsafe.Sizeof(*attr))
 return NewFD(int(fd))
 ```
@@ -402,8 +400,8 @@ The library will first check if the desired event is available in the Kernel.
 ```go
 // code from : kprobe, pmuProbe
 
-// Create a pointer to a NUL-terminated string for the kernel.
-// this is the name of the (kernel) function we want to trace.
+// Create a pointer to a NUL-terminated string for the Kernel.
+// this is the name of the (Kernel) function we want to trace.
 sp, err = unsafeStringPtr("sys_execve") // or ach specific, like "__x64_sys_execve"
 attr = unix.PerfEventAttr{
       Type:   uint32(KPROBE),      // PMU event type read from sysfs
@@ -420,7 +418,7 @@ rawFd, _, e1 := unix.Syscall(unix.SYS_BPF, SYS_PERF_EVENT_OPEN, uintptr(unsafe.P
 kprobeFd, err := sys.NewFD(int(rawFd))
 ```
 
-If this was successful, we know we can ask the kernel to add a probe there.
+If this is successful, we know we can ask the Kernel to add a probe there.
 This is done with the `SYS_BPF` syscall, with the `BPF_LINK_CREATE` command.
 
 ```go
@@ -432,10 +430,10 @@ rawFd2, _, errNo := unix.Syscall(unix.SYS_BPF, uintptr(BPF_LINK_CREATE), uintptr
 ebpfProgramLinkFd, err := sys.NewFD(int(rawFd2))
 ```
 
-At a high level, this is all that is done to load a BPF program into the Kernel.
-If the user-space part need to read data produced by BPF program (this example does), we need to lookup the map defined previously.
-A Map can store a lot of data, and its flexible.
-One of the ways to navigate it it to read "keys" by an index (like an array), and get the value stored in the map.
+At a high-level, these are the steps to load a BPF program into the Kernel.
+If the user-space part needs to read data produced by the BPF program (this example does), we need to lookup the map defined previously.
+A Map can store a lot of data, and it's flexible.
+One of the ways to navigate it is to read "keys" by an index (like an array) and get the value stored in the map.
 This example has a single value stored in the map, and the key is defined in the BPF code at the start of this exploration.
 This is how it is done in the cilium-ebpf library:
 
@@ -462,7 +460,7 @@ func (m *Map) LookupWithFlags(key, valueOut interface{}, flags MapLookupFlags) e
       // this does the same as below, but for each CPU
     return m.lookupPerCPU(key, valueOut, flags)
   }
-  // created a buffer to store a copy of the bytes from the kernel map.
+  // created a buffer to store a copy of the bytes from the Kernel map.
   valueBytes := makeMapSyscallOutput(valueOut, m.fullValueSize)
   // this call is expanded below
   if err := m.lookup(key, valueBytes.Pointer(), flags); err != nil {
@@ -497,7 +495,7 @@ func (m *Map) lookup(key interface{}, valueOut sys.Pointer, flags MapLookupFlags
 }
 ```
 
-With this done, the user-space part can handle the data produced by the BPF program. In this case, it just prints it to the with log every second.
+With this done, the user-space part can handle the data produced by the BPF program. In this case, it just logs it every second.
 
 ## What happens in the Kernel
 
@@ -506,12 +504,12 @@ Each one, with a different command: `BPF_PROG_LOAD` and `BPF_LINK_CREATE`.
 This Syscall `SYS_BPF` selects what it should do based on a command passed as input.
 It expects the command and a pointer to a structure that contains the attributes needed to execute the command.
 
-There is one interesting check that is made before the command is executed.
-Since a program compiled with a newer version of the Kernel can be sent to run in an older version, the kernel sets to Zero all extra memory space it does not know about.
-This guarantees that if the program still works, it wont depend on features that are not available in the Kernel it is running on.
+There is one interesting check made before the command is executed.
+Since a program compiled with a newer version of the Kernel can be sent to run in an older version, the Kernel sets to Zero all extra memory space it does not know about.
+This guarantees that if the program still works, it will not depend on features not available in the Kernel it is running on.
 
 > **Note**:
-> This sections has a lot of code from the Kernel, and a big part of the explanation in in the comments I added in the code.
+> This section has a lot of code from the Kernel, and a big part of the explanation is in the comments I added to the code.
 > My comments will be always noted by `//`.
 > There are also some comments from the original code that I left in (when useful), and they start with `/*`.
 
@@ -548,10 +546,10 @@ static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
 
 ### Loading Program
 
-In the `BPF_PROG_LOAD` command function, the kernel will load to program into memory for each CPU, check if it is safe to run, add it to the Kernel's symbol table,
+In the `BPF_PROG_LOAD` command function, the Kernel will load to program into memory for each CPU, check if it is safe to run, add it to the Kernel's symbol table,
 and create a file descriptor for the program.
 
-I found quite interesting that the Kernel code expects the program to provide its license, and checks if it is compatible with the GPL (used by the Kernel).
+I found it quite interesting that the Kernel code expects the program to provide its license, and checks if it is compatible with the GPL (used by the Kernel).
 
 ```c
 static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
@@ -561,7 +559,7 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
   struct btf *attach_btf = NULL;
   int err;
   char license[128];
-  ... // permission checks and code validation
+  ... // permission checks, validations
   if (attr->attach_prog_fd) {
     // reads the program from the file descriptor
     dst_prog = bpf_prog_get(attr->attach_prog_fd);
@@ -569,11 +567,11 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
   }
   // allocates memory for the program for each CPU (core)
   prog = bpf_prog_alloc(bpf_prog_size(attr->insn_cnt), GFP_USER);
-  if (!prog) { ... // error handling }
+  if (!prog) { ... // error handling
   ... // copies the relevant data from attr struct to the new prog structure
   /* copy eBPF program license from user space */
     if (strncpy_from_bpfptr(license,
-          make_bpfptr(attr->license, uattr.is_kernel),
+          make_bpfptr(attr->license, uattr.is_Kernel),
           sizeof(license) - 1) < 0)
       goto free_prog_sec;
 
@@ -621,8 +619,8 @@ static int bpf_prog_load(union bpf_attr *attr, bpfptr_t uattr, u32 uattr_size)
 
 Now let's take a look at the `BPF_LINK_CREATE` command.
 This is the one that will attach the program to the desired event.
-It's behaviour changes for each type of program that is being attached.
-I will only show the part that is relevant to the `kprobe` example.
+Its behavior changes for each type of program being attached.
+I will focus show the parts relevant to the `kprobe` example.
 
 ```c
 static int link_create(union bpf_attr *attr, bpfptr_t uattr)
@@ -675,8 +673,8 @@ I will expand two branches: `bpf_perf_link_attach` and `bpf_kprobe_multi_link_at
 
 ### Events with Perf
 
-At this point, the Kernel will choose what infrastructure to use to attach the program.
-A few that are available here are tracepoints, perf events, and fprobe.
+At this point, the Kernel will choose the infrastructure to attach the program with.
+Some that are available here are tracepoints, perf events, and fprobe.
 Our case is the `BPF_PERF_EVENT` attach type, which will use the perf infrastructure.
 
 ```c
@@ -691,7 +689,7 @@ static int bpf_perf_link_attach(const union bpf_attr *attr, struct bpf_prog *pro
   if (attr->link_create.flags)
     return -EINVAL;
   // gets the file descriptor of the perf event we want to trace
-  // it must have been added to target_fd in the user space part (? TODO: CHECK)
+  // it must have been added to target_fd in the user space part
   perf_file = perf_event_get(attr->link_create.target_fd);
   if (IS_ERR(perf_file))
     return PTR_ERR(perf_file);
@@ -719,14 +717,12 @@ static int bpf_perf_link_attach(const union bpf_attr *attr, struct bpf_prog *pro
   return bpf_link_settle(&link_primer);
   ...
 }
-
 ```
 
-In this next block, I put the two important functions that will be called in the block above.
+In this next block, I explore the calls following `perf_event_set_bpf_prog` from the block above.
 It will register the BPF program to the event using the perf infrastructure.
-For a given event, the kernel creates a list of programs that will be executed.
+For a given event, the Kernel creates a list of programs to be executed.
 When the event occurs, the Kernel will execute all the programs in the list.
-There is a maximum number of programs that can be attached to an event (defined in a constant), and this is checked before adding a new one.
 
 ```c
 int perf_event_set_bpf_prog(struct perf_event *event, struct bpf_prog *prog,
@@ -808,7 +804,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
   void __user *usyms;
   int err;
   ...
-  // if the bpf program passed in the addresses it want to trace, the kernel copies them here
+  // if the bpf program passed in the addresses it want to trace, the Kernel copies them here
   // Otherwise, if it passed a symbol list, the else branch looks for the addresses
   // either branch will have an address list in the addrs variable if successful
   if (uaddrs) {
@@ -818,7 +814,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
   } else {
     ...
     struct user_syms us;
-    // copy symbols from user space to kernel space
+    // copy symbols from user space to Kernel space
     err = copy_user_syms(&us, usyms, cnt);
     ...
     sort_r(us.syms, cnt, sizeof(*us.syms), symbols_cmp_r,
@@ -863,11 +859,11 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
 In the last lines of the previous block, we registered the `link->fprobe` to be called by the fprobe/ftrace infrastructure.
 The wrappers `kprobe_multi_link_handler` and `kprobe_multi_link_exit_handler` will handle the reference from `fp` back to the `link` structure using the `container_of` macro.
 
-This macro is used everywhere in the Kernel, and its worth to explain it here.
+This macro is used everywhere in the Kernel, and it's worth explaining it here.
 It gets the parent struct by subtracting from the known pointer the offset of memory required to store all fields that came before it in the parent struct [[10](#references)].
 This is analogous to a `super()` function in Python and other OO languages.
 
-This next block show the BPF program being linked as a function handler with fprobe.
+This next block shows the BPF program being linked as a function handler with Fprobe.
 I will also follow a chain of function calls that will lead to the BPF program being executed.
 
 ```c
@@ -1004,16 +1000,39 @@ static inline void __fprobe_handler(unsigned long ip, unsigned long parent_ip,
 - [1] A. S. Tanenbaum and H. J. Bos, Modern Operating Systems, 4th Edition. Pearson Higher Education, 2015.
 - [2] D. M. Ritchie and K. Thompson, “The UNIX time-sharing system,” Communications of the ACM, vol. 17, no. 7, pp. 365–375, Jul. 1974
 - [3] B. Gregg, Bpf performance tools: Linux system and application observability, 1st ed. Hoboken: Pearson Education, Inc, 2019.
-- [4] “Tracepoints Documentation — The Linux Kernel documentation,” kernel.org. [docs.kernel.org/trace/tracepoints.html](https://docs.kernel.org/trace/tracepoints.html).
+- [4] “Tracepoints Documentation — The Linux Kernel documentation,” Kernel.org. [docs.Kernel.org/trace/tracepoints.html](https://docs.Kernel.org/trace/tracepoints.html).
 - [5] S. Rostedt, “Learning the Linux Kernel with tracing”, Oct 31, 2018 [youtube.com/watch?v=JRyrhsx-L5Y](https://www.youtube.com/watch?v=JRyrhsx-L5Y)
-- [6] “Perf Wiki,” perf.wiki.kernel.org. [perf.wiki.kernel.org/](https://perf.wiki.kernel.org/)
-- [7] “Fprobe - Function entry/exit probe — The Linux Kernel documentation,” kernel.org. [kernel.org/doc/html/latest/trace/fprobe.html](https://kernel.org/doc/html/latest/trace/fprobe.html)
+- [6] “Perf Wiki,” perf.wiki.Kernel.org. [perf.wiki.Kernel.org/](https://perf.wiki.Kernel.org/)
+- [7] “Fprobe - Function entry/exit probe — The Linux Kernel documentation,” Kernel.org. [Kernel.org/doc/html/latest/trace/fprobe.html](https://Kernel.org/doc/html/latest/trace/fprobe.html)
 - [8] “cilium/ebpf,” GitHub, [github.com/cilium/ebpf](https://github.com/iovisor/bcc)
 - [9] “iovisor/bcc,” GitHub, [github.com/iovisor/bcc](https://github.com/iovisor/bcc)
 - [10] G. Kroah-Hartman, “container_of()” kroah.com, Feb. 18, 2005. [kroah.com/log/linux/container_of.html](http://www.kroah.com/log/linux/container_of.html)
-- [11] “BPF Documentation — The Linux Kernel documentation,” kernel.org. [kernel.org/doc/html/latest/bpf/index.html](https://kernel.org/doc/html/latest/bpf/index.html).
+- [11] “BPF Documentation — The Linux Kernel documentation,” Kernel.org. [Kernel.org/doc/html/latest/bpf/index.html](https://Kernel.org/doc/html/latest/bpf/index.html).
 
 # Appendix
+
+## What was my process to get here
+
+- I knew a bit about the BPF tech, but only from the "user" side. I went a bit deeper into this, reading a book and watching talks on the topic
+- I ran the examples for some BPF tools, and chose two to dive into
+- When I got to the Kernel code, I had to read a lot of it to understand what was happening
+- I tried using trace-cmd to watch the execution of a BPF program, but it was not satisfactory
+- I used the Kernel's `printk(KERN_INFO ...);` to track the execution of the BPF program in the Kernel, watching the outputs with `dmseg -w` (in the VM I created in my last article)
+- Compiled the Kernel with warning levels 1, 2, and 3 to see what kind of warnings are there in this subsystem. I also used this to make small contributions.
+
+## Testing inside a VM
+
+I compiled my versions of the Linux Kernel to explore, adding print statements to the Kernel code.
+To test it, I ran it all in a VM, with the setup described in [my last post](https://rcpassos.me/post/linux-kernel-build-environment).
+
+```bash
+apt update
+apt install make gcc clang bcc bpftool glibc-source libelf-dev linux-headers-amd64 build-essential
+
+## If you see an error with the libc version
+echo "deb https://deb.debian.org/debian experimental main" >> /etc/apt/sources.list
+apt install -t experimental libc-bin
+```
 
 ## Examples using bpftrace
 
@@ -1030,29 +1049,3 @@ sudo bpftrace -e 'kprobe:do_nanosleep {
     printf ("PID %d sleeping...\n",pid);
 }'
 ```
-
-## What was my process to get here
-
-- I knew a bit about the BPF tech, but only from the "user" side. I went a bit deeper in this, reading a book and watching talks on the topic
-- I ran the examples for some bpf tools, and chose two to dive deeper (the ones in this article)
-- When I got to the Kernel code, I had to read a lot of it to understand what was happening
-- I tried using trace-cmd to watch the execution of a BPF program, but failed,
-- I used the Kernel's kprintf to track the execution of the BPF program in the Kernel, watching the outputs with `dmseg -w` (in the VM I created in my last article)
-- Compiled the Kernel with warning levels 1, 2 and 3 to see what kind of warnings are there in this subsystem
-
-## Testing inside a VM
-
-Run bpf in vm
-
-```bash
-apt update
-apt install make gcc clang bcc bpftool glibc-source libelf-dev linux-headers-amd64 build-essential
-
-
-## If you see an error with the libc version
-echo "deb https://deb.debian.org/debian experimental main" >> /etc/apt/sources.list
-
-
-apt install -t experimental libc-bin
-```
-
