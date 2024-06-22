@@ -2,8 +2,11 @@
 </script>
 
 <svelte:head>
-	<title>Privacy Policy & License</title>
-	<meta name="description" content="This page contains the privacy policy for RCPassos.me" />
+	<title>Privacy Policy and License</title>
+	<meta
+		name="description"
+		content="This page contains the privacy policy for RCPassos.me, and the License for the content offered here for free."
+	/>
 </svelte:head>
 
 <container class="flex flex-col flex-grow w-full mx-auto max-w-2xl items-center">
@@ -12,13 +15,13 @@
 		<p class="py text-justify">
 			This Privacy Policy describes Our policies and procedures on the <b>non</b> collection, the
 			<b>absence</b>
-			of use and <b>needless</b> disclosure of Your information when You use the Service, and tells You
-			about Your privacy rights and how the law protects us and You.
+			of use and <b>unecessary</b> disclosure of Your information when You use the Service, and tells
+			You about Your privacy rights and how the law protects us and You.
 		</p>
 		<p class="py text-justify">
 			We <b>do not</b> use Your Personal data to provide and improve anything in the Service. By
 			using the Service, You <b>do not need to</b> agree to the collection and use of information in
-			accordance with this Privacy Policy (because there is none).
+			accordance with this Privacy Policy <b>(because there is none)</b>.
 		</p>
 		<p class="py text-justify">
 			Our Websites and Services <b>do not use</b> cookies <b>nor</b> other similar technologies, in
