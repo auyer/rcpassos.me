@@ -15,7 +15,7 @@
 		<p class="py text-justify">
 			This Privacy Policy describes Our policies and procedures on the <b>non</b> collection, the
 			<b>absence</b>
-			of use and <b>unecessary</b> disclosure of Your information when You use the Service, and tells
+			of use and <b>unnecessary</b> disclosure of Your information when You use the Service, and tells
 			You about Your privacy rights and how the law protects us and You.
 		</p>
 		<p class="py text-justify">

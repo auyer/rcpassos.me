@@ -999,7 +999,7 @@ This article explored the mechanics of Linux eBPF, starting from user-space libr
 By digging into the APIs and the kernel's role, we've gained a deeper understanding of how eBPF functions and its potential applications.
 For me, one great discovery was how much the BPF interacts with other subsystems to provide its power.
 
-For those curious about eBPF, this journey should hopefuly provide some guidance.
+For those curious about eBPF, this journey should hopefully provide some guidance.
 However, our exploration only scratches the surface.
 The technologies that were used here to complement BPF should be a good next challenge do uncover.
 The Linux kernel is a vast and complex project, and BPF itself continues to evolve with new capabilities and applications.

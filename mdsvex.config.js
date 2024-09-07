@@ -24,8 +24,8 @@ export default {
 				}
 			});
 			//
-			// workarround for the desired trailing /
-			// inpired by https://github.com/pngwn/MDsveX/issues/224 but mixed with shiki
+			// workaround for the desired trailing /
+			// inspired by https://github.com/pngwn/MDsveX/issues/224 but mixed with shiki
 			if (lang === 'bash') {
 				return `{@html ${JSON.stringify(codeHtml)}}`;
 			}

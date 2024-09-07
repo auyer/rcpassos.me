@@ -11,7 +11,7 @@
 	<div>
 		<container class="flex flex-col flex-grow w-full mx-auto max-w-6xl">
 			<header class="hero">
-				<img alt="Rafael in front of thge sea" width="2592" height="1654" src="/assets/hero.avif" />
+				<img alt="Rafael in front of the sea" width="2592" height="1654" src="/assets/hero.avif" />
 				<div class="gradient" />
 				<div class="overlay" />
 			</header>
