@@ -60,17 +60,17 @@
 							Posts
 						</a>
 						<a
+							class="block lg:inline-block btn no-underline {classesActive('/projects/kv')}"
+							href="/projects"
+							data-sveltekit-preload-data="hover">Projects</a
+						>
+						<a
 							class="block lg:inline-block btn no-underline {classesActive('/about')}"
 							href="/about"
 							data-sveltekit-preload-data="hover"
 						>
 							About
 						</a>
-						<a
-							class="block lg:inline-block btn no-underline {classesActive('/projects/kv')}"
-							href="/projects"
-							data-sveltekit-preload-data="hover">Projects</a
-						>
 						<a
 							class="block lg:inline-block btn no-underline {classesActive('/projects/github')}"
 							href="https://github.com/auyer/">GitHub</a
