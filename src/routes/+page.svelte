@@ -23,20 +23,19 @@
 			</picture>
 			<div>
 				<span class="role"
-					>💻 Software Engineer<span class="invert">💻 Software Engineer</span>
+					>💻 Software Engineering<span class="invert">💻 Software Engineering</span>
 				</span>
-				<span class="role">📈 Data Engineer <span class="invert">📈 Data Engineer</span> </span>
 				<span class="role"
 					>🐧 Open Source & Linux Enthusiast <span class="invert"
 						>🐧 Open Source & Linux Enthusiast</span
 					>
 				</span>
 			</div>
-			<p class="desc"><strong>Curious, Tech and Science</strong></p>
+			<p class="desc"><strong>Stay Curious</strong></p>
 			<div class="flex gap-6">
 				<SocialLinks />
 			</div>
-			<p class="text-base text-zinc-600 dark:text-zinc-400">
+			<p class="text-lg text-center font-semibold text-zinc-600 dark:text-zinc-400">
 				{bio}
 			</p>
 		</div>

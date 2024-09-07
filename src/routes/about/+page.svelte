@@ -6,17 +6,17 @@
 	<title>About: {name}</title>
 	<meta name="description" content={bio} />
 </svelte:head>
-
-<container class="flex flex-col flex-grow w-full mx-auto max-w-6xl">
-	<header class="hero">
-		<img alt="Rafael walking a bridge" width="1600" height="1230" src="/assets/hero.avif" />
-		<div class="gradient" />
-		<div class="overlay" />
-	</header>
-</container>
 <br />
 <container class="w-full mx-auto grid md:grid-cols-2 gap-24 sm:grid-cols-1 max-w-6xl">
 	<div>
+		<container class="flex flex-col flex-grow w-full mx-auto max-w-6xl">
+			<header class="hero">
+				<img alt="Rafael in front of thge sea" width="2592" height="1654" src="/assets/hero.avif" />
+				<div class="gradient" />
+				<div class="overlay" />
+			</header>
+		</container>
+
 		<article class="prose dark:prose-invert">
 			<h1>Who am I</h1>
 
@@ -33,9 +33,8 @@
 			</p>
 
 			<p class="py text-justify">
-				I have a deep love for traveling. Discovering different places, cultures, and connecting
-				with people from various backgrounds enriches my life. These experiences broaden my horizons
-				and positively impact me.
+				I have a deep love for traveling. Discovering different places, cultures, and people from
+				various backgrounds enriches my life.
 			</p>
 
 			<p class="py text-justify">
