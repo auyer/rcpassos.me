@@ -20,4 +20,5 @@ This blog is a place where I can share some of my thoughts and experiences, but 
 export const github = 'auyer';
 export const linkedin = 'passosRafael';
 export const medium = '@rcpassos';
+export const bluesky = "auyer.rcpassos.me";
 export const stackoverflow = '5621569/auyer?tab=profile';
