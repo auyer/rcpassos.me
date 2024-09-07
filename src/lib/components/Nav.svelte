@@ -68,8 +68,8 @@
 						</a>
 						<a
 							class="block lg:inline-block btn no-underline {classesActive('/projects/kv')}"
-							href="/projects/kv"
-							data-sveltekit-preload-data="hover">MemoryKV: A Cool Demo</a
+							href="/projects"
+							data-sveltekit-preload-data="hover">Projects</a
 						>
 						<a
 							class="block lg:inline-block btn no-underline {classesActive('/projects/github')}"
@@ -81,7 +81,11 @@
 		</svelte:fragment>
 		<svelte:fragment slot="trail">
 			<div class="block lg:hidden">
-				<button class="flex items-center px-3 py-2 rounded" aria-label="expand head menu" on:click={clickHandler}>
+				<button
+					class="flex items-center px-3 py-2 rounded"
+					aria-label="expand head menu"
+					on:click={clickHandler}
+				>
 					<svg aria-label="expand head links icon" viewBox="0 0 100 80" class="fill-token w-4 h-4">
 						<rect width="100" height="20" />
 						<rect y="30" width="100" height="20" />
