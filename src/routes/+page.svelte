@@ -2,7 +2,7 @@
 	import ArrowRightIcon from '$lib/components/ArrowRightIcon.svelte';
 	import PostsList from '$lib/components/PostsList.svelte';
 	import SocialLinks from '$lib/components/SocialLinks.svelte';
-	import { avatar_avif, avatar_png, bio, name } from '$lib/info.js';
+	import { avatar_avif, avatar_png, bio, bio_splitted, name } from '$lib/info.js';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -22,22 +22,26 @@
 				<img class="profile" src={avatar_png} alt={name} />
 			</picture>
 			<div>
-				<span class="role"
-					>💻 Software Engineering<span class="invert">💻 Software Engineering</span>
+				<span class="role">💻 Software Engineer<span class="invert">💻 Software Engineer</span>
 				</span>
-				<span class="role"
-					>🐧 Open Source & Linux Enthusiast <span class="invert"
-						>🐧 Open Source & Linux Enthusiast</span
-					>
+				<span class="role">📡 Researcher<span class="invert">📡 Researcher</span>
+				</span>
+				<span class="role">
+					🐧 FOSS & Linux Enthusiast
+					<span class="invert">🐧 FOSS & Linux Enthusiast</span>
 				</span>
 			</div>
 			<p class="desc"><strong>Stay Curious</strong></p>
 			<div class="flex gap-6">
 				<SocialLinks />
 			</div>
-			<p class="text-lg text-center font-semibold text-zinc-600 dark:text-zinc-400">
-				{bio}
-			</p>
+			<div class="gap-3">
+				{#each bio_splitted as item}
+					<p class="text-lg text-center text-zinc-600 dark:text-zinc-400">
+						{item}
+					</p>
+				{/each}
+			</div>
 		</div>
 	</section>
 	<section class="w-full">
