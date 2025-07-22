@@ -4,21 +4,21 @@ date: 2025-07-21
 ---
 
 > This will be a short one.
-> ArgoCD tracks application status in Kubernetes, usually tracking a git commit or helm chart tag.
+> ArgoCD syncronizes application status in Kubernetes, usually tracking a git commit or helm chart tag.
 > When building and deploying from a CI/CD workflow, I want an instant success/failure response.
-> This is how I did it.
+> This post describes how I did it.
 
 ## A Push inclined workflow
 
-My deployment strategy looks quite common for CI/CD systems, although a bit uncommon (as far as I know) for ArgoCD.
+My deployment strategy looks quite common for CI/CD workflows, although a bit uncommon (as far as I know) for ArgoCD.
 It is a common practice to have files updated by workflows in specific repositories or branches, and ArgoCD tracks it.
-This is not how I did it.
+This is not what I did.
 
 I started deploying apps to different systems, where pushing an update is far more common than expecting the system to watch a git repository.
-This is also what my team is used to.
+This more traditional method is also what my team is used to.
 
 I aim to keep the push-based structure running a workflow based on a push, or even a "tag/release".
-But I still want to benefit from ArgoCD auto-sync, and it's great UI.
+But I still want to benefit from ArgoCD auto-sync, and its great user interface.
 
 ## Describing my workflow
 
@@ -52,7 +52,7 @@ And yes, `${{ inputs.argo_applications_path }}` is the syntax for the input vari
 This action I built is shared across many systems; this is how I tell the workflow where the application YAML is.
 
 At this point, Argo is tracking the helm chart in a specific commit and running an image tagged with the same value.
-This is sufficient to deploy a newly built image to Kubernetes, without hard-coding a git sha or tag to any file.
+This is sufficient to deploy a newly built image to Kubernetes, without hard-coding a git SHA or tag to any file.
 Everything runs asynchronously from here, and a failure will not be reported.
 
 ## Retrieving Synchronous Responses
@@ -69,11 +69,11 @@ The idea is then to connect to ArgoCD and run these commands.
 But there are a couple of gotchas that I will deal with:
 
 1. My ArgoCD instance is not exposed to the public internet
-2. Changing the git commit argument ArgoCD is usually looking for, which starts a sync automatically
+2. Changing the pinned git commit may start the ArgoCD sync automatically.
 
 ### Step by Step
 
-First, the ArgoCD cli should be installed in the setup phase of the workflow (before running actual operations).
+First, the ArgoCD CLI should be installed in the setup phase of the workflow (before running actual operations).
 This is the step I use in GitHub actions:
 
 ```bash
@@ -97,7 +97,7 @@ ARGOCD_USERNAME=$(kubectl get secret argocd-initial-admin-secret \
 ```
 
 Since this workflow is shared across multiple applications, these next steps will read the application name and namespace from its YAML file.
-It is the relative path to the application yaml definition.
+It is the relative path to the application YAML definition.
 
 ```bash
 APP_NAME=$(cat ${{ inputs.argo_applications_path }} | yq -r .metadata.name)
@@ -123,11 +123,11 @@ argocd login localhost:8080 \
  --insecure --plaintext
 ```
 
-At this point, we are connected and authenticated with argocd.
+At this point, we are connected and authenticated with ArgoCD.
 We will call the sync command.
-But it is possible that the `sync` progress started automatically after applying the application yaml.
-If so, argocd will return an error, with status code 20.
-We run Sync and check the code.
+But it is possible that the `sync` progress started automatically after applying the application YAML.
+If so, ArgoCD will return an error, with status code 20.
+We run sync and check the code.
 If it runs, we run `wait` before syncing manually.
 
 ```bash
@@ -147,14 +147,17 @@ argocd app sync ${APP_NAME} -N ${APP_NAMESPACE} || {
 argocd app wait ${APP_NAME} -N ${APP_NAMESPACE}
 ```
 
-# Complete script
+## Complete script
 
-The complete script
+The steps described above provide a way to get results from ArgoCD synchronously, and get instant results from the deployment workflow.
+To put it all together, take this following script and run in a bash step.
 
 ```bash
+set -o pipefail
 APP_NAME=$(cat ${{ inputs.argo_applications_path }} | yq -r .metadata.name)
 APP_NAMESPACE=$(cat ${{ inputs.argo_applications_path }} | yq -r .metadata.namespace)
 echo "Running sync for $APP_NAME"
+
 ARGOCD_PASSWORD=$(kubectl get secret argocd-initial-admin-secret -n argocd \
            -o jsonpath="{.data.password}" | base64 -d && echo)
 ARGOCD_USERNAME=$(kubectl get secret argocd-initial-admin-secret -n argocd \
@@ -184,3 +187,4 @@ argocd app sync ${APP_NAME} -N ${APP_NAMESPACE} || {
 # now wait for the final status to be reported
 argocd app wait ${APP_NAME} -N ${APP_NAMESPACE}
 ```
+
