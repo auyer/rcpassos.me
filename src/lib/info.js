@@ -10,9 +10,12 @@ export const avatar_avif = '/assets/profile.avif';
 export const avatar_png = '/assets/profile.png';
 
 export const bio = `\
-I'm Rafael, a Computer Scientist currently working in Software Engineering.
-I am driven by my curiosity and passion for technology.
-This blog is a place where I can share some of my thoughts and experiences, but most of all, a personal incentive to keep learning.`;
+I'm Rafael Passos.
+This blog is a place where I share fun experiences.
+A personal incentive to keep learning.
+100% human, no artificial anything.`;
+
+export const bio_splitted = bio.split(/\n/).map((line) => line.replace(/\.$/, ""));
 
 // Your social usernames, empty strings won't be used.
 // For sake of the live demo, I'm using `username/repo` for github,
