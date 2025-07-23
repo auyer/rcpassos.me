@@ -1,7 +1,14 @@
 <script>
-	import '../app.postcss';
+	import '../app.css';
 	import Nav from '$lib/components/Nav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	/**
+	 * @typedef {Object} Props
+	 * @property {import('svelte').Snippet} [children]
+	 */
+
+	/** @type {Props} */
+	let { children } = $props();
 </script>
 
 <div class="flex flex-col min-h-screen">
@@ -9,7 +16,7 @@
 		<Nav />
 	</header>
 	<main class="m-4">
-		<slot />
+		{@render children?.()}
 		<Footer />
 	</main>
 </div>

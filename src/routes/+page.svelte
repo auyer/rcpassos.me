@@ -4,8 +4,14 @@
 	import SocialLinks from '$lib/components/SocialLinks.svelte';
 	import { avatar_avif, avatar_png, bio, bio_splitted, name } from '$lib/info.js';
 
-	/** @type {import('./$types').PageData} */
-	export let data;
+	
+	/**
+	 * @typedef {Object} Props
+	 * @property {import('./$types').PageData} data
+	 */
+
+	/** @type {Props} */
+	let { data } = $props();
 </script>
 
 <svelte:head>
@@ -57,65 +63,65 @@
 	</section>
 </container>
 
-<style lang="scss">
-	.profile {
-		@apply mx-auto rounded-full w-36 h-36;
-	}
-	.profile-box {
-		@apply profile ring-2 ring-zinc-200 dark:ring-zinc-700;
-	}
-	$w-s: 750px;
-
-	.role {
-		position: relative;
-		display: inline-block;
-		font-weight: 900;
-		color: var(--t-bg);
-		background-color: var(--t-fg);
-		padding: 0.25em 0.5em;
-		z-index: 2;
-
-		@media (min-width: $w-s) {
-			font-size: var(--f-u3);
-		}
-
-		&:nth-of-type(1) {
-			.invert {
-				background-color: var(--c-pink);
-			}
-		}
-
-		&:nth-of-type(2) {
-			.invert {
-				background-color: var(--c-blue);
-			}
-		}
-
-		&:nth-of-type(3) {
-			.invert {
-				background-color: var(--c-green);
-			}
-		}
-
-		&:hover {
-			.invert {
-				clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-			}
-		}
-	}
-
-	.invert {
-		position: absolute;
-		color: var(--t-fg);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		left: 0;
-		pointer-events: none;
-		clip-path: polygon(0% 100%, 100% 100%, 100% 200%, 0% 200%);
-		transition: clip-path cubic-bezier(0.4, 0, 0.5, 1) 150ms;
-	}
-</style>
+<!-- <style lang="scss"> -->
+<!-- 	.profile { -->
+<!-- 		@apply mx-auto rounded-full w-36 h-36; -->
+<!-- 	} -->
+<!-- 	.profile-box { -->
+<!-- 		@apply profile ring-2 ring-zinc-200 dark:ring-zinc-700; -->
+<!-- 	} -->
+<!-- 	$w-s: 750px; -->
+<!---->
+<!-- 	.role { -->
+<!-- 		position: relative; -->
+<!-- 		display: inline-block; -->
+<!-- 		font-weight: 900; -->
+<!-- 		color: var(--t-bg); -->
+<!-- 		background-color: var(--t-fg); -->
+<!-- 		padding: 0.25em 0.5em; -->
+<!-- 		z-index: 2; -->
+<!---->
+<!-- 		@media (min-width: $w-s) { -->
+<!-- 			font-size: var(--f-u3); -->
+<!-- 		} -->
+<!---->
+<!-- 		&:nth-of-type(1) { -->
+<!-- 			.invert { -->
+<!-- 				background-color: var(--c-pink); -->
+<!-- 			} -->
+<!-- 		} -->
+<!---->
+<!-- 		&:nth-of-type(2) { -->
+<!-- 			.invert { -->
+<!-- 				background-color: var(--c-blue); -->
+<!-- 			} -->
+<!-- 		} -->
+<!---->
+<!-- 		&:nth-of-type(3) { -->
+<!-- 			.invert { -->
+<!-- 				background-color: var(--c-green); -->
+<!-- 			} -->
+<!-- 		} -->
+<!---->
+<!-- 		&:hover { -->
+<!-- 			.invert { -->
+<!-- 				clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); -->
+<!-- 			} -->
+<!-- 		} -->
+<!-- 	} -->
+<!---->
+<!-- 	.invert { -->
+<!-- 		position: absolute; -->
+<!-- 		color: var(--t-fg); -->
+<!-- 		display: flex; -->
+<!-- 		align-items: center; -->
+<!-- 		justify-content: center; -->
+<!-- 		width: 100%; -->
+<!-- 		height: 100%; -->
+<!-- 		top: 0; -->
+<!-- 		left: 0; -->
+<!-- 		pointer-events: none; -->
+<!-- 		clip-path: polygon(0% 100%, 100% 100%, 100% 200%, 0% 200%); -->
+<!-- 		transition: clip-path cubic-bezier(0.4, 0, 0.5, 1) 150ms; -->
+<!-- 	} -->
+<!-- </style> -->

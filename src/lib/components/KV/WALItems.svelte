@@ -1,11 +1,17 @@
 <script lang="js">
-	/** @type {Array<{id:number, content: string}>} */
-	export let messages;
+	
 
 	import { fade, fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 
 	import WALItem from '$lib/components/KV/WALItem.svelte';
+	/**
+	 * @typedef {Object} Props
+	 * @property {Array<{id:number, content: string}>} messages
+	 */
+
+	/** @type {Props} */
+	let { messages } = $props();
 </script>
 
 <div>

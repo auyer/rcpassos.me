@@ -3,8 +3,15 @@
 	import { onMount } from 'svelte';
 	import Card from './Card.svelte';
 
-	/** @type {Array<{headings: { depth: Number, value: String, id: String}}>} */
-	export let post;
+	
+	/**
+	 * @typedef {Object} Props
+	 * @property {Array<{headings: { depth: Number, value: String, id: String}}>} post
+	 * @property {import('svelte').Snippet} [children]
+	 */
+
+	/** @type {Props} */
+	let { post, children } = $props();
 
 	/** @type {Array<HTMLInputElement>} */
 	let elements = [];
@@ -16,12 +23,12 @@
 		setActiveHeading();
 	});
 
-	let tocFullyVisible = true;
+	let tocFullyVisible = $state(true);
 	// the current heading in view
-	let activeHeading = headings[0];
+	let activeHeading = $state(headings[0]);
 	// a subset of headings that are visible in the toc
 	// when scroling down, the headings will be omitted from the top
-	let visibleHeadings = headings;
+	let visibleHeadings = $state(headings);
 
 	/** @type {Number} */
 	let scrollY;
@@ -61,43 +68,45 @@
 	}
 </script>
 
-<svelte:window on:scroll={setActiveHeading} />
+<svelte:window onscroll={setActiveHeading} />
 
 <Card>
-	<slot slot="description">
-		<ul class="flex flex-col gap-2">
-			<p>Table of Contents</p>
-			{#if !tocFullyVisible}
-				<li class="pl-2 text-zinc-500 dark:text-zinc-600">...</li>
-			{/if}
-			{#each visibleHeadings as heading}
-				<li
-					class="pl-2 transition-colors border-teal-500 heading text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100"
-					class:active={activeHeading === heading}
-					style={`--depth: ${
-						// consider h1 and h2 at the same depth, as h1 will only be used for page title
-						Math.max(0, heading.depth - 1)
-					}`}
-				>
-					{#if heading.depth >= 1}{'-'.repeat(heading.depth - 1)}{/if}
-					<a href={`#${heading.id}`}>{heading.value}</a>
-				</li>
-			{/each}
-		</ul>
-	</slot>
+	{#snippet description()}
+		{#if children}{@render children()}{:else}
+			<ul class="flex flex-col gap-2">
+				<p>Table of Contents</p>
+				{#if !tocFullyVisible}
+					<li class="pl-2 text-zinc-500 dark:text-zinc-600">...</li>
+				{/if}
+				{#each visibleHeadings as heading}
+					<li
+						class="pl-2 transition-colors border-teal-500 heading text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100"
+						class:active={activeHeading === heading}
+						style={`--depth: ${
+							// consider h1 and h2 at the same depth, as h1 will only be used for page title
+							Math.max(0, heading.depth - 1)
+						}`}
+					>
+						{#if heading.depth >= 1}{'-'.repeat(heading.depth - 1)}{/if}
+						<a href={`#${heading.id}`}>{heading.value}</a>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+	{/snippet}
 </Card>
 
-<style lang="postcss">
-	.heading {
-		padding-left: calc(var(--depth, 0) * 0.35rem);
-	}
-
-	.active {
-		@apply font-medium text-slate-900 border-l-2 -ml-[2px];
-	}
-
-	/* can't use dark: modifier in @apply */
-	:global(.dark) .active {
-		@apply text-slate-100;
-	}
-</style>
+<!-- <style lang="postcss"> -->
+<!-- 	.heading { -->
+<!-- 		padding-left: calc(var(--depth, 0) * 0.35rem); -->
+<!-- 	} -->
+<!---->
+<!-- 	.active { -->
+<!-- 		@apply font-medium text-slate-900 border-l-2 -ml-[2px]; -->
+<!-- 	} -->
+<!---->
+<!-- 	/* can't use dark: modifier in @apply */ -->
+<!-- 	:global(.dark) .active { -->
+<!-- 		@apply text-slate-100; -->
+<!-- 	} -->
+<!-- </style> -->

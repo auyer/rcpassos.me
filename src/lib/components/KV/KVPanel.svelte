@@ -1,15 +1,13 @@
 <script lang="js">
-	export let panelResults =
-		'There are no results to display yet.\nUse the actions above to see results here.';
 
 	/** @type {string} */
-	let key;
+	let key = $state();
 	/** @type {string} */
-	let keyClass;
+	let keyClass = $state();
 	/** @type {string} */
-	let value;
+	let value = $state();
 	/** @type {string} */
-	let valueClass;
+	let valueClass = $state();
 
 	/**
 	 * @param {string} value
@@ -113,12 +111,19 @@
 
 	/** @type {boolean} */
 	let isFocused = true;
-	import { focusTrap, CodeBlock } from '@skeletonlabs/skeleton';
+	/**
+	 * @typedef {Object} Props
+	 * @property {string} [panelResults]
+	 */
+
+	/** @type {Props} */
+	let { panelResults = 'There are no results to display yet.\nUse the actions above to see results here.' } = $props();
 </script>
 
 <div class="card p-4 m-2 space-y-4">
 	<h2>Interactive area</h2>
-	<form use:focusTrap={isFocused}>
+	<!-- <form use:focusTrap={isFocused}> -->
+	<form>
 		<label class="label">
 			<span>Key</span>
 			<input class="input {keyClass}" type="text" placeholder="Key" bind:value={key} />
@@ -130,18 +135,18 @@
 	</form>
 
 	<div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 p-2">
-		<button class="btn variant-filled-primary text-center" on:click={getKey}>Read</button>
-		<button class="btn variant-filled-primary text-center" on:click={putKey}>Put Key</button>
-		<button class="btn variant-filled text-center" on:click={listKeys}>List</button>
-		<button class="btn variant-filled text-center" on:click={listPrefix}>List Prefix</button>
+		<button class="btn variant-filled-primary text-center" onclick={getKey}>Read</button>
+		<button class="btn variant-filled-primary text-center" onclick={putKey}>Put Key</button>
+		<button class="btn variant-filled text-center" onclick={listKeys}>List</button>
+		<button class="btn variant-filled text-center" onclick={listPrefix}>List Prefix</button>
 
-		<button class="btn variant-filled-warning text-center" on:click={deleteKey}>Delete</button>
-		<button class="btn variant-filled-warning text-center" on:click={deletePrefix}
+		<button class="btn variant-filled-warning text-center" onclick={deleteKey}>Delete</button>
+		<button class="btn variant-filled-warning text-center" onclick={deletePrefix}
 			>Delete Prefix</button
 		>
-		<button class="btn variant-filled-warning text-center" on:click={deleteAll}>Delete All</button>
+		<button class="btn variant-filled-warning text-center" onclick={deleteAll}>Delete All</button>
 
-		<button class="btn btn-sm variant-filled-error align-top" on:click={cancelBg}>
+		<button class="btn btn-sm variant-filled-error align-top" onclick={cancelBg}>
 			Stop
 			<br />
 			Background Job
@@ -149,6 +154,10 @@
 	</div>
 	<div class="gap-2">
 		<h2>Results area</h2>
-		<CodeBlock code={panelResults} />
+		<div class="mockup-code w-full">
+			<pre data-prefix="$"><code>{panelResults}</code></pre>
+			<pre data-prefix=">" class="text-warning"><code>installing...</code></pre>
+			<pre data-prefix=">" class="text-success"><code>Done!</code></pre>
+		</div>
 	</div>
 </div>
