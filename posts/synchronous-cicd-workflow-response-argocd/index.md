@@ -1,6 +1,6 @@
 ---
 title: Synchronous CI/CD results for K8S Deployments with ArgoCD
-date: 2025-07-21
+date: 2025-07-31
 ---
 
 > This will be a short one.
@@ -112,6 +112,8 @@ The `--insecure --plaintext` flags deal with this.
 This is not an issue, because the tunnel opened by kubectl is encrypted with TLS.
 
 ```bash
+# ensure argo cli will use the correct namespace
+kubectl config set-context --current --namespace=argocd
 # binds port 80 from argocd service to local port 8080, in background
 kubectl port-forward svc/argocd-server 8080:80 -n argocd & \
 # waits up to 60s for the port to be open, using netcat to check
@@ -120,7 +122,7 @@ echo "Tunnel open" && \
 argocd login localhost:8080 \
  --username ${ARGOCD_USERNAME} \
  --password ${ARGOCD_PASSWORD} \
- --insecure --plaintext
+ --insecure --plaintext --http-retry-max 3 --core
 ```
 
 At this point, we are connected and authenticated with ArgoCD.
@@ -163,6 +165,8 @@ ARGOCD_PASSWORD=$(kubectl get secret argocd-initial-admin-secret -n argocd \
 ARGOCD_USERNAME=$(kubectl get secret argocd-initial-admin-secret -n argocd \
            -o jsonpath="{.data.username}" | base64 -d && echo)
 
+# ensure argo cli will use the correct namespace
+kubectl config set-context --current --namespace=argocd
 # binds port 80 from argocd service to local port 8080, in background
 kubectl port-forward svc/argocd-server 8080:80 -n argocd & \
 # waits up to 60s for the port to be open, using netcat to check
@@ -171,7 +175,7 @@ echo "Tunnel open" &&\
 argocd login localhost:8080 \
  --username ${ARGOCD_USERNAME} \
  --password ${ARGOCD_PASSWORD} \
- --insecure --plaintext
+ --insecure --plaintext --http-retry-max 3 --core
 # if Sync already running, status 20 is returned
 argocd app sync ${APP_NAME} -N ${APP_NAMESPACE} || {
  status=$?
@@ -187,4 +191,3 @@ argocd app sync ${APP_NAME} -N ${APP_NAMESPACE} || {
 # now wait for the final status to be reported
 argocd app wait ${APP_NAME} -N ${APP_NAMESPACE}
 ```
-
