@@ -1,10 +1,9 @@
 ---
-title: Synchronous CI/CD results for K8S Deployments with ArgoCD
+title: 'ArgoCD: Synchronous CI/CD results for K8S Deployments'
 date: 2025-07-31
 ---
 
-> This will be a short one.
-> ArgoCD syncronizes application status in Kubernetes, usually tracking a git commit or helm chart tag.
+> ArgoCD syncronizes application status in Kubernetes, usually tracking a git commit, branch or helm chart tag.
 > When building and deploying from a CI/CD workflow, I want an instant success/failure response.
 > This post describes how I did it.
 
