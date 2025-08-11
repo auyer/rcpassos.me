@@ -4,7 +4,9 @@
 
 <div class="w-full justify-center lg:w-4/6 mx-auto overflow-x-hidden">
 	<article class="prose max-w-none">
-		<header class="flex flex-col"></header>
+		<header class="flex flex-col">
+		<h1>Streamlining Analyses on the Linux Kernel with DUKS</h1>
+		</header>
 		<div class="prose max-w-5xl dark:prose-invert">
 			<p>This article was accepted by the IEEE VISSOFT 2025, Visualization Challenge Track.</p>
 			<p>

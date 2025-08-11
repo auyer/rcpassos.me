@@ -2,7 +2,7 @@
 	// TODO: generate this dynamically
 	const papers = [
 		{
-			name: 'Linux kernel With DUKS',
+			name: 'Streamlining Analyses on the Linux Kernel with DUKS',
 			published: '13th IEEE VISSOFT',
 			year: 2025,
 			url: 'research/linux-kernel-with-DUKS-vissoft-2025'
@@ -15,7 +15,7 @@
 </script>
 
 <div class="flex mx-auto lg:max-w-none items-center justify-center">
-	<div class="max-w-2xl w-full rounded-lg shadow-lg p-6 md:p-8 space-y-6">
+	<div class="max-w-4xl w-full rounded-lg shadow-lg p-6 md:p-8 space-y-6">
 		<header class="border-b border-slate-200 pb-4">
 			<h1 class="text-3xl font-bold text-slate-800">Research Preprint Repository</h1>
 			<p class="text-slate-500 mt-1">My academic contributions and research</p>
