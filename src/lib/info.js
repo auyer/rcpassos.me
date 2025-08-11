@@ -15,7 +15,7 @@ This blog is a place where I share fun experiences.
 A personal incentive to keep learning.
 100% human, no artificial anything.`;
 
-export const bio_splitted = bio.split(/\n/).map((line) => line.replace(/\.$/, ""));
+export const bio_splitted = bio.split(/\n/).map((line) => line.replace(/\.$/, ''));
 
 // Your social usernames, empty strings won't be used.
 // For sake of the live demo, I'm using `username/repo` for github,
@@ -23,5 +23,5 @@ export const bio_splitted = bio.split(/\n/).map((line) => line.replace(/\.$/, ""
 export const github = 'auyer';
 export const linkedin = 'passosRafael';
 export const medium = '@rcpassos';
-export const bluesky = "auyer.rcpassos.me";
+export const bluesky = 'auyer.rcpassos.me';
 export const stackoverflow = '5621569/auyer?tab=profile';

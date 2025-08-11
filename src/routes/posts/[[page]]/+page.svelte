@@ -17,7 +17,10 @@
 <div class="flex flex-col flex-grow">
 	<header class="pt-4">
 		<h1 class="lg:text-4xl font-bold tracking-tight md:text-2xl text-xl">Check my posts:</h1>
-		<p>A human writes theses posts. Any inaccuracies are probably my own fault — no text generation used.</p>
+		<p>
+			A human writes theses posts. Any inaccuracies are probably my own fault — no text generation
+			used.
+		</p>
 	</header>
 
 	<div class="mt-16 sm:mt-20">
