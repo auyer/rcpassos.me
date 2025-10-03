@@ -6,6 +6,13 @@
 			published: '13th IEEE VISSOFT',
 			year: 2025,
 			url: 'research/linux-kernel-with-DUKS-vissoft-2025'
+		},
+		{
+			name: 'DUKS: visualizações e análises unificadas para o Kernel Linux',
+			published: 'XIII VEM (CBSoft)',
+			year: 2025,
+			language: 'PT-BR 🇧🇷',
+			url: 'https://doi.org/10.5753/vem.2025.14637'
 		}
 	];
 
@@ -44,9 +51,12 @@
 							<a href={paper.url} class="text-blue-600 hover:text-blue-800 hover:underline">
 								{paper.name}
 							</a>
-							<p>
+							<p class="text-md">
 								{paper.published}
 							</p>
+							{#if paper.language}
+								<p class="text-sm text-end ml-auto" > {paper.language}</p>
+							{/if}
 						</li>
 					</div>
 				{/each}
