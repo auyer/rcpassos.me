@@ -22,10 +22,10 @@
 				<img class="profile" src={avatar_png} alt={name} />
 			</picture>
 			<div>
-				<span class="role">💻 Software Engineer<span class="invert">💻 Software Engineer</span>
+				<span class="role"
+					>💻 Software Engineer<span class="invert">💻 Software Engineer</span>
 				</span>
-				<span class="role">📡 Researcher<span class="invert">📡 Researcher</span>
-				</span>
+				<span class="role">📡 Researcher<span class="invert">📡 Researcher</span> </span>
 				<span class="role">
 					🐧 FOSS & Linux Enthusiast
 					<span class="invert">🐧 FOSS & Linux Enthusiast</span>

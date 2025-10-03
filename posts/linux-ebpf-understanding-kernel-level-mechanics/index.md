@@ -2,6 +2,7 @@
 title: 'Linux eBPF : Understanding Its Kernel-Level Mechanics'
 date: 2024-06-12T00:00:00.000Z
 ---
+
 My first contact with eBPF was reading about a networking tool for Kubernetes called Cilium.
 They advertised interesting performance improvements compared to similar tools, and it was all thanks to eBPF: a technology that allows us to run small programs inside the Linux Kernel.
 This short description gave me a high-level view that allowed me to explore, without really understanding how it worked (which is fine).
@@ -1060,4 +1061,3 @@ bpftrace -l 'tracepoint:*'
 
 There are some one-liner examples, and other more complex scripts that can be run with bpftrace.
 Check more in their repository [github.com/bpftrace/bpftrace](https://github.com/bpftrace/bpftrace).
-

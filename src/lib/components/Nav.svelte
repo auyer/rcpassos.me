@@ -60,6 +60,13 @@
 							Posts
 						</a>
 						<a
+							class="block lg:inline-block btn no-underline {classesActive('/research')}"
+							href="/research"
+							data-sveltekit-preload-data="hover"
+						>
+							Research
+						</a>
+						<a
 							class="block lg:inline-block btn no-underline {classesActive('/projects/kv')}"
 							href="/projects"
 							data-sveltekit-preload-data="hover">Projects</a
