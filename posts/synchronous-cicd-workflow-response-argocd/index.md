@@ -1,23 +1,23 @@
 ---
-title: 'ArgoCD: Synchronous CI/CD results for K8S Deployments'
-date: 2025-07-31
+title: 'Synchronous CI/CD feedback for K8S Deployments with ArgoCD'
+date: 2025-10-14
 ---
 
-> ArgoCD syncronizes application status in Kubernetes, usually tracking a git commit, branch or helm chart tag.
+> ArgoCD synchronizes application status in Kubernetes, usually tracking a git commit, branch, or Helm chart tag.
 > When building and deploying from a CI/CD workflow, I want an instant success/failure response.
 > This post describes how I did it.
 
 ## A Push inclined workflow
 
 My deployment strategy looks quite common for CI/CD workflows, although a bit uncommon (as far as I know) for ArgoCD.
-It is a common practice to have files updated by workflows in specific repositories or branches, and ArgoCD tracks it.
+It is a common practice to have files updated by workflows in specific repositories or branches, and ArgoCD tracks them.
 This is not what I did.
 
 I started deploying apps to different systems, where pushing an update is far more common than expecting the system to watch a git repository.
-This more traditional method is also what my team is used to.
+My team is also used to this more traditional method.
 
 I aim to keep the push-based structure running a workflow based on a push, or even a "tag/release".
-But I still want to benefit from ArgoCD auto-sync, and its great user interface.
+But I still want to benefit from ArgoCD auto-sync and its excellent user interface.
 
 ## Describing my workflow
 
@@ -95,8 +95,8 @@ ARGOCD_USERNAME=$(kubectl get secret argocd-initial-admin-secret \
          -n argocd -o jsonpath="{.data.username}" | base64 -d && echo)
 ```
 
-Since this workflow is shared across multiple applications, these next steps will read the application name and namespace from its YAML file.
-It is the relative path to the application YAML definition.
+Since this workflow is shared across multiple applications, the following steps will read the application name and namespace from its YAML file.
+It is the relative path to the definition of the application YAML.
 
 ```bash
 APP_NAME=$(cat ${{ inputs.argo_applications_path }} | yq -r .metadata.name)
@@ -106,14 +106,14 @@ echo "Running sync for $APP_NAME"
 
 To connect to ArgoCD, we will use kubectl to forward the port to the Argo service.
 Using the credentials we collected before, we can authenticate to the API.
-Note that no HTTPS certificate validation can occur since we are using the http port and a local domain (localhost).
+No HTTPS certificate validation can occur since we use the HTTP port and a local domain (localhost).
 The `--insecure --plaintext` flags deal with this.
-This is not an issue, because the tunnel opened by kubectl is encrypted with TLS.
+This is not an issue because the tunnel opened by kubectl is encrypted with TLS.
 
 ```bash
 # ensure argo cli will use the correct namespace
 kubectl config set-context --current --namespace=argocd
-# binds port 80 from argocd service to local port 8080, in background
+# binds port 80 from argocd service to local port 8080, in the background
 kubectl port-forward svc/argocd-server 8080:80 -n argocd & \
 # waits up to 60s for the port to be open, using netcat to check
 timeout 60 sh -c 'until nc -z $0 $1; do sleep 1; done' localhost 8080 && \
@@ -126,15 +126,15 @@ argocd login localhost:8080 \
 
 At this point, we are connected and authenticated with ArgoCD.
 We will call the sync command.
-But it is possible that the `sync` progress started automatically after applying the application YAML.
-If so, ArgoCD will return an error, with status code 20.
-We run sync and check the code.
+However, it is possible that the `sync` progress started automatically after the YAML application was applied.
+If so, ArgoCD will return an error with status code 20.
+We run Sync and check the code.
 If it runs, we run `wait` before syncing manually.
 
 ```bash
 argocd app sync ${APP_NAME} -N ${APP_NAMESPACE} || {
  status=$?
- # if Sync already running, status 20 is returned
+ # If Sync is already running, status 20 is returned
  if [ $status -eq 20 ]; then
    echo "Sync in progress. Running wait before re-issuing a sync."
    argocd app wait ${APP_NAME} -N ${APP_NAMESPACE} && \
@@ -150,8 +150,8 @@ argocd app wait ${APP_NAME} -N ${APP_NAMESPACE}
 
 ## Complete script
 
-The steps described above provide a way to get results from ArgoCD synchronously, and get instant results from the deployment workflow.
-To put it all together, take this following script and run in a bash step.
+The steps described above provide a way to synchronously get results from ArgoCD and instant results from the deployment workflow.
+To put it all together, take the following script and run it in a bash step.
 
 ```bash
 set -o pipefail
@@ -166,7 +166,7 @@ ARGOCD_USERNAME=$(kubectl get secret argocd-initial-admin-secret -n argocd \
 
 # ensure argo cli will use the correct namespace
 kubectl config set-context --current --namespace=argocd
-# binds port 80 from argocd service to local port 8080, in background
+# binds port 80 from argocd service to local port 8080, in the background
 kubectl port-forward svc/argocd-server 8080:80 -n argocd & \
 # waits up to 60s for the port to be open, using netcat to check
 timeout 60 sh -c 'until nc -z $0 $1; do sleep 1; done' localhost 8080 &&\
@@ -175,7 +175,7 @@ argocd login localhost:8080 \
  --username ${ARGOCD_USERNAME} \
  --password ${ARGOCD_PASSWORD} \
  --insecure --plaintext --http-retry-max 3 --core
-# if Sync already running, status 20 is returned
+# if Sync is already running, status 20 is returned
 argocd app sync ${APP_NAME} -N ${APP_NAMESPACE} || {
  status=$?
  if [ $status -eq 20 ]; then
@@ -190,3 +190,4 @@ argocd app sync ${APP_NAME} -N ${APP_NAMESPACE} || {
 # now wait for the final status to be reported
 argocd app wait ${APP_NAME} -N ${APP_NAMESPACE}
 ```
+
