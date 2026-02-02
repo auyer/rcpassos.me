@@ -22,7 +22,15 @@
 			published: 'DebConf25 Brest',
 			year: 2025,
 			url: 'https://hal.science/hal-05334509'
-		}
+		},
+		{
+			name: 'Estratégias de ensino para incentivar a participação consistente em projetos de Software Livre',
+			published: 'XIII VEM (CBSoft)',
+			year: 2025,
+			language: 'PT-BR 🇧🇷',
+			url: 'https://doi.org/10.5753/vem.2025.14524'
+		},
+		
 	];
 
 	// Author's ORCID information
