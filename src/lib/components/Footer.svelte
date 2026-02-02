@@ -3,7 +3,6 @@
 
 <footer class="footer">
 	&copy; {new Date().getFullYear()} Rafael Passos
-	<small class="line">🚀 Built with SvelteKit</small>
 </footer>
 
 <style lang="scss">
