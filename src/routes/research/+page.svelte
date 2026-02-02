@@ -16,6 +16,15 @@
 		}
 	];
 
+	const co_papers = [
+		{
+			name: 'Guidelines for Boosting Long-Lasting FLOSS Contributors',
+			published: 'DebConf25 Brest',
+			year: 2025,
+			url: 'https://hal.science/hal-05334509'
+		}
+	];
+
 	// Author's ORCID information
 	const orcidId = '0009-0003-3657-5519';
 	const orcidUrl = `https://orcid.org/${orcidId}`;
@@ -45,6 +54,27 @@
 			<h3 class="text-xl font-semibold text-slate-700 mb-3">Publications</h3>
 			<ul class="space-y-3">
 				{#each papers as paper, i}
+					<div class="card p-4 m-2 space-y-4">
+						<li class="flex items-start gap-3">
+							<span>{paper.year} -</span>
+							<a href={paper.url} class="text-blue-600 hover:text-blue-800 hover:underline">
+								{paper.name}
+							</a>
+							<p class="text-md">
+								{paper.published}
+							</p>
+							{#if paper.language}
+								<p class="text-sm text-end ml-auto" > {paper.language}</p>
+							{/if}
+						</li>
+					</div>
+				{/each}
+			</ul>
+		</section>
+		<section>
+			<h3 class="text-xl font-semibold text-slate-700 mb-3">Contributions</h3>
+			<ul class="space-y-3">
+				{#each co_papers as paper, i}
 					<div class="card p-4 m-2 space-y-4">
 						<li class="flex items-start gap-3">
 							<span>{paper.year} -</span>
