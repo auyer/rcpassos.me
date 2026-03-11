@@ -27,7 +27,7 @@ My second approach was to log (`printk`) messages in all the functions listed in
 One challenge with this approach was identifying the functions that were used as methods in the Kernel's Object-Oriented model.
 This was very verbose and led me to spend a lot of time reading code, but I didn't get any real results.
 
-It was only after that that I decided to contact my colleague, David Tadokoro. He suggested a different approach: git bisect.
+It was only after that that I decided to contact my colleague, [David Tadokoro](https://davidbtadokoro.github.io). He suggested a different approach: git bisect.
 At this point, I decided to send my public report, announcing I would attempt to bisect it: check [My bug report in the Mailing list](https://lore.kernel.org/amd-gfx/DGQ49PK0QE7U.3O1AQPSD6NI7I@rcpassos.me/).
 
 ## Git Bisect
