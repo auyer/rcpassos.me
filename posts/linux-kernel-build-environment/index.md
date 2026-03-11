@@ -1011,6 +1011,7 @@ For compiling the Linux Kernel:
 Or using the dependencies specified in the [Linux PKGBUILD](https://gitlab.archlinux.org/archlinux/packaging/packages/linux/-/blob/main/PKGBUILD):
 
 ```bash
+# arch:
 pacman -S base-devel \
   make \
   bc \
@@ -1022,6 +1023,22 @@ pacman -S base-devel \
   python \
   tar \
   xz
+
+#debian:
+sudo apt install \
+	build-essential \
+	flex \
+	bison \
+	bc \
+	cpio \
+	pahole \
+	perl \
+	libelf-dev \
+	libssl-dev \
+	sqlite3 \
+	rsync
+
+(last two for kw)
 ```
 
 For cross compilation:
