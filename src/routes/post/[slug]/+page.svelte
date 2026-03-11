@@ -4,7 +4,10 @@
 	import ArrowLeftIcon from '$lib/components/ArrowLeftIcon.svelte';
 	import SocialLinks from '$lib/components/SocialLinks.svelte';
 	import { afterNavigate } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import PostDate from '$lib/components/PostDate.svelte';
+	import 'katex/dist/katex.min.css';
+	import katex from 'katex';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -31,6 +34,115 @@
 			history.back();
 		}
 	}
+
+	// Render KaTeX formulas in an element
+	function renderMathInElement(element) {
+		if (!element || typeof window === 'undefined') return;
+
+		// Process inline math: $...$
+		const elementsWithText = element.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, td, th');
+		elementsWithText.forEach((el) => {
+			// Skip if already processed (has katex children)
+			if (el.querySelector('.katex')) return;
+
+			const text = el.textContent;
+			const inlineRegex = /\$([^\$\n]+?)\$/g;
+			let match;
+			let hasMatch = false;
+
+			// Check if there are matches first
+			while ((match = inlineRegex.exec(text)) !== null) {
+				hasMatch = true;
+				break;
+			}
+
+			if (!hasMatch) return;
+
+			// Reset regex and process
+			inlineRegex.lastIndex = 0;
+			const parts = text.split(inlineRegex);
+			const fragment = document.createDocumentFragment();
+
+			for (let i = 0; i < parts.length; i++) {
+				if (i % 2 === 0) {
+					// Text part
+					if (parts[i]) {
+						fragment.appendChild(document.createTextNode(parts[i]));
+					}
+				} else {
+					// Math part
+					try {
+						const rendered = katex.renderToString(parts[i], {
+							displayMode: false,
+							throwOnError: false
+						});
+						const span = document.createElement('span');
+						span.innerHTML = rendered;
+						fragment.appendChild(span);
+					} catch (e) {
+						fragment.appendChild(document.createTextNode('$' + parts[i] + '$'));
+					}
+				}
+			}
+
+			el.innerHTML = '';
+			el.appendChild(fragment);
+		});
+
+		// Process display math: $$...$$
+		const allTextNodes = [];
+		const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+		let node;
+		while ((node = walker.nextNode())) {
+			if (node.textContent.includes('$$')) {
+				allTextNodes.push(node);
+			}
+		}
+
+		allTextNodes.forEach((textNode) => {
+			const text = textNode.textContent;
+			const parts = text.split(/\$\$([\s\S]+?)\$\$/g);
+
+			if (parts.length === 1) return;
+
+			const fragment = document.createDocumentFragment();
+
+			for (let i = 0; i < parts.length; i++) {
+				if (!parts[i]) continue;
+
+				if (i % 2 === 0) {
+					// Text part
+					fragment.appendChild(document.createTextNode(parts[i]));
+				} else {
+					// Math part (display mode)
+					try {
+						const rendered = katex.renderToString(parts[i].trim(), {
+							displayMode: true,
+							throwOnError: false
+						});
+						const div = document.createElement('div');
+						div.className = 'katex-display';
+						div.innerHTML = rendered;
+						fragment.appendChild(div);
+					} catch (e) {
+						fragment.appendChild(document.createTextNode('$$' + parts[i] + '$$'));
+					}
+				}
+			}
+
+			textNode.parentNode.replaceChild(fragment, textNode);
+		});
+	}
+
+	onMount(() => {
+		const article = document.querySelector('article');
+		renderMathInElement(article);
+
+		afterNavigate(() => {
+			const article = document.querySelector('article');
+			renderMathInElement(article);
+		});
+	});
 </script>
 
 <svelte:head>
