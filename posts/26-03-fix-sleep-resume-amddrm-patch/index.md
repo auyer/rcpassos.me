@@ -65,14 +65,16 @@ The affected function used to call the register read from the "hwseq" layer. The
 What we got right:
 
 - We found a register missing from the definition in this new module. The `MICROSECOND_TIME_BASE_DIV` register address was set to the structs by a few macros in "hwseq", but not in "dccg". We added it.
-- The init function was checking for a value that was never present in the register. We added a new `init` function specific to this driver (because we couldn't know if other cards were affected).
+- The init function was overwriting a value in the register (and this was on the wrong offset).
+- The `dcn21_s0i3_golden_init_wa` function expected to find the `0x120464` value, but the init function was setting `0x120264`. We added a new `init` function specific to this driver (because we couldn't know if other cards were affected), and it set the value expected by the check.
 
 Turns out a developer had sent his changes in the middle of a larger patchset (still unmerged), and did not update our thread.
-In his changes, he added a few other registers that were missing, and actually stopped setting the value in the init function. This value was set in the BIOS, and there was no need to set it again in the Kernel.
+In his changes, he added a few other registers that were missing, and actually stopped setting the value in the init function. This value was set in the BIOS, and there was no need to set it again in the Kernel (the change we made to the init function was unnecessary).
+
 
 ## Conclusion
 
 We learned a lot, and it was very fun to work with my colleague.
 But we didn't land a nice bugfix patch.
-At least we got a [response in our thread](https://lore.kernel.org/amd-gfx/ad3244e8-96a0-4d60-9047-cc20720c6dd2@amd.com/)  with a Thank You :).
+At least we got a [response in our thread](https://lore.kernel.org/amd-gfx/ad3244e8-96a0-4d60-9047-cc20720c6dd2@amd.com/) with a Thank You :).
 Wish us better luck next time!
