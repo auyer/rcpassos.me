@@ -29,8 +29,7 @@
 			year: 2025,
 			language: 'PT-BR 🇧🇷',
 			url: 'https://doi.org/10.5753/vem.2025.14524'
-		},
-		
+		}
 	];
 
 	// Author's ORCID information
@@ -39,19 +38,19 @@
 </script>
 
 <div class="flex mx-auto lg:max-w-none items-center justify-center">
-	<div class="max-w-4xl w-full rounded-lg shadow-lg p-6 md:p-8 space-y-6">
-		<header class="border-b border-slate-200 pb-4">
-			<h1 class="text-3xl font-bold text-slate-800">Research Preprint Repository</h1>
-			<p class="text-slate-500 mt-1">My academic contributions and research</p>
+	<div class="max-w-4xl w-full rounded-lg shadow-lg p-6 md:p-8 space-y-6 bg-white border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
+		<header class="border-b border-zinc-200 pb-4 dark:border-zinc-800">
+			<h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100">Research Preprint Repository</h1>
+			<p class="text-zinc-600 mt-1 dark:text-zinc-400">My academic contributions and research</p>
 		</header>
 		<section>
-			<h3 class="text-xl font-semibold text-slate-700 mb-3">My ORCID:</h3>
+			<h3 class="text-xl font-semibold text-zinc-800 mb-3 dark:text-zinc-200">My ORCID:</h3>
 			<p>
 				<a
 					href={orcidUrl}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="inline-flex items-center gap-2 text-gray-600 text-3xl hover:text-green-600 transition-colors group"
+					class="inline-flex items-center gap-2 text-zinc-700 text-3xl hover:text-green-600 transition-colors group dark:text-zinc-300 dark:hover:text-green-400"
 				>
 					<img src="/assets/ORCID_iD.svg" alt="ORCID iD" width="50" height="50" />
 					<span class="font-mono tracking-wide group-hover:underline">{orcidId}</span>
@@ -59,20 +58,20 @@
 			</p>
 		</section>
 		<section>
-			<h3 class="text-xl font-semibold text-slate-700 mb-3">Publications</h3>
+			<h3 class="text-xl font-semibold text-zinc-800 mb-3 dark:text-zinc-200">Publications</h3>
 			<ul class="space-y-3">
 				{#each papers as paper, i}
-					<div class="card p-4 m-2 space-y-4">
+					<div class="card p-4 m-2 space-y-4 border border-zinc-200 bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700">
 						<li class="flex items-start gap-3">
-							<span>{paper.year} -</span>
-							<a href={paper.url} class="text-blue-600 hover:text-blue-800 hover:underline">
+							<span class="text-zinc-600 dark:text-zinc-400">{paper.year} -</span>
+							<a href={paper.url} class="text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
 								{paper.name}
 							</a>
-							<p class="text-md">
+							<p class="text-zinc-700 dark:text-zinc-300">
 								{paper.published}
 							</p>
 							{#if paper.language}
-								<p class="text-sm text-end ml-auto" > {paper.language}</p>
+								<p class="text-sm text-zinc-500 text-end ml-auto dark:text-zinc-500">{paper.language}</p>
 							{/if}
 						</li>
 					</div>
@@ -80,20 +79,20 @@
 			</ul>
 		</section>
 		<section>
-			<h3 class="text-xl font-semibold text-slate-700 mb-3">Contributions</h3>
+			<h3 class="text-xl font-semibold text-zinc-800 mb-3 dark:text-zinc-200">Contributions</h3>
 			<ul class="space-y-3">
 				{#each co_papers as paper, i}
-					<div class="card p-4 m-2 space-y-4">
+					<div class="card p-4 m-2 space-y-4 border border-zinc-200 bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700">
 						<li class="flex items-start gap-3">
-							<span>{paper.year} -</span>
-							<a href={paper.url} class="text-blue-600 hover:text-blue-800 hover:underline">
+							<span class="text-zinc-600 dark:text-zinc-400">{paper.year} -</span>
+							<a href={paper.url} class="text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
 								{paper.name}
 							</a>
-							<p class="text-md">
+							<p class="text-zinc-700 dark:text-zinc-300">
 								{paper.published}
 							</p>
 							{#if paper.language}
-								<p class="text-sm text-end ml-auto" > {paper.language}</p>
+								<p class="text-sm text-zinc-500 text-end ml-auto dark:text-zinc-500">{paper.language}</p>
 							{/if}
 						</li>
 					</div>

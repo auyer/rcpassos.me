@@ -5,11 +5,15 @@
 <div class="w-full justify-center lg:w-4/6 mx-auto overflow-x-hidden">
 	<article class="prose max-w-none">
 		<header class="flex flex-col">
-		<h1>Streamlining Analyses on the Linux Kernel with DUKS</h1>
+			<h1>Streamlining Analyses on the Linux Kernel with DUKS</h1>
 		</header>
 		<div class="prose max-w-5xl dark:prose-invert">
 			<p>This article was accepted by the IEEE VISSOFT 2025, Visualization Challenge Track.</p>
-			<p>Published by IEEE: <a href="https://doi.org/10.1109/VISSOFT67405.2025.00025">10.1109/VISSOFT67405.2025.00025</a></p>
+			<p>
+				Published by IEEE: <a href="https://doi.org/10.1109/VISSOFT67405.2025.00025"
+					>10.1109/VISSOFT67405.2025.00025</a
+				>
+			</p>
 			<p>
 				DUKS an innovative framework that supports multiple visualizations and data analyses
 				previously unsupported for the Linux kernel. Using the Linux kernel mainline as an example,
@@ -25,7 +29,9 @@
 				obtained for all other uses, in any current or future media, including
 				reprinting/republishing this material for advertising or promotional purposes, creating new
 				collective works, for resale or redistribution to servers or lists, or reuse of any
-				copyrighted component of this work in other works. DOI: <a href="https://doi.org/10.1109/VISSOFT67405.2025.00025">10.1109/VISSOFT67405.2025.00025</a>
+				copyrighted component of this work in other works. DOI: <a
+					href="https://doi.org/10.1109/VISSOFT67405.2025.00025">10.1109/VISSOFT67405.2025.00025</a
+				>
 			</p>
 		</div>
 	</article>

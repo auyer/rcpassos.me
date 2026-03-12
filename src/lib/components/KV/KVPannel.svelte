@@ -113,12 +113,11 @@
 
 	/** @type {boolean} */
 	let isFocused = true;
-	import { focusTrap, CodeBlock } from '@skeletonlabs/skeleton';
 </script>
 
 <div class="card p-4 m-2 space-y-4">
 	<h2>Interactive area</h2>
-	<form use:focusTrap={isFocused}>
+	<form>
 		<label class="label">
 			<span>Key</span>
 			<input class="input {keyClass}" type="text" placeholder="Key" bind:value={key} />
@@ -149,6 +148,6 @@
 	</div>
 	<div class="gap-2">
 		<h2>Results area</h2>
-		<CodeBlock code={panelResults} />
+		<pre class="bg-surface-100-900 p-4 rounded-lg overflow-auto"><code>{panelResults}</code></pre>
 	</div>
 </div>

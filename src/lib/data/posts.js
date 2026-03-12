@@ -17,8 +17,10 @@ export const posts = Object.entries(import.meta.glob('/posts/**/*.md', { eager: 
 		// Remove frontmatter and get first paragraph
 		const contentWithoutFrontmatter = rawMarkdown.replace(/^---[\s\S]*?---\n/, '');
 		const firstParagraphMatch = contentWithoutFrontmatter.match(/^#\s+.*?\n\n([\s\S]*?)(?=\n\n|$)/);
-		const previewText = firstParagraphMatch ? firstParagraphMatch[1].trim() : contentWithoutFrontmatter.split('\n\n')[0];
-		
+		const previewText = firstParagraphMatch
+			? firstParagraphMatch[1].trim()
+			: contentWithoutFrontmatter.split('\n\n')[0];
+
 		const html = parse(`<p>${previewText}</p>`);
 		const preview = post.metadata.preview ? parse(post.metadata.preview) : html;
 

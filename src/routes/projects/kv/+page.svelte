@@ -140,17 +140,17 @@
 
 	import WALItems from '$lib/components/KV/WALItems.svelte';
 	import KVPanel from '$lib/components/KV/KVPanel.svelte';
-	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
+	import { Accordion } from '@skeletonlabs/skeleton-svelte';
 </script>
 
 <div class="gap-8">
 	<div class="card w-full max-w-6xl mx-auto m-5 p-2">
 		<Accordion>
-			<AccordionItem open>
-				<svelte:fragment slot="summary"
-					><h3 class="h3">MemoryKV: an in memory Key Value DB with Live a feed</h3></svelte:fragment
-				>
-				<svelte:fragment slot="content">
+			<Accordion.Item open>
+				<Accordion.ItemTrigger>
+					<h3 class="h3">MemoryKV: an in memory Key Value DB with Live a feed</h3>
+				</Accordion.ItemTrigger>
+				<Accordion.ItemContent>
 					<p>
 						This is a KV in memory database I built in Rust for learning purposes with a live feed
 						of the WAL (Write Ahead Log).
@@ -168,8 +168,8 @@
 						might come from other visitors.
 					</p>
 					Source code:<a href="http://github.com/auyer/MemoryKV">github.com/auyer/MemoryKV</a>
-				</svelte:fragment>
-			</AccordionItem>
+				</Accordion.ItemContent>
+			</Accordion.Item>
 		</Accordion>
 	</div>
 

@@ -87,7 +87,9 @@
 	</slot>
 </Card>
 
-<style lang="postcss">
+<style lang="scss">
+	@reference 'tailwindcss';
+
 	.heading {
 		padding-left: calc(var(--depth, 0) * 0.35rem);
 	}

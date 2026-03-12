@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
-	import { AppBar } from '@skeletonlabs/skeleton';
-	import { LightSwitch } from '@skeletonlabs/skeleton';
+	import { AppBar } from '@skeletonlabs/skeleton-svelte';
+	import LightSwitch from './LightSwitch.svelte';
 	import { onMount } from 'svelte';
 
 	/**
@@ -30,49 +30,46 @@
 	});
 </script>
 
-<div>
-	<AppBar slotTrail="place-content-end">
-		<svelte:fragment slot="lead">
-			<div class="flex items-center justify-between flex-wrap">
-				<div class="flex items-center flex-shrink-0 text-white mr-6">
-					<a class="btn min-w-fit" href="/" data-sveltekit-preload-data="hover">
-						<img src="/assets/logo.svg" alt="Auyer" width="30px" height="30px" />
+<AppBar>
+	<AppBar.Toolbar class="grid-cols-[auto_1fr_auto]">
+		<AppBar.Lead>
+			<div class="flex items-center flex-shrink-0 text-white mr-6">
+				<a class="btn min-w-fit" href="/" data-sveltekit-preload-data="hover">
+					<img src="/assets/logo.svg" alt="Auyer" width="30px" height="30px" />
+				</a>
+			</div>
+		</AppBar.Lead>
+		<AppBar.Trail>
+			<div
+				id="menu-content"
+				class="w-full block flex-grow lg:flex lg:items-center lg:w-auto lg:block hidden"
+			>
+				<div class="text-sm lg:flex-grow">
+					<a
+						class="block lg:inline-block btn no-underline {classesActive('/posts')}"
+						href="/posts"
+						data-sveltekit-preload-data="hover"
+					>
+						Posts
 					</a>
-				</div>
-				<div
-					id="menu-content"
-					class="w-full block flex-grow lg:flex lg:items-center lg:w-auto lg:block hidden"
-				>
-					<div class="text-sm lg:flex-grow">
-						<a
-							class="block lg:inline-block btn no-underline {classesActive('/posts')}"
-							href="/posts"
-							data-sveltekit-preload-data="hover"
-						>
-							Posts
-						</a>
-						<a
-							class="block lg:inline-block btn no-underline {classesActive('/research')}"
-							href="/research"
-							data-sveltekit-preload-data="hover"
-						>
-							Research
-						</a>
-						<a
-							class="block lg:inline-block btn no-underline {classesActive('/projects/kv')}"
-							href="/projects"
-							data-sveltekit-preload-data="hover">Projects</a
-						>
-						<!-- <a class="block lg:inline-block btn no-underline {classesActive('/about')}" href="/about" data-sveltekit-preload-data="hover" >About</a> -->
-						<a
-							class="block lg:inline-block btn no-underline {classesActive('/projects/github')}"
-							href="https://github.com/auyer/">GitHub</a
-						>
-					</div>
+					<a
+						class="block lg:inline-block btn no-underline {classesActive('/research')}"
+						href="/research"
+						data-sveltekit-preload-data="hover"
+					>
+						Research
+					</a>
+					<a
+						class="block lg:inline-block btn no-underline {classesActive('/projects/kv')}"
+						href="/projects"
+						data-sveltekit-preload-data="hover">Projects</a
+					>
+					<a
+						class="block lg:inline-block btn no-underline {classesActive('/projects/github')}"
+						href="https://github.com/auyer/">GitHub</a
+					>
 				</div>
 			</div>
-		</svelte:fragment>
-		<svelte:fragment slot="trail">
 			<div class="block lg:hidden">
 				<button
 					class="flex items-center px-3 py-2 rounded"
@@ -87,6 +84,6 @@
 				</button>
 			</div>
 			<LightSwitch />
-		</svelte:fragment>
-	</AppBar>
-</div>
+		</AppBar.Trail>
+	</AppBar.Toolbar>
+</AppBar>
