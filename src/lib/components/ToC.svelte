@@ -61,7 +61,7 @@
 	}
 </script>
 
-<svelte:window on:scroll={setActiveHeading} />
+<svelte:window onscroll={setActiveHeading} />
 
 <Card>
 	<slot slot="description">

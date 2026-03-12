@@ -2,6 +2,7 @@ import { browser } from '$app/environment';
 import { format } from 'date-fns';
 import { parse } from 'node-html-parser';
 import readingTime from 'reading-time/lib/reading-time.js';
+import { readFileSync } from 'node:fs';
 
 // we require some server-side APIs to parse all metadata
 if (browser) {
@@ -11,8 +12,15 @@ if (browser) {
 // Get all posts and add metadata
 export const posts = Object.entries(import.meta.glob('/posts/**/*.md', { eager: true }))
 	.map(([filepath, post]) => {
-		const html = parse(post.default.render().html);
-		const preview = post.metadata.preview ? parse(post.metadata.preview) : html.querySelector('p');
+		// Read raw markdown to extract content for preview
+		const rawMarkdown = readFileSync(filepath.replace(/^\//, ''), 'utf-8');
+		// Remove frontmatter and get first paragraph
+		const contentWithoutFrontmatter = rawMarkdown.replace(/^---[\s\S]*?---\n/, '');
+		const firstParagraphMatch = contentWithoutFrontmatter.match(/^#\s+.*?\n\n([\s\S]*?)(?=\n\n|$)/);
+		const previewText = firstParagraphMatch ? firstParagraphMatch[1].trim() : contentWithoutFrontmatter.split('\n\n')[0];
+		
+		const html = parse(`<p>${previewText}</p>`);
+		const preview = post.metadata.preview ? parse(post.metadata.preview) : html;
 
 		return {
 			...post.metadata,
@@ -43,7 +51,7 @@ export const posts = Object.entries(import.meta.glob('/posts/**/*.md', { eager: 
 			},
 
 			// get estimated reading time for the post
-			readingTime: readingTime(html.structuredText).text
+			readingTime: readingTime(previewText).text
 		};
 	})
 	// sort by date

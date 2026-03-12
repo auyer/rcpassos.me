@@ -1,4 +1,4 @@
-<script lang="js">
+<script>
 	import { page } from '$app/stores';
 	import { AppBar } from '@skeletonlabs/skeleton';
 	import { LightSwitch } from '@skeletonlabs/skeleton';
@@ -8,17 +8,13 @@
 	 * @param {string} href
 	 */
 	function classesActive(href) {
-		href === $page.url.pathname ? 'variant-filled-primary' : 'variant-ghost-primary';
+		return href === $page.url.pathname ? 'variant-filled-primary' : 'variant-ghost-primary';
 	}
 
 	function clickHandler() {
 		const nav = document.getElementById('menu-content');
 		if (nav != null) {
-			if (nav.style.display === 'none') {
-				nav.style.display = 'block';
-			} else {
-				nav.style.display = 'none';
-			}
+			nav.style.display = nav.style.display === 'none' ? 'block' : 'none';
 		}
 	}
 
@@ -26,11 +22,7 @@
 		const handleResize = () => {
 			const nav = document.getElementById('menu-content');
 			if (nav != null) {
-				if (window.innerWidth > 1024) {
-					nav.style.display = 'flex';
-				} else {
-					nav.style.display = 'none';
-				}
+				nav.style.display = window.innerWidth > 1024 ? 'flex' : 'none';
 			}
 		};
 
@@ -85,7 +77,7 @@
 				<button
 					class="flex items-center px-3 py-2 rounded"
 					aria-label="expand head menu"
-					on:click={clickHandler}
+					onclick={clickHandler}
 				>
 					<svg aria-label="expand head links icon" viewBox="0 0 100 80" class="fill-token w-4 h-4">
 						<rect width="100" height="20" />

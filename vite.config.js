@@ -5,10 +5,13 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [sveltekit(), purgeCss()],
 
-	// allows vite access to ./posts
 	server: {
 		fs: {
 			allow: ['./']
 		}
+	},
+
+	optimizeDeps: {
+		exclude: ['@skeletonlabs/skeleton']
 	}
 });

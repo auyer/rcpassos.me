@@ -7,18 +7,16 @@ import adapter from '@sveltejs/adapter-static';
 const config = {
 	extensions: ['.svelte', ...mdsvexConfig.extensions],
 
-	// Consult https://github.com/sveltejs/svelte-preprocess
-	// for more information about preprocessors
 	preprocess: [
 		preprocess({
-			postcss: true
+			postcss: true,
+			scss: true
 		}),
 		mdsvex(mdsvexConfig)
 	],
 
 	kit: {
 		adapter: adapter(),
-		// remove this if you don't want prerendering
 		prerender: {
 			entries: ['*', '/sitemap.xml', '/rss.xml']
 		}

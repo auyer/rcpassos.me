@@ -130,18 +130,18 @@
 	</form>
 
 	<div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 p-2">
-		<button class="btn variant-filled-primary text-center" on:click={getKey}>Read</button>
-		<button class="btn variant-filled-primary text-center" on:click={putKey}>Put Key</button>
-		<button class="btn variant-filled text-center" on:click={listKeys}>List</button>
-		<button class="btn variant-filled text-center" on:click={listPrefix}>List Prefix</button>
+		<button class="btn variant-filled-primary text-center" onclick={getKey}>Read</button>
+		<button class="btn variant-filled-primary text-center" onclick={putKey}>Put Key</button>
+		<button class="btn variant-filled text-center" onclick={listKeys}>List</button>
+		<button class="btn variant-filled text-center" onclick={listPrefix}>List Prefix</button>
 
-		<button class="btn variant-filled-warning text-center" on:click={deleteKey}>Delete</button>
-		<button class="btn variant-filled-warning text-center" on:click={deletePrefix}
+		<button class="btn variant-filled-warning text-center" onclick={deleteKey}>Delete</button>
+		<button class="btn variant-filled-warning text-center" onclick={deletePrefix}
 			>Delete Prefix</button
 		>
-		<button class="btn variant-filled-warning text-center" on:click={deleteAll}>Delete All</button>
+		<button class="btn variant-filled-warning text-center" onclick={deleteAll}>Delete All</button>
 
-		<button class="btn btn-sm variant-filled-error align-top" on:click={cancelBg}>
+		<button class="btn btn-sm variant-filled-error align-top" onclick={cancelBg}>
 			Stop
 			<br />
 			Background Job

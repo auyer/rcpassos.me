@@ -176,14 +176,14 @@
 	<container class="w-full max-w-6xl mx-auto grid md:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
 		<KVPanel
 			{panelResults}
-			on:listKeys={listKeys}
-			on:putKey={putKey}
-			on:getKey={getKey}
-			on:listPrefix={listPrefix}
-			on:deleteKey={deleteKey}
-			on:deletePrefix={deletePrefix}
-			on:deleteAll={deleteAll}
-			on:cancelBg={cancelBg}
+			onlistKeys={listKeys}
+			onputKey={putKey}
+			ongetKey={getKey}
+			onlistPrefix={listPrefix}
+			ondeleteKey={deleteKey}
+			ondeletePrefix={deletePrefix}
+			ondeleteAll={deleteAll}
+			oncancelBg={cancelBg}
 		/>
 		<div class="card p-4 space-y-8">
 			<div class="shadow-xl rounded-lg p-4">
