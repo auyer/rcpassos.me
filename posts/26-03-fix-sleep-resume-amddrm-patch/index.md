@@ -1,6 +1,6 @@
 ---
 title: I found a Bug in Linux 7.0-rc1 when resuming from S3 Sleep and sent a Fix
-date: 2026-03-11
+date: 2026-03-12
 ---
 
 In [my last post](https://rcpassos.me/post/26-03-linux-kernel-bug-hunting-setup), I described my current effort to find bugs, regressions, and compilation warnings on Linux, to open up contribution opportunities in hardware I can test.
@@ -65,16 +65,20 @@ The affected function used to call the register read from the "hwseq" layer. The
 What we got right:
 
 - We found a register missing from the definition in this new module. The `MICROSECOND_TIME_BASE_DIV` register address was set to the structs by a few macros in "hwseq", but not in "dccg". We added it.
-- The init function was overwriting a value in the register (and this was on the wrong offset).
+- The init function was overwriting a value in the register, and this was on the wrong offset. Even when correcting the offset (in the point above), the issue persisted.
 - The `dcn21_s0i3_golden_init_wa` function expected to find the `0x120464` value, but the init function was setting `0x120264`. We added a new `init` function specific to this driver (because we couldn't know if other cards were affected), and it set the value expected by the check.
 
-Turns out a developer had sent his changes in the middle of a larger patchset (still unmerged), and did not update our thread.
-In his changes, he added a few other registers that were missing, and actually stopped setting the value in the init function. This value was set in the BIOS, and there was no need to set it again in the Kernel (the change we made to the init function was unnecessary).
+Turns out a developer had sent his changes in the middle of a larger patchset (still unmerged) a couple of days before us, and did not update our thread.
+In his changes, he added a few other registers that were missing, and actually stopped setting the value in the init function.
+This value was set in the BIOS, and there was no need to set it again in Kernel code.
+This made our change to the init function unnecessary and incompatible.
 
-
-## Conclusion
+## Looking Ahead
 
 We learned a lot, and it was very fun to work with my colleague.
 But we didn't land a nice bugfix patch.
-At least we got a [response in our thread](https://lore.kernel.org/amd-gfx/ad3244e8-96a0-4d60-9047-cc20720c6dd2@amd.com/) with a Thank You :).
-Wish us better luck next time!
+We are still happy to have found a bug, identified its cause, and proposed a real fix.
+The bisection I made was helpful to them.
+At least we got a [response in our thread](https://lore.kernel.org/amd-gfx/ad3244e8-96a0-4d60-9047-cc20720c6dd2@amd.com/) with a Thank You :)
+
+I will keep hunting for bugs and opportunities to contribute. After this experience, I might even find the root cause faster. Wish us better luck next time!
