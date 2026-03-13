@@ -17,8 +17,9 @@ export const posts = Object.entries(globResult)
 	.map(([filepath, post]) => {
 		// Read raw markdown to extract content for preview
 		const rawMarkdown = readFileSync(filepath.replace(/^\//, ''), 'utf-8');
-		// Remove frontmatter and get first paragraph
+		// Remove frontmatter to get content
 		const contentWithoutFrontmatter = rawMarkdown.replace(/^---[\s\S]*?---\n/, '');
+		// Get first paragraph for preview
 		const firstParagraphMatch = contentWithoutFrontmatter.match(/^#\s+.*?\n\n([\s\S]*?)(?=\n\n|$)/);
 		const previewText = firstParagraphMatch
 			? firstParagraphMatch[1].trim()
@@ -26,6 +27,9 @@ export const posts = Object.entries(globResult)
 
 		const html = parse(`<p>${previewText}</p>`);
 		const preview = post.metadata?.preview ? parse(post.metadata.preview) : html;
+		
+		// Calculate reading time from full content (without frontmatter)
+		const fullReadingTime = readingTime(contentWithoutFrontmatter);
 
 		return {
 			...post.metadata,
@@ -58,8 +62,8 @@ export const posts = Object.entries(globResult)
 				text: preview.structuredText ?? preview.toString()
 			},
 
-			// get estimated reading time for the post
-			readingTime: readingTime(previewText).text
+			// get estimated reading time for the full post
+			readingTime: fullReadingTime.text
 		};
 	})
 	// sort by date
