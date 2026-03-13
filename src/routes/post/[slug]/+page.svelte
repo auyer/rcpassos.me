@@ -15,7 +15,7 @@
 	// generated open-graph image for sharing on social media.
 	// see https://og-image.vercel.app/ for more options.
 	const ogImage = `https://og-image.vercel.app/**${encodeURIComponent(
-		data.post.title
+		data.post.title ?? ''
 	)}**?theme=dark&md=1&fontSize=100px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fhyper-color-logo.svg`;
 
 	const url = `${website}/${data.post.slug}`;
@@ -36,12 +36,13 @@
 	}
 
 	// Render KaTeX formulas in an element
+	/** @param {Element} element */
 	function renderMathInElement(element) {
 		if (!element || typeof window === 'undefined') return;
 
 		// Process inline math: $...$
 		const elementsWithText = element.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, td, th');
-		elementsWithText.forEach((el) => {
+		elementsWithText.forEach(/** @param {Element} el */ (el) => {
 			// Skip if already processed (has katex children)
 			if (el.querySelector('.katex')) return;
 
@@ -94,13 +95,14 @@
 		const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
 		let node;
 		while ((node = walker.nextNode())) {
-			if (node.textContent.includes('$$')) {
+			if (node.textContent && node.textContent.includes('$$')) {
 				allTextNodes.push(node);
 			}
 		}
 
 		allTextNodes.forEach((textNode) => {
 			const text = textNode.textContent;
+			if (!text) return;
 			const parts = text.split(/\$\$([\s\S]+?)\$\$/g);
 
 			if (parts.length === 1) return;
@@ -130,17 +132,17 @@
 				}
 			}
 
-			textNode.parentNode.replaceChild(fragment, textNode);
+			textNode.parentNode?.replaceChild(fragment, textNode);
 		});
 	}
 
 	onMount(() => {
 		const article = document.querySelector('article');
-		renderMathInElement(article);
+		if (article) renderMathInElement(article);
 
 		afterNavigate(() => {
 			const article = document.querySelector('article');
-			renderMathInElement(article);
+			if (article) renderMathInElement(article);
 		});
 	});
 </script>
@@ -229,9 +231,9 @@
 
 	<!-- table of contents -->
 	<div class="hidden items-start xl:w-2/6 lg:w-fit xl:block pt-10">
-		{#if data.post.headings.length > 0}
+		{#if /** @type {any} */ (/** @type {any} */ (data.post).metadata)?.headings?.length > 0}
 			<aside class="sticky hidden w-48 ml-8 xl:block top-8" aria-label="Table of Contents">
-				<ToC post={data.post} />
+				<ToC post={{ headings: /** @type {any} */ (/** @type {any} */ (data.post).metadata)?.headings }} />
 			</aside>
 		{/if}
 	</div>

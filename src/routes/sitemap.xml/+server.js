@@ -4,6 +4,7 @@ import { website } from '$lib/info';
 export const prerender = true;
 
 // make sure this matches your post route
+/** @param {string} slug */
 const getPostUrl = (slug) => `${website}/post/${slug}`;
 
 export async function GET({ setHeaders }) {
@@ -29,12 +30,12 @@ export async function GET({ setHeaders }) {
       ${posts
 				.map(
 					(post) => `<url>
-            <loc>${getPostUrl(post.slug)}</loc>
+            <loc>${getPostUrl(post.slug ?? '')}</loc>
             <lastmod
               >${
 								post.updated
 									? new Date(post.updated).toISOString()
-									: new Date(post.date).toISOString()
+									: new Date(post.date ?? new Date()).toISOString()
 							}</lastmod
             >
             <changefreq>monthly</changefreq>

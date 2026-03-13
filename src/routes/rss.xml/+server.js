@@ -32,7 +32,7 @@ export async function GET({ setHeaders }) {
                 <title>${post.title}</title>
                 <description>${post.preview.text}</description>
                 <link>${postUrl}/${post.slug}</link>
-                <pubDate>${new Date(post.date).toUTCString().replace('GMT', '+0000')}</pubDate>
+                <pubDate>${new Date(post.date ?? new Date()).toUTCString().replace('GMT', '+0000')}</pubDate>
             </item>
           `
 					)

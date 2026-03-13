@@ -10,7 +10,10 @@ if (browser) {
 }
 
 // Get all posts and add metadata
-export const posts = Object.entries(import.meta.glob('/posts/**/*.md', { eager: true }))
+/** @typedef {{ metadata?: { title?: string, date?: string, preview?: string, headings?: any[], updated?: string, [key: string]: any }, default?: any }} GlobResult */
+
+const globResult = /** @type {Record<string, GlobResult>} */ (import.meta.glob('/posts/**/*.md', { eager: true }));
+export const posts = Object.entries(globResult)
 	.map(([filepath, post]) => {
 		// Read raw markdown to extract content for preview
 		const rawMarkdown = readFileSync(filepath.replace(/^\//, ''), 'utf-8');
@@ -22,7 +25,7 @@ export const posts = Object.entries(import.meta.glob('/posts/**/*.md', { eager: 
 			: contentWithoutFrontmatter.split('\n\n')[0];
 
 		const html = parse(`<p>${previewText}</p>`);
-		const preview = post.metadata.preview ? parse(post.metadata.preview) : html;
+		const preview = post.metadata?.preview ? parse(post.metadata.preview) : html;
 
 		return {
 			...post.metadata,
@@ -38,13 +41,16 @@ export const posts = Object.entries(import.meta.glob('/posts/**/*.md', { eager: 
 			isIndexFile: filepath.endsWith('/index.md'),
 
 			// format date as yyyy-MM-dd
-			date: post.metadata.date
+			date: post.metadata?.date
 				? format(
 						// offset by timezone so that the date is correct
 						addTimezoneOffset(new Date(post.metadata.date)),
 						'yyyy-MM-dd'
 					)
 				: undefined,
+
+			// include updated date for sitemap
+			updated: post.metadata?.updated,
 
 			preview: {
 				html: preview.toString(),
@@ -57,7 +63,7 @@ export const posts = Object.entries(import.meta.glob('/posts/**/*.md', { eager: 
 		};
 	})
 	// sort by date
-	.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+	.sort((a, b) => new Date(/** @type {{ date: string }} */ (b).date).getTime() - new Date(/** @type {{ date: string }} */ (a).date).getTime())
 	// add references to the next/previous post
 	.map((post, index, allPosts) => ({
 		...post,
@@ -65,6 +71,7 @@ export const posts = Object.entries(import.meta.glob('/posts/**/*.md', { eager: 
 		previous: allPosts[index + 1]
 	}));
 
+/** @param {Date} date */
 function addTimezoneOffset(date) {
 	const offsetInMilliseconds = new Date().getTimezoneOffset() * 60 * 1000;
 	return new Date(new Date(date).getTime() + offsetInMilliseconds);

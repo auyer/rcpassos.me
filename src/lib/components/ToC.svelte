@@ -3,13 +3,14 @@
 	import { onMount } from 'svelte';
 	import Card from './Card.svelte';
 
-	/** @type {Array<{headings: { depth: Number, value: String, id: String}}>} */
+	/** @type {{ headings: { depth: number, value: string, id: string }[] }} */
 	export let post;
 
-	/** @type {Array<HTMLInputElement>} */
+	/** @type {Array<HTMLElement | null>} */
 	let elements = [];
 
-	let headings = post.headings;
+	/** @type {{ depth: number, value: string, id: string }[]} */
+	let headings = post.headings ?? [];
 
 	onMount(() => {
 		updateHeadings();
@@ -18,16 +19,18 @@
 
 	let tocFullyVisible = true;
 	// the current heading in view
+	/** @type {{ depth: number, value: string, id: string }} */
 	let activeHeading = headings[0];
 	// a subset of headings that are visible in the toc
 	// when scroling down, the headings will be omitted from the top
+	/** @type {{ depth: number, value: string, id: string }[]} */
 	let visibleHeadings = headings;
 
-	/** @type {Number} */
+	/** @type {number} */
 	let scrollY;
 
 	function updateHeadings() {
-		headings = post.headings;
+		headings = post.headings ?? [];
 
 		if (browser) {
 			elements = headings.map((heading) => {
@@ -42,7 +45,7 @@
 		scrollY = window.scrollY;
 
 		const visibleIndex = elements.findIndex(
-			(element) => element.offsetTop + element.clientHeight > scrollY
+			(element) => element && element.offsetTop + element.clientHeight > scrollY
 		);
 
 		activeHeading = headings[visibleIndex];

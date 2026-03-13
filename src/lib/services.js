@@ -49,6 +49,7 @@ export async function Put(url, body) {
 			}
 			return [resBody, null];
 		}
+		return ['', null];
 	} catch (error) {
 		return ['', error];
 	}

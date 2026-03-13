@@ -2,10 +2,10 @@
  * Paginates an array of data.
  *
  * @param {any[]} data
- * @param {{ page?: number, limit: number }} args
- * @returns
+ * @param {{ page?: number, limit?: number }} args
+ * @returns {any[]}
  */
-export function paginate(data, { page = 1, limit } = {}) {
+export function paginate(data, { page = 1, limit = 10 } = {}) {
 	if (limit) {
 		return data.slice((page - 1) * limit, page * limit);
 	}

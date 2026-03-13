@@ -60,6 +60,7 @@
 		panelResults = `Background process cancelled.`;
 	};
 
+	/** @param {{ detail: { key: string } }} event */
 	const deletePrefix = async ({ detail: { key } }) => {
 		const [results, err] = await DeletePrefix(key);
 
@@ -80,6 +81,7 @@
 		}
 	};
 
+	/** @param {{ detail: { key: string } }} event */
 	const deleteKey = async ({ detail: { key } }) => {
 		const [result, err] = await DeleteKey(key);
 		console.log('result', result, err);
@@ -97,11 +99,12 @@
 		if (err) {
 			panelResults = `ERROR: ${JSON.stringify(err)}`;
 		} else {
-			const values = results.join('\n');
+			const values = results?.join('\n') ?? '';
 			panelResults = `LIST\n${values}`;
 		}
 	};
 
+	/** @param {{ detail: { key: string } }} event */
 	const listPrefix = async ({ detail: { key } }) => {
 		const [results, err] = await ListPrefix(key);
 
@@ -113,6 +116,7 @@
 		}
 	};
 
+	/** @param {{ detail: { key: string, value: string } }} event */
 	const putKey = async ({ detail: { key, value } }) => {
 		const [prev, err] = await PutKeyValue(key, value);
 
@@ -125,6 +129,7 @@
 		}
 	};
 
+	/** @param {{ detail: { key: string } }} event */
 	const getKey = async ({ detail: { key } }) => {
 		const [result, err] = await GetKey(key);
 
@@ -146,7 +151,7 @@
 <div class="gap-8">
 	<div class="card w-full max-w-6xl mx-auto m-5 p-2">
 		<Accordion>
-			<Accordion.Item open>
+			<Accordion.Item value="item-1">
 				<Accordion.ItemTrigger>
 					<h3 class="h3">MemoryKV: an in memory Key Value DB with Live a feed</h3>
 				</Accordion.ItemTrigger>
@@ -176,14 +181,14 @@
 	<container class="w-full max-w-6xl mx-auto grid md:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
 		<KVPanel
 			{panelResults}
-			onlistKeys={listKeys}
-			onputKey={putKey}
-			ongetKey={getKey}
-			onlistPrefix={listPrefix}
-			ondeleteKey={deleteKey}
-			ondeletePrefix={deletePrefix}
-			ondeleteAll={deleteAll}
-			oncancelBg={cancelBg}
+			on:listKeys={listKeys}
+			on:putKey={putKey}
+			on:getKey={getKey}
+			on:listPrefix={listPrefix}
+			on:deleteKey={deleteKey}
+			on:deletePrefix={deletePrefix}
+			on:deleteAll={deleteAll}
+			on:cancelBg={cancelBg}
 		/>
 		<div class="card p-4 space-y-8">
 			<div class="shadow-xl rounded-lg p-4">
