@@ -42,53 +42,55 @@
 
 		// Process inline math: $...$
 		const elementsWithText = element.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, td, th');
-		elementsWithText.forEach(/** @param {Element} el */ (el) => {
-			// Skip if already processed (has katex children)
-			if (el.querySelector('.katex')) return;
+		elementsWithText.forEach(
+			/** @param {Element} el */ (el) => {
+				// Skip if already processed (has katex children)
+				if (el.querySelector('.katex')) return;
 
-			const text = el.textContent;
-			const inlineRegex = /\$([^\$\n]+?)\$/g;
-			let match;
-			let hasMatch = false;
+				const text = el.textContent;
+				const inlineRegex = /\$([^\$\n]+?)\$/g;
+				let match;
+				let hasMatch = false;
 
-			// Check if there are matches first
-			while ((match = inlineRegex.exec(text)) !== null) {
-				hasMatch = true;
-				break;
-			}
+				// Check if there are matches first
+				while ((match = inlineRegex.exec(text)) !== null) {
+					hasMatch = true;
+					break;
+				}
 
-			if (!hasMatch) return;
+				if (!hasMatch) return;
 
-			// Reset regex and process
-			inlineRegex.lastIndex = 0;
-			const parts = text.split(inlineRegex);
-			const fragment = document.createDocumentFragment();
+				// Reset regex and process
+				inlineRegex.lastIndex = 0;
+				const parts = text.split(inlineRegex);
+				const fragment = document.createDocumentFragment();
 
-			for (let i = 0; i < parts.length; i++) {
-				if (i % 2 === 0) {
-					// Text part
-					if (parts[i]) {
-						fragment.appendChild(document.createTextNode(parts[i]));
-					}
-				} else {
-					// Math part
-					try {
-						const rendered = katex.renderToString(parts[i], {
-							displayMode: false,
-							throwOnError: false
-						});
-						const span = document.createElement('span');
-						span.innerHTML = rendered;
-						fragment.appendChild(span);
-					} catch (e) {
-						fragment.appendChild(document.createTextNode('$' + parts[i] + '$'));
+				for (let i = 0; i < parts.length; i++) {
+					if (i % 2 === 0) {
+						// Text part
+						if (parts[i]) {
+							fragment.appendChild(document.createTextNode(parts[i]));
+						}
+					} else {
+						// Math part
+						try {
+							const rendered = katex.renderToString(parts[i], {
+								displayMode: false,
+								throwOnError: false
+							});
+							const span = document.createElement('span');
+							span.innerHTML = rendered;
+							fragment.appendChild(span);
+						} catch (e) {
+							fragment.appendChild(document.createTextNode('$' + parts[i] + '$'));
+						}
 					}
 				}
-			}
 
-			el.innerHTML = '';
-			el.appendChild(fragment);
-		});
+				el.innerHTML = '';
+				el.appendChild(fragment);
+			}
+		);
 
 		// Process display math: $$...$$
 		const allTextNodes = [];
@@ -233,7 +235,11 @@
 	<div class="hidden items-start xl:w-2/6 lg:w-fit xl:block pt-10">
 		{#if /** @type {any} */ (/** @type {any} */ (data.post).metadata)?.headings?.length > 0}
 			<aside class="sticky hidden w-48 ml-8 xl:block top-8" aria-label="Table of Contents">
-				<ToC post={{ headings: /** @type {any} */ (/** @type {any} */ (data.post).metadata)?.headings }} />
+				<ToC
+					post={{
+						headings: /** @type {any} */ (/** @type {any} */ (data.post).metadata)?.headings
+					}}
+				/>
 			</aside>
 		{/if}
 	</div>

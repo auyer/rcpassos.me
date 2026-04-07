@@ -12,7 +12,9 @@ if (browser) {
 // Get all posts and add metadata
 /** @typedef {{ metadata?: { title?: string, date?: string, preview?: string, headings?: any[], updated?: string, [key: string]: any }, default?: any }} GlobResult */
 
-const globResult = /** @type {Record<string, GlobResult>} */ (import.meta.glob('/posts/**/*.md', { eager: true }));
+const globResult = /** @type {Record<string, GlobResult>} */ (
+	import.meta.glob('/posts/**/*.md', { eager: true })
+);
 export const posts = Object.entries(globResult)
 	.map(([filepath, post]) => {
 		// Read raw markdown to extract content for preview
@@ -27,7 +29,7 @@ export const posts = Object.entries(globResult)
 
 		const html = parse(`<p>${previewText}</p>`);
 		const preview = post.metadata?.preview ? parse(post.metadata.preview) : html;
-		
+
 		// Calculate reading time from full content (without frontmatter)
 		const fullReadingTime = readingTime(contentWithoutFrontmatter);
 
@@ -67,7 +69,11 @@ export const posts = Object.entries(globResult)
 		};
 	})
 	// sort by date
-	.sort((a, b) => new Date(/** @type {{ date: string }} */ (b).date).getTime() - new Date(/** @type {{ date: string }} */ (a).date).getTime())
+	.sort(
+		(a, b) =>
+			new Date(/** @type {{ date: string }} */ (b).date).getTime() -
+			new Date(/** @type {{ date: string }} */ (a).date).getTime()
+	)
 	// add references to the next/previous post
 	.map((post, index, allPosts) => ({
 		...post,
