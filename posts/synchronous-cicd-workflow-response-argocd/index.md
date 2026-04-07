@@ -190,4 +190,3 @@ argocd app sync ${APP_NAME} -N ${APP_NAMESPACE} || {
 # now wait for the final status to be reported
 argocd app wait ${APP_NAME} -N ${APP_NAMESPACE}
 ```
-
