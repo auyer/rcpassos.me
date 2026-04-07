@@ -13,7 +13,7 @@ export const bio = `\
 I'm Rafael Passos.
 This blog is a place where I share fun experiences.
 A personal incentive to keep learning.
-100% human, no artificial anything.`;
+Written by a Human`;
 
 export const bio_splitted = bio.split(/\n/).map((line) => line.replace(/\.$/, ''));
 
