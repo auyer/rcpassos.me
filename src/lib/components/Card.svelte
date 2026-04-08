@@ -40,6 +40,9 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
+		padding: 0px;
+		margin: 0;
+		box-shadow: none;
 	}
 
 	:global(.card-item:hover .card-hover-bg) {

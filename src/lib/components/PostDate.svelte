@@ -31,7 +31,6 @@
 		position: relative;
 		z-index: 10;
 		order: -9999;
-		margin-bottom: 0.75rem;
 		display: flex;
 		color: var(--pico-muted-color);
 	}

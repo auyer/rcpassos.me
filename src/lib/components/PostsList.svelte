@@ -9,14 +9,11 @@
 	{#each posts as post}
 		<article class="post-article">
 			<PostDate class="post-date-desktop" {post} decorate />
-
-			<div class="post-content">
 				<PostPreview {post}>
 					<slot slot="eyebrow">
 						<PostDate class="post-date-mobile" {post} collapsed decorate />
 					</slot>
 				</PostPreview>
-			</div>
 		</article>
 	{/each}
 </div>
@@ -25,13 +22,12 @@
 	:global(.posts-list) {
 		display: flex;
 		flex-direction: column;
-		gap: 4rem;
 	}
 
 	@media (min-width: 768px) {
 		:global(.posts-list) {
 			border-left: 1px solid var(--pico-muted-border-color);
-			padding-left: 1.5rem;
+			padding-left: 1rem;
 		}
 
 		[data-theme='dark'] :global(.posts-list) {
@@ -41,9 +37,14 @@
 
 	:global(.post-article) {
 		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		gap: 2rem;
+		grid-template-columns: 1fr;
 		align-items: start;
+	}
+
+	@media (min-width: 768px) {
+		:global(.post-article) {
+			grid-template-columns: 160px 1fr;
+		}
 	}
 
 	:global(.post-date-desktop) {
@@ -59,16 +60,18 @@
 	@media (min-width: 768px) {
 		:global(.post-date-desktop) {
 			display: flex;
+			/* Pull date flush with the border-left edge, counteracting the parent padding */
+			margin-left: -1.5rem;
 		}
 	}
 
 	:global(.post-content) {
-		grid-column: span 4 / span 4;
+		grid-column: 1;
 	}
 
 	@media (min-width: 768px) {
 		:global(.post-content) {
-			grid-column: span 3 / span 3;
+			grid-column: 2;
 		}
 	}
 

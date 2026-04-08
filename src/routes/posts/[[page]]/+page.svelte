@@ -14,23 +14,23 @@
 	<title>{name} | Posts</title>
 </svelte:head>
 
-<div class="posts-page">
-	<header class="posts-header">
-		<h1>Check my posts:</h1>
-		<p>
-			A human writes theses posts. Any inaccuracies are probably my own fault — no text generation
-			used.
-		</p>
-	</header>
+<container class="posts-container">
+	<article class="posts-article">
+		<header class="posts-header">
+			<h1>Check my posts:</h1>
+			<p>
+				Written by a human. Any inaccuracies are my fault — no text generation
+				used.
+			</p>
+		</header>
 
-	<div class="posts-content">
 		<PostsList posts={data.posts} />
-	</div>
+	</article>
 
 	<!-- pagination -->
-	<div class="pagination">
+	<nav class="pagination">
 		{#if !isFirstPage}
-			<a href={`/posts/${data.page - 1}`} data-sveltekit-preload-data="hover" class="pagination-link">
+			<a href={`/posts/${data.page - 1}`} data-sveltekit-preload-data="hover">
 				<ArrowLeftIcon class="pagination-icon" />
 				Previous
 			</a>
@@ -39,19 +39,26 @@
 		{/if}
 
 		{#if hasNextPage}
-			<a href={`/posts/${data.page + 1}`} data-sveltekit-preload-data="hover" class="pagination-link">
+			<a href={`/posts/${data.page + 1}`} data-sveltekit-preload-data="hover">
 				Next
 				<ArrowRightIcon class="pagination-icon" />
 			</a>
 		{/if}
-	</div>
-</div>
+	</nav>
+</container>
 
 <style>
-	:global(.posts-page) {
-		display: flex;
-		flex-direction: column;
-		flex-grow: 1;
+	:global(.posts-container) {
+		display: block;
+		max-width: 72rem;
+		margin-left: auto;
+		margin-right: auto;
+		padding-left: 1rem;
+		padding-right: 1rem;
+	}
+
+	:global(.posts-article) {
+		margin-bottom: 2rem;
 	}
 
 	:global(.posts-header) {
@@ -59,42 +66,21 @@
 	}
 
 	:global(.posts-header h1) {
-		font-size: 1.25rem;
+		font-size: 1.5rem;
 		font-weight: 700;
 		letter-spacing: -0.025em;
-	}
-
-	@media (min-width: 768px) {
-		:global(.posts-header h1) {
-			font-size: 1.5rem;
-		}
-	}
-
-	@media (min-width: 1024px) {
-		:global(.posts-header h1) {
-			font-size: 2.25rem;
-		}
-	}
-
-	:global(.posts-content) {
-		margin-top: 4rem;
-	}
-
-	@media (min-width: 640px) {
-		:global(.posts-content) {
-			margin-top: 5rem;
-		}
+		margin-bottom: 0.5rem;
 	}
 
 	:global(.pagination) {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding-top: 4rem;
+		padding-top: 2rem;
 		padding-bottom: 2rem;
 	}
 
-	:global(.pagination-link) {
+	:global(.pagination a) {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.25rem;
@@ -102,7 +88,7 @@
 		text-decoration: none;
 	}
 
-	:global(.pagination-link:hover) {
+	:global(.pagination a:hover) {
 		text-decoration: underline;
 	}
 
