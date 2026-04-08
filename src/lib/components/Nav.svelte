@@ -1,144 +1,122 @@
 <script>
 	import { page } from '$app/stores';
 	import LightSwitch from './LightSwitch.svelte';
-	import { onMount } from 'svelte';
 
 	/**
 	 * @param {string} href
 	 */
-	function classesActive(href) {
-		return href === $page.url.pathname ? 'active' : '';
+	function isActive(href) {
+		return href === $page.url.pathname;
 	}
 
-	function clickHandler() {
-		const nav = document.getElementById('menu-content');
-		if (nav != null) {
-			nav.style.display = nav.style.display === 'none' ? 'block' : 'none';
+	let menuOpen = $state(false);
+
+	function toggleMenu() {
+		menuOpen = !menuOpen;
+	}
+
+	// Close menu when navigating
+	$effect(() => {
+		const currentPath = $page.url.pathname;
+		if (currentPath) {
+			menuOpen = false;
 		}
-	}
-
-	onMount(() => {
-		const handleResize = () => {
-			const nav = document.getElementById('menu-content');
-			if (nav != null) {
-				nav.style.display = window.innerWidth > 1024 ? 'flex' : 'none';
-			}
-		};
-
-		window.addEventListener('resize', handleResize);
 	});
 </script>
 
-<nav>
+<nav class="navbar">
+	<!-- Brand -->
 	<ul>
-		<li class="nav-brand">
-			<a href="/" data-sveltekit-preload-data="hover">
-				<img src="/assets/logo.svg" alt="Auyer" width="30px" height="30px" />
+		<li>
+			<a href="/" data-sveltekit-preload-data="hover" class="navbar-brand">
+				<img src="/assets/logo.svg" alt="Auyer" width="30" height="30" />
 			</a>
+		</li>
+	</ul>
+
+	<!-- Links (desktop: inline, mobile: dropdown) -->
+	<ul class="nav-links" class:show={menuOpen}>
+		<li>
+			<a
+				href="/posts"
+				data-sveltekit-preload-data="hover"
+				aria-current={isActive('/posts') ? 'page' : undefined}
+			>
+				Posts
+			</a>
+		</li>
+		<li>
+			<a
+				href="/research"
+				data-sveltekit-preload-data="hover"
+				aria-current={isActive('/research') ? 'page' : undefined}
+			>
+				Research
+			</a>
+		</li>
+		<li>
+			<a
+				href="/projects"
+				data-sveltekit-preload-data="hover"
+				aria-current={isActive('/projects') ? 'page' : undefined}
+			>
+				Projects
+			</a>
+		</li>
+		<li>
+			<a
+				href="https://github.com/auyer/"
+				aria-current={isActive('/projects/github') ? 'page' : undefined}
+			>
+				GitHub
+			</a>
+		</li>
+	</ul>
+
+	<!-- Trail: hamburger + theme toggle -->
+	<ul>
+		<li class="nav-mobile-toggle">
+			<button
+				class="hamburger-btn"
+				aria-label="Toggle menu"
+				aria-expanded={menuOpen}
+				onclick={toggleMenu}
+			>
+				<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="3" y1="6" x2="21" y2="6" />
+					<line x1="3" y1="12" x2="21" y2="12" />
+					<line x1="3" y1="18" x2="21" y2="18" />
+				</svg>
+			</button>
+		</li>
+		<li>
+			<LightSwitch />
 		</li>
 	</ul>
 </nav>
 
-<div
-	id="menu-content"
-	class="nav-links"
->
-	<nav>
-		<ul>
-			<li>
-				<a
-					class="{classesActive('/posts')}"
-					href="/posts"
-					data-sveltekit-preload-data="hover"
-				>
-					Posts
-				</a>
-			</li>
-			<li>
-				<a
-					class="{classesActive('/research')}"
-					href="/research"
-					data-sveltekit-preload-data="hover"
-				>
-					Research
-				</a>
-			</li>
-			<li>
-				<a
-					class="{classesActive('/projects/kv')}"
-					href="/projects"
-					data-sveltekit-preload-data="hover">Projects</a
-				>
-			</li>
-			<li>
-				<a
-					class="{classesActive('/projects/github')}"
-					href="https://github.com/auyer/">GitHub</a
-				>
-			</li>
-		</ul>
-	</nav>
-</div>
-
-<div class="nav-trail">
-	<button
-		class="btn-icon hamburger-btn"
-		aria-label="expand head menu"
-		onclick={clickHandler}
-	>
-		<svg aria-label="expand head links icon" viewBox="0 0 100 80" class="social-icon">
-			<rect width="100" height="20" />
-			<rect y="30" width="100" height="20" />
-			<rect y="60" width="100" height="20" />
-		</svg>
-	</button>
-	<LightSwitch />
-</div>
-
 <style>
-	/* Navigation layout */
-	:global(nav) {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.5rem 1rem;
-	}
-
-	:global(.nav-brand) {
-		flex-shrink: 0;
-	}
-
-	:global(.nav-links) {
-		display: none;
-	}
-
-	:global(.nav-trail) {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
+	/* Hamburger button */
 	:global(.hamburger-btn) {
-		display: block;
+		padding: 0.25rem;
+		min-height: auto;
+		height: auto;
+		border: none;
+		background: transparent;
+		cursor: pointer;
+		color: var(--pico-color);
 	}
 
-	@media (min-width: 1024px) {
-		:global(.nav-links) {
-			display: block !important;
-		}
-
-		:global(.hamburger-btn) {
-			display: none;
-		}
-	}
-
-	/* Active link styling */
-	:global(a.active) {
-		background-color: var(--pico-primary);
+	:global(.hamburger-btn:hover) {
+		background-color: var(--pico-primary-hover);
 		color: var(--pico-primary-inverse);
+		border-radius: var(--pico-border-radius);
 	}
 
-	:global(nav ul) {
-		gap: 0.25rem;
+	/* LightSwitch button sizing */
+	:global(.navbar .btn-icon) {
+		padding: 0.25rem;
+		min-height: auto;
+		height: auto;
 	}
 </style>

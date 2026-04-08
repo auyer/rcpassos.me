@@ -794,29 +794,98 @@ footer.footer {
 	margin-left: -2px;
 }
 
-/* Navigation styles */
-nav ul {
+/* Navigation styles - scoped to avoid conflicts with PicoCSS */
+.navbar {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	padding: 0.5rem 1rem;
+	margin-bottom: 0;
+}
+
+.navbar > ul {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 	list-style: none;
 	padding: 0;
 	margin: 0;
-	display: flex;
-	gap: 0.5rem;
 }
 
-nav ul li a {
+.navbar ul li a {
 	text-decoration: none;
-	padding: 0.5rem 1rem;
+	padding: 0.5rem 0.75rem;
 	border-radius: var(--pico-border-radius);
+	display: inline-block;
 }
 
-nav ul li a:hover {
+.navbar ul li a:hover {
 	background-color: var(--pico-primary-hover);
 	color: var(--pico-primary-inverse);
+	text-decoration: none;
 }
 
-nav ul li a[aria-current='page'] {
+.navbar ul li a[aria-current='page'] {
 	background-color: var(--pico-primary);
 	color: var(--pico-primary-inverse);
+}
+
+/* Mobile responsive navbar */
+@media (max-width: 1023px) {
+	.navbar {
+		position: relative;
+		flex-wrap: wrap;
+	}
+
+	/* Brand takes available space, pushing trail to the right */
+	.navbar > ul:first-child {
+		flex: 1;
+	}
+
+	/* Links dropdown on mobile - hidden by default */
+	.navbar .nav-links {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		width: 100%;
+		flex-direction: column;
+		background-color: var(--pico-background-color);
+		border-top: 1px solid var(--pico-muted-border-color);
+		padding: 0.5rem 0;
+		z-index: 100;
+		display: none !important;
+	}
+
+	.navbar .nav-links.show {
+		display: flex !important;
+	}
+
+	.navbar .nav-links li {
+		width: 100%;
+	}
+
+	.navbar .nav-links li a {
+		display: block;
+		width: 100%;
+		border-radius: 0;
+	}
+
+	/* Trail ul stays inline on the right */
+	.navbar > ul:last-child {
+		gap: 0.25rem;
+	}
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+	.navbar .nav-links {
+		display: flex !important;
+	}
+
+	.navbar .nav-mobile-toggle {
+		display: none !important;
+	}
 }
 
 /* Button icon styles */
