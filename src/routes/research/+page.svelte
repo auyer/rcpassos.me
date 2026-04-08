@@ -37,50 +37,44 @@
 	const orcidUrl = `https://orcid.org/${orcidId}`;
 </script>
 
-<div class="flex mx-auto lg:max-w-none items-center justify-center">
-	<div
-		class="max-w-4xl w-full rounded-lg shadow-lg p-6 md:p-8 space-y-6 bg-white border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800"
-	>
-		<header class="border-b border-zinc-200 pb-4 dark:border-zinc-800">
-			<h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100">
-				Research Preprint Repository
-			</h1>
-			<p class="text-zinc-600 mt-1 dark:text-zinc-400">My academic contributions and research</p>
+<div class="research-container">
+	<div class="research-card">
+		<header class="research-header">
+			<h1>Research Preprint Repository</h1>
+			<p>My academic contributions and research</p>
 		</header>
 		<section>
-			<h3 class="text-xl font-semibold text-zinc-800 mb-3 dark:text-zinc-200">My ORCID:</h3>
+			<h3>My ORCID:</h3>
 			<p>
 				<a
 					href={orcidUrl}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="inline-flex items-center gap-2 text-zinc-700 text-3xl hover:text-green-600 transition-colors group dark:text-zinc-300 dark:hover:text-green-400"
+					class="orcid-link"
 				>
 					<img src="/assets/ORCID_iD.svg" alt="ORCID iD" width="50" height="50" />
-					<span class="font-mono tracking-wide group-hover:underline">{orcidId}</span>
+					<span class="orcid-id">{orcidId}</span>
 				</a>
 			</p>
 		</section>
 		<section>
-			<h3 class="text-xl font-semibold text-zinc-800 mb-3 dark:text-zinc-200">Publications</h3>
-			<ul class="space-y-3">
+			<h3>Publications</h3>
+			<ul class="paper-list">
 				{#each papers as paper, i}
-					<div
-						class="card p-4 m-2 space-y-4 border border-zinc-200 bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700"
-					>
-						<li class="flex items-start gap-3">
-							<span class="text-zinc-600 dark:text-zinc-400">{paper.year} -</span>
+					<div class="paper-item">
+						<li>
+							<span class="paper-year">{paper.year} -</span>
 							<a
 								href={paper.url}
-								class="text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+								class="paper-title"
 							>
 								{paper.name}
 							</a>
-							<p class="text-zinc-700 dark:text-zinc-300">
+							<p class="paper-published">
 								{paper.published}
 							</p>
 							{#if paper.language}
-								<p class="text-sm text-zinc-500 text-end ml-auto dark:text-zinc-500">
+								<p class="paper-language">
 									{paper.language}
 								</p>
 							{/if}
@@ -90,25 +84,23 @@
 			</ul>
 		</section>
 		<section>
-			<h3 class="text-xl font-semibold text-zinc-800 mb-3 dark:text-zinc-200">Contributions</h3>
-			<ul class="space-y-3">
+			<h3>Contributions</h3>
+			<ul class="paper-list">
 				{#each co_papers as paper, i}
-					<div
-						class="card p-4 m-2 space-y-4 border border-zinc-200 bg-zinc-50 dark:bg-zinc-800 dark:border-zinc-700"
-					>
-						<li class="flex items-start gap-3">
-							<span class="text-zinc-600 dark:text-zinc-400">{paper.year} -</span>
+					<div class="paper-item">
+						<li>
+							<span class="paper-year">{paper.year} -</span>
 							<a
 								href={paper.url}
-								class="text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+								class="paper-title"
 							>
 								{paper.name}
 							</a>
-							<p class="text-zinc-700 dark:text-zinc-300">
+							<p class="paper-published">
 								{paper.published}
 							</p>
 							{#if paper.language}
-								<p class="text-sm text-zinc-500 text-end ml-auto dark:text-zinc-500">
+								<p class="paper-language">
 									{paper.language}
 								</p>
 							{/if}
@@ -119,3 +111,173 @@
 		</section>
 	</div>
 </div>
+
+<style>
+	:global(.research-container) {
+		display: flex;
+		margin-left: auto;
+		margin-right: auto;
+		justify-content: center;
+		align-items: center;
+	}
+
+	:global(.research-card) {
+		max-width: 56rem;
+		width: 100%;
+		border-radius: 0.5rem;
+		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+		padding: 1.5rem;
+		background-color: var(--pico-card-background-color);
+		border: 1px solid var(--pico-card-border-color);
+		gap: 1.5rem;
+		display: flex;
+		flex-direction: column;
+	}
+
+	@media (min-width: 768px) {
+		:global(.research-card) {
+			padding: 2rem;
+		}
+	}
+
+	[data-theme='dark'] :global(.research-card) {
+		background-color: var(--pico-background-color);
+		border-color: var(--pico-muted-border-color);
+	}
+
+	:global(.research-header) {
+		border-bottom: 1px solid var(--pico-muted-border-color);
+		padding-bottom: 1rem;
+	}
+
+	:global(.research-header h1) {
+		font-size: 1.875rem;
+		font-weight: 700;
+		color: var(--pico-color);
+	}
+
+	[data-theme='dark'] :global(.research-header h1) {
+		color: var(--pico-color);
+	}
+
+	:global(.research-header p) {
+		color: var(--pico-muted-color);
+		margin-top: 0.25rem;
+	}
+
+	[data-theme='dark'] :global(.research-header p) {
+		color: var(--pico-secondary);
+	}
+
+	:global(.research-card section h3) {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--pico-color);
+		margin-bottom: 0.75rem;
+	}
+
+	[data-theme='dark'] :global(.research-card section h3) {
+		color: var(--pico-color);
+	}
+
+	:global(.orcid-link) {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 1.875rem;
+		color: var(--pico-muted-color);
+		text-decoration: none;
+		transition: color 0.15s ease-in-out;
+	}
+
+	:global(.orcid-link:hover) {
+		color: #16a34a;
+	}
+
+	[data-theme='dark'] :global(.orcid-link:hover) {
+		color: #4ade80;
+	}
+
+	:global(.orcid-id) {
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+			'Courier New', monospace;
+		letter-spacing: 0.025em;
+	}
+
+	:global(.orcid-id:hover) {
+		text-decoration: underline;
+	}
+
+	:global(.paper-list) {
+		gap: 0.75rem;
+		display: flex;
+		flex-direction: column;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	:global(.paper-item) {
+		padding: 1rem;
+		gap: 1rem;
+		border: 1px solid var(--pico-card-border-color);
+		background-color: var(--pico-muted-border-color);
+		margin: 0.5rem;
+	}
+
+	[data-theme='dark'] :global(.paper-item) {
+		background-color: var(--pico-card-background-color);
+		border-color: var(--pico-muted-border-color);
+	}
+
+	:global(.paper-item li) {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+	}
+
+	:global(.paper-year) {
+		color: var(--pico-muted-color);
+	}
+
+	[data-theme='dark'] :global(.paper-year) {
+		color: var(--pico-secondary);
+	}
+
+	:global(.paper-title) {
+		color: #2563eb;
+		text-decoration: none;
+	}
+
+	:global(.paper-title:hover) {
+		color: #1d4ed8;
+		text-decoration: underline;
+	}
+
+	[data-theme='dark'] :global(.paper-title) {
+		color: #60a5fa;
+	}
+
+	[data-theme='dark'] :global(.paper-title:hover) {
+		color: #93c5fd;
+	}
+
+	:global(.paper-published) {
+		color: var(--pico-color);
+	}
+
+	[data-theme='dark'] :global(.paper-published) {
+		color: var(--pico-color);
+	}
+
+	:global(.paper-language) {
+		font-size: 0.875rem;
+		color: var(--pico-muted-color);
+		margin-left: auto;
+		text-align: end;
+	}
+
+	[data-theme='dark'] :global(.paper-language) {
+		color: var(--pico-muted-color);
+	}
+</style>

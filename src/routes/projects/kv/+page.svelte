@@ -145,40 +145,33 @@
 
 	import WALItems from '$lib/components/KV/WALItems.svelte';
 	import KVPanel from '$lib/components/KV/KVPanel.svelte';
-	import { Accordion } from '@skeletonlabs/skeleton-svelte';
 </script>
 
-<div class="gap-8">
-	<div class="card w-full max-w-6xl mx-auto m-5 p-2">
-		<Accordion>
-			<Accordion.Item value="item-1">
-				<Accordion.ItemTrigger>
-					<h3 class="h3">MemoryKV: an in memory Key Value DB with Live a feed</h3>
-				</Accordion.ItemTrigger>
-				<Accordion.ItemContent>
-					<p>
-						This is a KV in memory database I built in Rust for learning purposes with a live feed
-						of the WAL (Write Ahead Log).
-					</p>
-					<p>This page has a control panel and a WebSocket feed.</p>
-					<p>
-						The server is hosted in a small free-tier cloud VM, with <s
-							>WAF rules to allow Cloudflare proxy as the only ingress point.</s
-						> Cloudflare Tunnel acting as a reverse Proxy.
-					</p>
-					<p>
-						Play with it, inserting some data, and looking for what is inside the database. When
-						this page is loaded, a background job is started in your browser, sending data to the
-						server every 20 seconds. It should be showing in the feed, among the other requests that
-						might come from other visitors.
-					</p>
-					Source code:<a href="http://github.com/auyer/MemoryKV">github.com/auyer/MemoryKV</a>
-				</Accordion.ItemContent>
-			</Accordion.Item>
-		</Accordion>
-	</div>
+<div class="kv-page">
+	<details class="kv-accordion">
+		<summary role="button">
+			<h3>MemoryKV: an in memory Key Value DB with Live a feed</h3>
+		</summary>
+		<p>
+			This is a KV in memory database I built in Rust for learning purposes with a live feed
+			of the WAL (Write Ahead Log).
+		</p>
+		<p>This page has a control panel and a WebSocket feed.</p>
+		<p>
+			The server is hosted in a small free-tier cloud VM, with <s
+				>WAF rules to allow Cloudflare proxy as the only ingress point.</s
+			> Cloudflare Tunnel acting as a reverse Proxy.
+		</p>
+		<p>
+			Play with it, inserting some data, and looking for what is inside the database. When
+			this page is loaded, a background job is started in your browser, sending data to the
+			server every 20 seconds. It should be showing in the feed, among the other requests that
+			might come from other visitors.
+		</p>
+		Source code:<a href="http://github.com/auyer/MemoryKV">github.com/auyer/MemoryKV</a>
+	</details>
 
-	<container class="w-full max-w-6xl mx-auto grid md:grid-cols-2 grid-cols-1 md:gap-4 gap-2">
+	<container class="kv-grid">
 		<KVPanel
 			{panelResults}
 			on:listKeys={listKeys}
@@ -190,13 +183,67 @@
 			on:deleteAll={deleteAll}
 			on:cancelBg={cancelBg}
 		/>
-		<div class="card p-4 space-y-8">
-			<div class="shadow-xl rounded-lg p-4">
-				<h2 class="p-4">Live Database feed</h2>
-				<div class="card card-hover p-4 overflow-auto">
+		<div class="kv-feed">
+			<div class="kv-feed-card">
+				<h2>Live Database feed</h2>
+				<div class="kv-feed-content">
 					<WALItems {messages} />
 				</div>
 			</div>
 		</div>
 	</container>
 </div>
+
+<style>
+	:global(.kv-page) {
+		gap: 2rem;
+	}
+
+	:global(.kv-accordion) {
+		width: 100%;
+		max-width: 72rem;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 1.25rem;
+	}
+
+	:global(.kv-accordion h3) {
+		margin: 0;
+	}
+
+	:global(.kv-grid) {
+		width: 100%;
+		max-width: 72rem;
+		margin-left: auto;
+		margin-right: auto;
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	@media (min-width: 768px) {
+		:global(.kv-grid) {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1rem;
+		}
+	}
+
+	:global(.kv-feed) {
+		padding: 1rem;
+		gap: 2rem;
+	}
+
+	:global(.kv-feed-card) {
+		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+		border-radius: 0.5rem;
+		padding: 1rem;
+	}
+
+	:global(.kv-feed-card h2) {
+		padding: 1rem;
+	}
+
+	:global(.kv-feed-content) {
+		padding: 1rem;
+		overflow: auto;
+	}
+</style>

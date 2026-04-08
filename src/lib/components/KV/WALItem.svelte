@@ -4,8 +4,25 @@
 </script>
 
 <li>
-	<div class="flex-start flex items-center pt-3 bg-opacity-75">
-		<div class="-ml-[5px] mr-3 h-[9px] w-[9px] rounded-full bg-neutral-300"></div>
+	<div class="wal-item-content">
+		<div class="wal-item-dot"></div>
 		<p class="note">{content}</p>
 	</div>
 </li>
+
+<style>
+	:global(.wal-item-content) {
+		display: flex;
+		align-items: center;
+		padding-top: 0.75rem;
+	}
+
+	:global(.wal-item-dot) {
+		margin-left: -5px;
+		margin-right: 0.75rem;
+		height: 9px;
+		width: 9px;
+		border-radius: 9999px;
+		background-color: var(--pico-muted-border-color);
+	}
+</style>

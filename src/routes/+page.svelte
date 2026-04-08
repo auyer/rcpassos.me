@@ -13,10 +13,10 @@
 	<meta name="description" content={bio} />
 </svelte:head>
 
-<container class="flex flex-col flex-grow w-full mx-auto max-w-6xl">
+<container class="container home-container">
 	<!-- bio -->
-	<section class="flex flex-col items-center gap-16 pt-8 pb-16">
-		<div class="flex flex-col items-center w-full gap-6">
+	<section class="bio-section">
+		<div class="bio-content">
 			<picture class="profile-box">
 				<source class="profile" type="image/avif" srcset={avatar_avif} />
 				<img class="profile" src={avatar_png} alt={name} />
@@ -32,93 +32,112 @@
 				</span>
 			</div>
 			<p class="desc"><strong>Stay Curious</strong></p>
-			<div class="flex gap-6">
+			<div class="social-links">
 				<SocialLinks />
 			</div>
-			<div class="gap-3">
+			<div class="bio-text">
 				{#each bio_splitted as item}
-					<p class="text-lg text-center text-zinc-600 dark:text-zinc-400">
-						{item}
-					</p>
+					<p>{item}</p>
 				{/each}
 			</div>
 		</div>
 	</section>
-	<section class="w-full">
-		<div class="flex items-center justify-between gap-4 mb-8">
-			<h2 class="text-sm font-medium sm:text-base text-zinc-500 dark:text-zinc-400">
-				Recently Published
-			</h2>
-			<a href="/posts" class="flex items-center gap-1 text-sm font-medium text-teal-500"
-				>View All <ArrowRightIcon class="w-4 h-4 m-2" /></a
-			>
+	<section class="recent-posts">
+		<div class="section-header">
+			<h2>Recently Published</h2>
+			<a href="/posts" class="view-all">View All <ArrowRightIcon class="arrow-icon" /></a>
 		</div>
 		<PostsList posts={data.posts} />
 	</section>
 </container>
 
-<style lang="scss">
-	@reference 'tailwindcss';
-
-	.profile,
-	.profile-box {
-		@apply mx-auto rounded-full w-36 h-36;
-	}
-	.profile-box {
-		@apply ring-2 ring-zinc-200 dark:ring-zinc-700;
-	}
-	$w-s: 750px;
-
-	.role {
-		position: relative;
-		display: inline-block;
-		font-weight: 900;
-		color: var(--t-bg);
-		background-color: var(--t-fg);
-		padding: 0.25em 0.5em;
-		z-index: 2;
-
-		@media (min-width: $w-s) {
-			font-size: var(--f-u3);
-		}
-
-		&:nth-of-type(1) {
-			.invert {
-				background-color: var(--c-pink);
-			}
-		}
-
-		&:nth-of-type(2) {
-			.invert {
-				background-color: var(--c-blue);
-			}
-		}
-
-		&:nth-of-type(3) {
-			.invert {
-				background-color: var(--c-green);
-			}
-		}
-
-		&:hover {
-			.invert {
-				clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-			}
-		}
+<style>
+	:global(.home-container) {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+		width: 100%;
+		max-width: 72rem;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
-	.invert {
-		position: absolute;
-		color: var(--t-fg);
+	:global(.bio-section) {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 4rem;
+		padding-top: 2rem;
+		padding-bottom: 4rem;
+	}
+
+	:global(.bio-content) {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		gap: 1.5rem;
+	}
+
+	:global(.social-links) {
+		display: flex;
+		gap: 1.5rem;
+	}
+
+	:global(.bio-text) {
+		gap: 0.75rem;
+	}
+
+	:global(.bio-text p) {
+		font-size: 1.125rem;
+		text-align: center;
+		color: var(--pico-muted-color);
+	}
+
+	[data-theme='dark'] :global(.bio-text p) {
+		color: var(--pico-secondary);
+	}
+
+	:global(.recent-posts) {
+		width: 100%;
+	}
+
+	:global(.section-header) {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		left: 0;
-		pointer-events: none;
-		clip-path: polygon(0% 100%, 100% 100%, 100% 200%, 0% 200%);
-		transition: clip-path cubic-bezier(0.4, 0, 0.5, 1) 150ms;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	:global(.section-header h2) {
+		font-size: 1rem;
+		font-weight: 500;
+		color: var(--pico-muted-color);
+	}
+
+	@media (min-width: 640px) {
+		:global(.section-header h2) {
+			font-size: 1.125rem;
+		}
+	}
+
+	:global(.view-all) {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--pico-primary);
+		text-decoration: none;
+	}
+
+	:global(.view-all:hover) {
+		text-decoration: underline;
+	}
+
+	:global(.arrow-icon) {
+		width: 1rem;
+		height: 1rem;
 	}
 </style>

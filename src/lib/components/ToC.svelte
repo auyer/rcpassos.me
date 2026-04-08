@@ -68,14 +68,14 @@
 
 <Card>
 	<slot slot="description">
-		<ul class="flex flex-col gap-2">
+		<ul class="toc-list">
 			<p>Table of Contents</p>
 			{#if !tocFullyVisible}
-				<li class="pl-2 text-zinc-500 dark:text-zinc-600">...</li>
+				<li class="toc-ellipsis">...</li>
 			{/if}
 			{#each visibleHeadings as heading}
 				<li
-					class="pl-2 transition-colors border-teal-500 heading text-zinc-500 dark:text-zinc-600 hover:text-zinc-900 dark:hover:text-zinc-100"
+					class="heading"
 					class:active={activeHeading === heading}
 					style={`--depth: ${
 						// consider h1 and h2 at the same depth, as h1 will only be used for page title
@@ -90,19 +90,35 @@
 	</slot>
 </Card>
 
-<style lang="scss">
-	@reference 'tailwindcss';
+<style>
+	:global(.toc-list) {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
 
-	.heading {
+	:global(.heading) {
 		padding-left: calc(var(--depth, 0) * 0.35rem);
+		transition: color 0.15s ease-in-out;
+		color: var(--pico-muted-color);
 	}
 
-	.active {
-		@apply font-medium text-slate-900 border-l-2 -ml-[2px];
+	:global(.heading:hover) {
+		color: var(--pico-color);
 	}
 
-	/* can't use dark: modifier in @apply */
-	:global(.dark) .active {
-		@apply text-slate-100;
+	:global(.heading.active) {
+		font-weight: 500;
+		color: var(--pico-color);
+		border-left: 2px solid var(--pico-primary);
+		margin-left: -2px;
+	}
+
+	:global(.toc-ellipsis) {
+		padding-left: 0.5rem;
+		color: var(--pico-muted-color);
 	}
 </style>

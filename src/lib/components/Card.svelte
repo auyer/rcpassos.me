@@ -1,25 +1,19 @@
 <script>
-	export let as = 'div';
+	export let as = 'article';
 	export let href = undefined;
 
 	let _class = undefined;
 	export { _class as class };
 </script>
 
-<svelte:element this={as} class={['relative flex flex-col items-start group', _class].join(' ')}>
+<svelte:element this={as} class={['card-item', _class].join(' ')}>
 	<slot name="eyebrow" />
 
 	{#if $$slots.title}
-		<div class="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
+		<div class="card-title">
 			{#if href}
-				<div
-					class="absolute z-0 transition scale-95 opacity-0 -inset-y-6 -inset-x-4 bg-zinc-50 group-hover:scale-100 group-hover:opacity-100 dark:bg-zinc-800/50 sm:-inset-x-6 sm:rounded-2xl"
-				></div>
 				<a {href} data-sveltekit-preload-data="hover">
-					<span class="absolute z-20 -inset-y-6 -inset-x-4 sm:-inset-x-6 sm:rounded-2xl"></span>
-					<span class="relative z-10">
-						<slot name="title" />
-					</span>
+					<slot name="title" />
 				</a>
 			{:else}
 				<slot name="title" />
@@ -28,17 +22,61 @@
 	{/if}
 
 	{#if $$slots.description}
-		<div
-			class="relative z-10 flex-1 text-sm text-zinc-600 dark:text-zinc-400"
-			class:mt-2={!!$$slots.title}
-		>
+		<div class="card-description" class:mt-2={!!$$slots.title}>
 			<slot name="description" />
 		</div>
 	{/if}
 
 	{#if $$slots.actions}
-		<div aria-hidden="true" class="relative z-10 flex items-center mt-4">
+		<div aria-hidden="true" class="card-actions">
 			<slot name="actions" />
 		</div>
 	{/if}
 </svelte:element>
+
+<style>
+	:global(.card-item) {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	:global(.card-item:hover .card-hover-bg) {
+		transform: scale(1);
+		opacity: 1;
+	}
+
+	:global(.card-title) {
+		font-size: 1rem;
+		font-weight: 600;
+		letter-spacing: -0.025em;
+		color: var(--pico-color);
+	}
+
+	[data-theme='dark'] :global(.card-title) {
+		color: var(--pico-color);
+	}
+
+	:global(.card-description) {
+		position: relative;
+		flex: 1;
+		font-size: 0.875rem;
+		color: var(--pico-muted-color);
+	}
+
+	[data-theme='dark'] :global(.card-description) {
+		color: var(--pico-secondary);
+	}
+
+	:global(.card-description.mt-2) {
+		margin-top: 0.5rem;
+	}
+
+	:global(.card-actions) {
+		position: relative;
+		display: flex;
+		align-items: center;
+		margin-top: 1rem;
+	}
+</style>

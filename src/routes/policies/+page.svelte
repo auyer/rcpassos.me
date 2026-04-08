@@ -9,21 +9,21 @@
 	/>
 </svelte:head>
 
-<container class="flex flex-col flex-grow w-full mx-auto max-w-2xl items-center">
-	<article class="prose dark:prose-invert">
+<container class="policies-container">
+	<article class="prose">
 		<h1>Privacy Policy</h1>
-		<p class="py text-justify">
+		<p class="text-justify">
 			This Privacy Policy describes Our policies and procedures on the <b>non</b> collection, the
 			<b>absence</b>
 			of use and <b>unnecessary</b> disclosure of Your information when You use the Service, and tells
 			You about Your privacy rights and how the law protects us and You.
 		</p>
-		<p class="py text-justify">
+		<p class="text-justify">
 			We <b>do not</b> use Your Personal data to provide and improve anything in the Service. By
 			using the Service, You <b>do not need to</b> agree to the collection and use of information in
 			accordance with this Privacy Policy <b>(because there is none)</b>.
 		</p>
-		<p class="py text-justify">
+		<p class="text-justify">
 			Our Websites and Services <b>do not use</b> cookies <b>nor</b> other similar technologies, in
 			order to provide a better service to you, to help keep your account safe
 			<b>(there isn't one)</b>, and to generally improve our Websites and Services. Cookies can
@@ -384,7 +384,7 @@ wiki.creativecommons.org/Considerations_for_licensees
 		<p>
 			Creative Commons is not a party to its public licenses. Notwithstanding, Creative Commons may
 			elect to apply one of its public licenses to material it publishes and in those instances will
-			be considered the “Licensor.” The text of the Creative Commons public licenses is dedicated to
+			be considered the "Licensor." The text of the Creative Commons public licenses is dedicated to
 			the public domain under the CC0 Public Domain Dedication. Except for the limited purpose of
 			indicating that material is shared under a Creative Commons public license or as otherwise
 			permitted by the Creative Commons policies published at creativecommons.org/policies, Creative
@@ -398,6 +398,15 @@ wiki.creativecommons.org/Considerations_for_licensees
 	</article>
 </container>
 
-<style lang="scss">
-	$w-s: 750px;
+<style>
+	:global(.policies-container) {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+		width: 100%;
+		max-width: 42rem;
+		margin-left: auto;
+		margin-right: auto;
+		align-items: center;
+	}
 </style>

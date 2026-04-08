@@ -40,59 +40,50 @@
 	function renderMathInElement(element) {
 		if (!element || typeof window === 'undefined') return;
 
-		// Process inline math: $...$
 		const elementsWithText = element.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, td, th');
-		elementsWithText.forEach(
-			/** @param {Element} el */ (el) => {
-				// Skip if already processed (has katex children)
-				if (el.querySelector('.katex')) return;
+		elementsWithText.forEach((el) => {
+			if (el.querySelector('.katex')) return;
 
-				const text = el.textContent;
-				const inlineRegex = /\$([^\$\n]+?)\$/g;
-				let match;
-				let hasMatch = false;
+			const text = el.textContent;
+			const inlineRegex = /\$([^\$\n]+?)\$/g;
+			let match;
+			let hasMatch = false;
 
-				// Check if there are matches first
-				while ((match = inlineRegex.exec(text)) !== null) {
-					hasMatch = true;
-					break;
-				}
+			while ((match = inlineRegex.exec(text)) !== null) {
+				hasMatch = true;
+				break;
+			}
 
-				if (!hasMatch) return;
+			if (!hasMatch) return;
 
-				// Reset regex and process
-				inlineRegex.lastIndex = 0;
-				const parts = text.split(inlineRegex);
-				const fragment = document.createDocumentFragment();
+			inlineRegex.lastIndex = 0;
+			const parts = text.split(inlineRegex);
+			const fragment = document.createDocumentFragment();
 
-				for (let i = 0; i < parts.length; i++) {
-					if (i % 2 === 0) {
-						// Text part
-						if (parts[i]) {
-							fragment.appendChild(document.createTextNode(parts[i]));
-						}
-					} else {
-						// Math part
-						try {
-							const rendered = katex.renderToString(parts[i], {
-								displayMode: false,
-								throwOnError: false
-							});
-							const span = document.createElement('span');
-							span.innerHTML = rendered;
-							fragment.appendChild(span);
-						} catch (e) {
-							fragment.appendChild(document.createTextNode('$' + parts[i] + '$'));
-						}
+			for (let i = 0; i < parts.length; i++) {
+				if (i % 2 === 0) {
+					if (parts[i]) {
+						fragment.appendChild(document.createTextNode(parts[i]));
+					}
+				} else {
+					try {
+						const rendered = katex.renderToString(parts[i], {
+							displayMode: false,
+							throwOnError: false
+						});
+						const span = document.createElement('span');
+						span.innerHTML = rendered;
+						fragment.appendChild(span);
+					} catch (e) {
+						fragment.appendChild(document.createTextNode('$' + parts[i] + '$'));
 					}
 				}
-
-				el.innerHTML = '';
-				el.appendChild(fragment);
 			}
-		);
 
-		// Process display math: $$...$$
+			el.innerHTML = '';
+			el.appendChild(fragment);
+		});
+
 		const allTextNodes = [];
 		const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
 		let node;
@@ -170,71 +161,63 @@
 	<meta name="twitter:image" content={ogImage} />
 </svelte:head>
 
-<div class="flex mx-auto lg:max-w-none">
-	<div class="hidden lg:w-1/6 lg:block pt-8">
-		<div class="sticky top-0 w-full flex justify-end pt-11 pr-8">
+<div class="post-layout">
+	<div class="post-sidebar-left">
+		<div class="back-button-container">
 			<svelte:element
 				this={canGoBack ? 'button' : 'a'}
 				tabindex="0"
 				role="button"
 				aria-pressed="false"
-				class="items-center justify-center hidden w-10 h-10 mb-8 transition bg-white rounded-full shadow-md -top-1 -left-16 lg:flex group shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:focus-visible:ring-2 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
+				class="back-button"
 				href={canGoBack ? undefined : '/posts'}
 				aria-label="Go back to posts"
 				onclick={goBack}
 				onkeydown={goBack}
 			>
-				<ArrowLeftIcon
-					class="w-4 h-4 transition stroke-zinc-500 group-hover:stroke-zinc-700 dark:stroke-zinc-500 dark:group-hover:stroke-zinc-400"
-				/>
+				<ArrowLeftIcon class="back-icon" />
 			</svelte:element>
 		</div>
 	</div>
 
-	<div class="w-full justify-center lg:w-4/6 mx-auto overflow-x-hidden">
-		<article class="prose max-w-none">
-			<header class="flex flex-col">
-				<h1
-					class="mt-4 font-bold tracking-tight text-zinc-800 dark:text-zinc-100 text-2xl lg:text-4xl md:text-3xl"
-				>
-					{data.post.title}
-				</h1>
+	<div class="post-content">
+		<article class="post-article">
+			<header class="post-header">
+				<h1>{data.post.title}</h1>
 				<PostDate class="text-sm sm:text-base" post={data.post} decorate collapsed />
 			</header>
 
 			<!-- render the post -->
-			<div class="prose max-w-5xl dark:prose-invert">
+			<div class="prose">
 				<svelte:component this={data.component} />
 			</div>
 		</article>
 
 		<!-- bio -->
 		<hr />
-		<div class="py-8">
+		<div class="post-author">
 			<div class="grid gap-8">
-				<div class="flex justify-center order-1 col-span-2 gap-6 md:order-2">
+				<div class="social-links-container">
 					<SocialLinks />
 				</div>
-				<div class="flex justify-center order-2 md:order-1 md:col-span-2">
-					<a href="/" class="inline-block rounded-full">
+				<div class="avatar-container">
+					<a href="/" class="avatar-link">
 						<img
 							src={avatar_avif}
 							alt={name}
-							class="w-24 h-24 mx-auto rounded-full md:w-28 md:h-28 ring-2 ring-zinc-200 dark:ring-zinc-700"
+							class="avatar-image"
 						/>
 					</a>
 				</div>
-				<p class="order-3 text-base text-zinc-600 dark:text-zinc-400">
-					{bio}
-				</p>
+				<p class="bio-text">{bio}</p>
 			</div>
 		</div>
 	</div>
 
 	<!-- table of contents -->
-	<div class="hidden items-start xl:w-2/6 lg:w-fit xl:block pt-10">
+	<div class="post-sidebar-right">
 		{#if /** @type {any} */ (/** @type {any} */ (data.post).metadata)?.headings?.length > 0}
-			<aside class="sticky hidden w-48 ml-8 xl:block top-8" aria-label="Table of Contents">
+			<aside class="toc-aside" aria-label="Table of Contents">
 				<ToC
 					post={{
 						headings: /** @type {any} */ (/** @type {any} */ (data.post).metadata)?.headings
@@ -244,3 +227,224 @@
 		{/if}
 	</div>
 </div>
+
+<style>
+	:global(.post-layout) {
+		display: flex;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	@media (min-width: 1024px) {
+		:global(.post-layout) {
+			max-width: none;
+		}
+	}
+
+	:global(.post-sidebar-left) {
+		display: none;
+	}
+
+	@media (min-width: 1024px) {
+		:global(.post-sidebar-left) {
+			display: block;
+			width: 16.666667%;
+			padding-top: 2rem;
+		}
+	}
+
+	:global(.back-button-container) {
+		position: sticky;
+		top: 0;
+		width: 100%;
+		display: flex;
+		justify-content: flex-end;
+		padding-top: 2.75rem;
+		padding-right: 2rem;
+	}
+
+	:global(.back-button) {
+		display: none;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		margin-bottom: 2rem;
+		transition: all 0.15s ease-in-out;
+		background-color: var(--pico-card-background-color);
+		border-radius: 9999px;
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+		border: 1px solid color-mix(in srgb, var(--pico-muted-border-color) 50%, transparent);
+	}
+
+	@media (min-width: 1024px) {
+		:global(.back-button) {
+			display: flex;
+		}
+	}
+
+	[data-theme='dark'] :global(.back-button) {
+		background-color: var(--pico-card-background-color);
+		border: 1px solid color-mix(in srgb, var(--pico-muted-border-color) 50%, transparent);
+	}
+
+	:global(.back-icon) {
+		width: 1rem;
+		height: 1rem;
+		transition: all 0.15s ease-in-out;
+		stroke: #6b7280;
+	}
+
+	:global(.back-button:hover .back-icon) {
+		stroke: #374151;
+	}
+
+	[data-theme='dark'] :global(.back-icon) {
+		stroke: #6b7280;
+	}
+
+	[data-theme='dark'] :global(.back-button:hover .back-icon) {
+		stroke: #9ca3af;
+	}
+
+	:global(.post-content) {
+		width: 100%;
+		justify-content: center;
+		margin-left: auto;
+		margin-right: auto;
+		overflow-x: hidden;
+	}
+
+	@media (min-width: 1024px) {
+		:global(.post-content) {
+			width: 66.666667%;
+		}
+	}
+
+	:global(.post-article) {
+		max-width: none;
+	}
+
+	:global(.post-header) {
+		display: flex;
+		flex-direction: column;
+	}
+
+	:global(.post-header h1) {
+		margin-top: 1rem;
+		font-weight: 700;
+		letter-spacing: -0.025em;
+		color: var(--pico-color);
+		font-size: 1.5rem;
+	}
+
+	@media (min-width: 768px) {
+		:global(.post-header h1) {
+			font-size: 1.875rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		:global(.post-header h1) {
+			font-size: 2.25rem;
+		}
+	}
+
+	[data-theme='dark'] :global(.post-header h1) {
+		color: var(--pico-color);
+	}
+
+	:global(.post-author) {
+		padding-top: 2rem;
+		padding-bottom: 2rem;
+	}
+
+	:global(.grid) {
+		display: grid;
+		gap: 2rem;
+	}
+
+	:global(.social-links-container) {
+		display: flex;
+		justify-content: center;
+		order: 1;
+		gap: 1.5rem;
+	}
+
+	@media (min-width: 768px) {
+		:global(.social-links-container) {
+			order: 2;
+		}
+	}
+
+	:global(.avatar-container) {
+		display: flex;
+		justify-content: center;
+		order: 2;
+	}
+
+	@media (min-width: 768px) {
+		:global(.avatar-container) {
+			order: 1;
+			grid-column: span 2 / span 2;
+		}
+	}
+
+	:global(.avatar-link) {
+		display: inline-block;
+		border-radius: 9999px;
+	}
+
+	:global(.avatar-image) {
+		width: 6rem;
+		height: 6rem;
+		margin-left: auto;
+		margin-right: auto;
+		border-radius: 9999px;
+		box-shadow: 0 0 0 2px var(--pico-muted-border-color);
+	}
+
+	@media (min-width: 768px) {
+		:global(.avatar-image) {
+			width: 7rem;
+			height: 7rem;
+		}
+	}
+
+	:global(.bio-text) {
+		order: 3;
+		font-size: 1rem;
+		color: var(--pico-muted-color);
+	}
+
+	[data-theme='dark'] :global(.bio-text) {
+		color: var(--pico-secondary);
+	}
+
+	:global(.post-sidebar-right) {
+		display: none;
+		align-items: flex-start;
+		padding-top: 2.5rem;
+	}
+
+	@media (min-width: 1280px) {
+		:global(.post-sidebar-right) {
+			display: block;
+			width: 33.333333%;
+		}
+	}
+
+	:global(.toc-aside) {
+		position: sticky;
+		display: none;
+		width: 12rem;
+		margin-left: 2rem;
+		top: 2rem;
+	}
+
+	@media (min-width: 1280px) {
+		:global(.toc-aside) {
+			display: block;
+		}
+	}
+</style>

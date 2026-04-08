@@ -115,39 +115,69 @@
 	let isFocused = true;
 </script>
 
-<div class="card p-4 m-2 space-y-4">
+<article class="kv-panel">
 	<h2>Interactive area</h2>
 	<form>
 		<label class="label">
 			<span>Key</span>
 			<input class="input {keyClass}" type="text" placeholder="Key" bind:value={key} />
 		</label>
-		<label class="label">
+		<label>
 			<span>Value</span>
 			<input class="input {valueClass}" type="text" placeholder="Value" bind:value />
 		</label>
 	</form>
 
-	<div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 p-2">
-		<button class="btn variant-filled-primary text-center" onclick={getKey}>Read</button>
-		<button class="btn variant-filled-primary text-center" onclick={putKey}>Put Key</button>
-		<button class="btn variant-filled text-center" onclick={listKeys}>List</button>
-		<button class="btn variant-filled text-center" onclick={listPrefix}>List Prefix</button>
+	<div class="kv-button-grid">
+		<button class="btn variant-filled-primary" onclick={getKey}>Read</button>
+		<button class="btn variant-filled-primary" onclick={putKey}>Put Key</button>
+		<button class="btn variant-filled" onclick={listKeys}>List</button>
+		<button class="btn variant-filled" onclick={listPrefix}>List Prefix</button>
 
-		<button class="btn variant-filled-warning text-center" onclick={deleteKey}>Delete</button>
-		<button class="btn variant-filled-warning text-center" onclick={deletePrefix}
-			>Delete Prefix</button
-		>
-		<button class="btn variant-filled-warning text-center" onclick={deleteAll}>Delete All</button>
+		<button class="btn variant-filled-warning" onclick={deleteKey}>Delete</button>
+		<button class="btn variant-filled-warning" onclick={deletePrefix}>Delete Prefix</button>
+		<button class="btn variant-filled-warning" onclick={deleteAll}>Delete All</button>
 
 		<button class="btn btn-sm variant-filled-error align-top" onclick={cancelBg}>
-			Stop
-			<br />
-			Background Job
+			Stop<br />Background Job
 		</button>
 	</div>
-	<div class="gap-2">
+	<div class="kv-results">
 		<h2>Results area</h2>
-		<pre class="bg-surface-100-900 p-4 rounded-lg overflow-auto"><code>{panelResults}</code></pre>
+		<pre class="kv-results-pre"><code>{panelResults}</code></pre>
 	</div>
-</div>
+</article>
+
+<style>
+	:global(.kv-panel) {
+		padding: 1rem;
+		margin: 0.5rem;
+		gap: 1rem;
+		display: flex;
+		flex-direction: column;
+	}
+
+	:global(.kv-button-grid) {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.5rem;
+		padding: 0.5rem;
+	}
+
+	@media (min-width: 768px) {
+		:global(.kv-button-grid) {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	:global(.kv-results) {
+		gap: 0.5rem;
+	}
+
+	:global(.kv-results-pre) {
+		background-color: var(--pico-code-background-color);
+		padding: 1rem;
+		border-radius: 0.5rem;
+		overflow: auto;
+	}
+</style>

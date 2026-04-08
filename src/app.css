@@ -1,42 +1,1435 @@
-@import 'tailwindcss';
-@import '@skeletonlabs/skeleton';
-@import '@skeletonlabs/skeleton-svelte';
-@plugin '@tailwindcss/typography';
-@import '@skeletonlabs/skeleton/themes/pine';
+@import '@picocss/pico/css/pico.min.css';
+@import '@picocss/pico/css/pico.colors.min.css';
 
-@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
+/* Custom color scheme using data-theme attribute */
+[data-theme='light'],
+:root:not([data-theme='dark']) {
+	--pico-primary: #0891b2;
+	--pico-primary-hover: #0e7490;
+	--pico-primary-focus: rgba(8, 145, 178, 0.5);
+	--pico-primary-inverse: #fff;
+	--pico-secondary: #6b7280;
+	--pico-secondary-hover: #4b5563;
+	--pico-secondary-focus: rgba(107, 114, 128, 0.5);
+	--pico-secondary-inverse: #fff;
+}
 
-@layer base {
-	body {
-		@apply text-zinc-600 dark:text-zinc-400 h-full;
+[data-theme='dark'],
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		--pico-primary: #22d3ee;
+		--pico-primary-hover: #06b6d4;
+		--pico-primary-focus: rgba(34, 211, 238, 0.5);
+		--pico-primary-inverse: #000;
+		--pico-secondary: #9ca3af;
+		--pico-secondary-hover: #6b7280;
+		--pico-secondary-focus: rgba(156, 163, 175, 0.5);
+		--pico-secondary-inverse: #000;
 	}
+}
 
-	h1 {
-		@apply text-zinc-900 dark:text-zinc-100;
-	}
+/* Base typography overrides */
+body {
+	height: 100%;
+}
 
-	h2,
-	h3,
-	h4,
-	h5,
-	h6 {
-		@apply text-zinc-900 dark:text-zinc-200;
-	}
+h1 {
+	margin-bottom: 1rem;
+}
 
-	hr {
-		@apply border-zinc-100 dark:border-zinc-700/25;
-	}
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-bottom: 0.75rem;
+}
+
+hr {
+	border-top: 1px solid var(--pico-muted-border-color);
 }
 
 a {
-	@apply dark:text-cyan-400 text-cyan-800 hover:text-blue-600;
+	text-decoration: none;
 }
 
-html.dark .shiki,
-html.dark .shiki span {
+a:hover {
+	text-decoration: underline;
+}
+
+/* Link colors using Pico variables */
+a:not([class]) {
+	color: var(--pico-primary);
+}
+
+a:not([class]):hover {
+	color: var(--pico-primary-hover);
+}
+
+/* Custom styles for code highlighting (Shiki) */
+[data-theme='dark'] .shiki,
+[data-theme='dark'] .shiki span {
 	color: var(--shiki-dark) !important;
 	background-color: var(--shiki-dark-bg) !important;
 	font-style: var(--shiki-dark-font-style) !important;
 	font-weight: var(--shiki-dark-font-weight) !important;
 	text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* Custom utility classes */
+.container {
+	max-width: var(--pico-container-width, 1200px);
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+/* Grid system */
+.grid {
+	display: grid;
+	gap: 1rem;
+}
+
+@media (min-width: 768px) {
+	.md\:grid-cols-2 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 767px) {
+	.sm\:grid-cols-1 {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* Flex utilities */
+.flex {
+	display: flex;
+}
+
+.flex-col {
+	flex-direction: column;
+}
+
+.flex-grow {
+	flex-grow: 1;
+}
+
+.items-center {
+	align-items: center;
+}
+
+.justify-center {
+	justify-content: center;
+}
+
+.justify-between {
+	justify-content: space-between;
+}
+
+.gap-2 {
+	gap: 0.5rem;
+}
+
+.gap-4 {
+	gap: 1rem;
+}
+
+.gap-6 {
+	gap: 1.5rem;
+}
+
+.gap-8 {
+	gap: 2rem;
+}
+
+.gap-16 {
+	gap: 4rem;
+}
+
+.gap-24 {
+	gap: 6rem;
+}
+
+/* Spacing utilities */
+.mx-auto {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.m-2 {
+	margin: 0.5rem;
+}
+
+.m-4 {
+	margin: 1rem;
+}
+
+.m-5 {
+	margin: 1.25rem;
+}
+
+.mt-2 {
+	margin-top: 0.5rem;
+}
+
+.mt-4 {
+	margin-top: 1rem;
+}
+
+.mt-8 {
+	margin-top: 2rem;
+}
+
+.mt-16 {
+	margin-top: 4rem;
+}
+
+.mb-3 {
+	margin-bottom: 0.75rem;
+}
+
+.mb-8 {
+	margin-bottom: 2rem;
+}
+
+.p-2 {
+	padding: 0.5rem;
+}
+
+.p-4 {
+	padding: 1rem;
+}
+
+.p-6 {
+	padding: 1.5rem;
+}
+
+.px-3 {
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+}
+
+.py-2 {
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+.py {
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+}
+
+.pt-4 {
+	padding-top: 1rem;
+}
+
+.pt-8 {
+	padding-top: 2rem;
+}
+
+.pt-16 {
+	padding-top: 4rem;
+}
+
+.pb-4 {
+	padding-bottom: 1rem;
+}
+
+.pb-8 {
+	padding-bottom: 2rem;
+}
+
+.pb-16 {
+	padding-bottom: 4rem;
+}
+
+/* Width utilities */
+.w-full {
+	width: 100%;
+}
+
+.max-w-2xl {
+	max-width: 42rem;
+}
+
+.max-w-4xl {
+	max-width: 56rem;
+}
+
+.max-w-6xl {
+	max-width: 72rem;
+}
+
+/* Text utilities */
+.text-sm {
+	font-size: 0.875rem;
+}
+
+.text-lg {
+	font-size: 1.125rem;
+}
+
+.text-xl {
+	font-size: 1.25rem;
+}
+
+.text-2xl {
+	font-size: 1.5rem;
+}
+
+.text-3xl {
+	font-size: 1.875rem;
+}
+
+.font-bold {
+	font-weight: 700;
+}
+
+.font-medium {
+	font-weight: 500;
+}
+
+.font-semibold {
+	font-weight: 600;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.text-justify {
+	text-align: justify;
+}
+
+.tracking-tight {
+	letter-spacing: -0.025em;
+}
+
+.tracking-wide {
+	letter-spacing: 0.025em;
+}
+
+/* Border utilities */
+.rounded-full {
+	border-radius: 9999px;
+}
+
+.rounded-lg {
+	border-radius: 0.5rem;
+}
+
+.border {
+	border-width: 1px;
+	border-style: solid;
+}
+
+.border-b {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+/* Ring utilities */
+.ring-2 {
+	box-shadow: 0 0 0 2px var(--pico-primary);
+}
+
+/* Overflow utilities */
+.overflow-auto {
+	overflow: auto;
+}
+
+.overflow-hidden {
+	overflow: hidden;
+}
+
+.overflow-x-hidden {
+	overflow-x: hidden;
+}
+
+/* Shadow utilities */
+.shadow-lg {
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-md {
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-xl {
+	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Position utilities */
+.relative {
+	position: relative;
+}
+
+.absolute {
+	position: absolute;
+}
+
+.sticky {
+	position: sticky;
+}
+
+.top-0 {
+	top: 0;
+}
+
+/* Display utilities */
+.block {
+	display: block;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+.hidden {
+	display: none;
+}
+
+/* Order utilities */
+.order-first {
+	order: -9999;
+}
+
+/* Transition utilities */
+.transition {
+	transition: all 0.15s ease-in-out;
+}
+
+.transition-colors {
+	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+		border-color 0.15s ease-in-out;
+}
+
+/* Group hover utilities */
+.group:hover .group-hover\:text-zinc-600,
+.group:hover .group-hover\:text-zinc-300 {
+	/* Handled via CSS variables in component styles */
+}
+
+/* Responsive utilities */
+@media (min-width: 640px) {
+	.sm\:mt-20 {
+		margin-top: 5rem;
+	}
+
+	.sm\:text-base {
+		font-size: 1rem;
+	}
+
+	.sm\:-inset-x-6 {
+		left: -1.5rem;
+		right: -1.5rem;
+	}
+
+	.sm\:rounded-2xl {
+		border-radius: 1rem;
+	}
+}
+
+@media (min-width: 768px) {
+	.md\:block {
+		display: block;
+	}
+
+	.md\:flex {
+		display: flex;
+	}
+
+	.md\:hidden {
+		display: none;
+	}
+
+	.md\:border-l {
+		border-left-width: 1px;
+		border-left-style: solid;
+	}
+
+	.md\:pl-6 {
+		padding-left: 1.5rem;
+	}
+
+	.md\:col-span-2 {
+		grid-column: span 2 / span 2;
+	}
+
+	.md\:col-span-3 {
+		grid-column: span 3 / span 3;
+	}
+
+	.md\:order-1 {
+		order: 1;
+	}
+
+	.md\:order-2 {
+		order: 2;
+	}
+
+	.md\:p-8 {
+		padding: 2rem;
+	}
+
+	.md\:w-28 {
+		width: 7rem;
+	}
+
+	.md\:h-28 {
+		height: 7rem;
+	}
+}
+
+@media (min-width: 1024px) {
+	.lg\:block {
+		display: block;
+	}
+
+	.lg\:flex {
+		display: flex;
+	}
+
+	.lg\:hidden {
+		display: none;
+	}
+
+	.lg\:items-center {
+		align-items: center;
+	}
+
+	.lg\:w-auto {
+		width: auto;
+	}
+
+	.lg\:w-1\/6 {
+		width: 16.666667%;
+	}
+
+	.lg\:w-4\/6 {
+		width: 66.666667%;
+	}
+
+	.lg\:max-w-none {
+		max-width: none;
+	}
+
+	.lg\:text-4xl {
+		font-size: 2.25rem;
+	}
+
+	.lg\:inline-block {
+		display: inline-block;
+	}
+}
+
+@media (min-width: 1280px) {
+	.xl\:block {
+		display: block;
+	}
+
+	.xl\:w-2\/6 {
+		width: 33.333333%;
+	}
+}
+
+/* First letter utilities */
+.first-letter\:text-6xl::first-letter {
+	font-size: 3.75rem;
+}
+
+.first-letter\:font-bold::first-letter {
+	font-weight: 700;
+}
+
+.first-letter\:mr-3::first-letter {
+	margin-right: 0.75rem;
+}
+
+.first-letter\:float-left::first-letter {
+	float: left;
+}
+
+/* Space between children utilities */
+.space-y-3 > * + * {
+	margin-top: 0.75rem;
+}
+
+.space-y-4 > * + * {
+	margin-top: 1rem;
+}
+
+.space-y-6 > * + * {
+	margin-top: 1.5rem;
+}
+
+.space-y-8 > * + * {
+	margin-top: 2rem;
+}
+
+/* Card styles */
+.card {
+	background-color: var(--pico-card-background-color, var(--pico-background-color));
+	border: 1px solid var(--pico-card-border-color, var(--pico-muted-border-color));
+	border-radius: var(--pico-border-radius);
+	padding: 1rem;
+}
+
+.card-hover:hover {
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Prose styles (replacing @tailwindcss/typography) */
+.prose {
+	max-width: 65ch;
+}
+
+.prose h1 {
+	font-size: 2.25rem;
+	margin-top: 2rem;
+	margin-bottom: 1rem;
+}
+
+.prose h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+	margin-bottom: 0.75rem;
+}
+
+.prose h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+	margin-bottom: 0.5rem;
+}
+
+.prose p {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+
+.prose ul,
+.prose ol {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	padding-left: 1.5rem;
+}
+
+.prose li {
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
+.prose a {
+	color: var(--pico-primary);
+	text-decoration: underline;
+}
+
+.prose a:hover {
+	color: var(--pico-primary-hover);
+}
+
+.prose pre {
+	background-color: var(--pico-code-background-color);
+	border-radius: var(--pico-border-radius);
+	padding: 1rem;
+	overflow-x: auto;
+}
+
+.prose code {
+	background-color: var(--pico-code-background-color);
+	border-radius: calc(var(--pico-border-radius) / 2);
+	font-size: 0.875em;
+	padding: 0.2em 0.4em;
+}
+
+.prose pre code {
+	background-color: transparent;
+	padding: 0;
+	font-size: 0.875em;
+}
+
+.prose blockquote {
+	border-left: 4px solid var(--pico-muted-border-color);
+	padding-left: 1rem;
+	font-style: italic;
+	margin: 1rem 0;
+}
+
+.prose img {
+	border-radius: var(--pico-border-radius);
+}
+
+.prose hr {
+	border-color: var(--pico-muted-border-color);
+	margin: 2rem 0;
+}
+
+/* Dark mode prose */
+[data-theme='dark'] .prose {
+	color: var(--pico-color);
+}
+
+/* Custom role badge styles */
+.role {
+	position: relative;
+	display: inline-block;
+	font-weight: 900;
+	color: var(--t-bg);
+	background-color: var(--t-fg);
+	padding: 0.25em 0.5em;
+	z-index: 2;
+	font-size: var(--f-u3, 1rem);
+}
+
+.role:nth-of-type(1) .invert {
+	background-color: var(--c-pink, #ec4899);
+}
+
+.role:nth-of-type(2) .invert {
+	background-color: var(--c-blue, #3b82f6);
+}
+
+.role:nth-of-type(3) .invert {
+	background-color: var(--c-green, #22c55e);
+}
+
+.role:hover .invert {
+	clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+
+.invert {
+	position: absolute;
+	color: var(--t-fg);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	pointer-events: none;
+	clip-path: polygon(0% 100%, 100% 100%, 100% 200%, 0% 200%);
+	transition: clip-path cubic-bezier(0.4, 0, 0.5, 1) 150ms;
+}
+
+/* Profile image styles */
+.profile,
+.profile-box {
+	margin-left: auto;
+	margin-right: auto;
+	border-radius: 9999px;
+	width: 9rem;
+	height: 9rem;
+}
+
+.profile-box {
+	box-shadow: 0 0 0 2px var(--pico-muted-border-color);
+}
+
+[data-theme='dark'] .profile-box {
+	box-shadow: 0 0 0 2px var(--pico-muted-border-color);
+}
+
+/* Footer styles */
+footer.footer {
+	text-align: center;
+	padding-top: 8rem;
+	padding-right: 2rem;
+	padding-bottom: 4rem;
+	padding-left: 2rem;
+}
+
+/* Hero styles */
+.hero {
+	position: relative;
+	overflow: hidden;
+}
+
+.hero img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.gradient {
+	background-image: url('/assets/mesh-gradient.avif');
+	background-size: cover;
+	pointer-events: none;
+	mix-blend-mode: screen;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 2;
+}
+
+.overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	padding-left: 2rem;
+}
+
+@media (min-width: 750px) {
+	.overlay {
+		padding-left: 4rem;
+	}
+}
+
+/* Heading active state */
+.heading.active {
+	font-weight: 500;
+	color: var(--pico-color);
+	border-left: 2px solid var(--pico-primary);
+	margin-left: -2px;
+}
+
+/* Navigation styles */
+nav ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	gap: 0.5rem;
+}
+
+nav ul li a {
+	text-decoration: none;
+	padding: 0.5rem 1rem;
+	border-radius: var(--pico-border-radius);
+}
+
+nav ul li a:hover {
+	background-color: var(--pico-primary-hover);
+	color: var(--pico-primary-inverse);
+}
+
+nav ul li a[aria-current='page'] {
+	background-color: var(--pico-primary);
+	color: var(--pico-primary-inverse);
+}
+
+/* Button icon styles */
+.btn-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem;
+	border-radius: var(--pico-border-radius);
+	border: none;
+	cursor: pointer;
+}
+
+/* Social link icon sizes */
+.social-icon {
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+/* WAL timeline styles */
+.border-l {
+	border-left-width: 1px;
+	border-left-style: solid;
+}
+
+[data-theme='dark'] .border-l {
+	border-color: var(--pico-muted-border-color);
+}
+
+.note {
+	font-size: 0.875rem;
+	color: var(--pico-muted-color);
+}
+
+.flex-start {
+	display: flex;
+	justify-content: flex-start;
+}
+
+.bg-opacity-75 {
+	background-opacity: 0.75;
+}
+
+/* Col-span utilities */
+.col-span-4 {
+	grid-column: span 4 / span 4;
+}
+
+/* Grid columns 4 */
+.grid-cols-4 {
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Text colors using CSS variables */
+.text-token {
+	fill: var(--pico-color);
+}
+
+.fill-token {
+	fill: var(--pico-color);
+}
+
+/* Svelte-FA icon class */
+.svelte-fa {
+	/* Size handled via .social-icon */
+}
+
+/* Min width utility */
+.min-w-fit {
+	min-width: fit-content;
+}
+
+/* No underline utility */
+.no-underline {
+	text-decoration: none;
+}
+
+/* Align top utility */
+.align-top {
+	vertical-align: top;
+}
+
+/* MR (margin right) utilities */
+.mr-6 {
+	margin-right: 1.5rem;
+}
+
+.ml-1 {
+	margin-left: 0.25rem;
+}
+
+.ml-8 {
+	margin-left: 2rem;
+}
+
+.ml-auto {
+	margin-left: auto;
+}
+
+.-ml-\[2px\] {
+	margin-left: -2px;
+}
+
+.-ml-\[5px\] {
+	margin-left: -5px;
+}
+
+/* Width/height utilities */
+.w-4 {
+	width: 1rem;
+}
+
+.w-5 {
+	width: 1.25rem;
+}
+
+.w-6 {
+	width: 1.5rem;
+}
+
+.w-10 {
+	width: 2.5rem;
+}
+
+.w-24 {
+	width: 6rem;
+}
+
+.w-36 {
+	width: 9rem;
+}
+
+.w-48 {
+	width: 12rem;
+}
+
+.h-4 {
+	height: 1rem;
+}
+
+.h-5 {
+	height: 1.25rem;
+}
+
+.h-6 {
+	height: 1.5rem;
+}
+
+.h-10 {
+	height: 2.5rem;
+}
+
+.h-24 {
+	height: 6rem;
+}
+
+.h-36 {
+	height: 9rem;
+}
+
+.h-\[9px\] {
+	height: 9px;
+}
+
+.w-\[9px\] {
+	width: 9px;
+}
+
+.h-full {
+	height: 100%;
+}
+
+.w-0\.5 {
+	width: 0.125rem;
+}
+
+.w-0 {
+	width: 0;
+}
+
+/* Padding left utilities */
+.pl-2 {
+	padding-left: 0.5rem;
+}
+
+.pl-3\.5 {
+	padding-left: 0.875rem;
+}
+
+.py-1 {
+	padding-top: 0.25rem;
+	padding-bottom: 0.25rem;
+}
+
+.py-8 {
+	padding-top: 2rem;
+	padding-bottom: 2rem;
+}
+
+/* Rounded utilities */
+.rounded {
+	border-radius: var(--pico-border-radius);
+}
+
+/* Stroke for SVG */
+.stroke-zinc-500 {
+	stroke: #6b7280;
+}
+
+.group:hover .group-hover\:stroke-zinc-700 {
+	stroke: #374151;
+}
+
+[data-theme='dark'] .dark\:stroke-zinc-500 {
+	stroke: #6b7280;
+}
+
+[data-theme='dark'] .dark\:group-hover\:stroke-zinc-400 {
+	stroke: #9ca3af;
+}
+
+/* Background colors */
+.bg-white {
+	background-color: var(--pico-card-background-color, #fff);
+}
+
+[data-theme='dark'] .dark\:bg-zinc-900 {
+	background-color: var(--pico-background-color);
+}
+
+[data-theme='dark'] .dark\:bg-zinc-800 {
+	background-color: var(--pico-card-background-color);
+}
+
+/* Border colors */
+.border-zinc-200 {
+	border-color: #e5e7eb;
+}
+
+[data-theme='dark'] .dark\:border-zinc-800 {
+	border-color: var(--pico-muted-border-color);
+}
+
+[data-theme='dark'] .dark\:border-zinc-700\/40 {
+	border-color: color-mix(in srgb, var(--pico-muted-border-color) 40%, transparent);
+}
+
+[data-theme='dark'] .dark\:border-zinc-700\/50 {
+	border-color: color-mix(in srgb, var(--pico-muted-border-color) 50%, transparent);
+}
+
+/* Text colors using variables */
+.text-zinc-500 {
+	color: #6b7280;
+}
+
+.text-zinc-600 {
+	color: #4b5563;
+}
+
+.text-zinc-700 {
+	color: #374151;
+}
+
+.text-zinc-800 {
+	color: #1f2937;
+}
+
+.text-zinc-900 {
+	color: #111827;
+}
+
+.text-teal-500 {
+	color: #14b8a6;
+}
+
+.text-blue-600 {
+	color: #2563eb;
+}
+
+[data-theme='dark'] .dark\:text-zinc-100 {
+	color: #f3f4f6;
+}
+
+[data-theme='dark'] .dark\:text-zinc-200 {
+	color: #e5e7eb;
+}
+
+[data-theme='dark'] .dark\:text-zinc-300 {
+	color: #d1d5db;
+}
+
+[data-theme='dark'] .dark\:text-zinc-400 {
+	color: #9ca3af;
+}
+
+[data-theme='dark'] .dark\:text-zinc-500 {
+	color: #6b7280;
+}
+
+[data-theme='dark'] .dark\:text-zinc-600 {
+	color: #4b5563;
+}
+
+[data-theme='dark'] .dark\:text-cyan-400 {
+	color: #22d3ee;
+}
+
+[data-theme='dark'] .dark\:text-blue-400 {
+	color: #60a5fa;
+}
+
+[data-theme='dark'] .dark\:hover\:text-blue-300:hover {
+	color: #93c5fd;
+}
+
+[data-theme='dark'] .dark\:hover\:text-green-400:hover {
+	color: #4ade80;
+}
+
+[data-theme='dark'] .dark\:hover\:text-zinc-100:hover {
+	color: #f3f4f6;
+}
+
+[data-theme='dark'] .dark\:hover\:text-zinc-300:hover {
+	color: #d1d5db;
+}
+
+.hover\:text-blue-600:hover {
+	color: #2563eb;
+}
+
+.hover\:text-blue-800:hover {
+	color: #1d4ed8;
+}
+
+.hover\:text-green-600:hover {
+	color: #16a34a;
+}
+
+.hover\:text-zinc-900:hover {
+	color: #111827;
+}
+
+.hover\:underline:hover {
+	text-decoration: underline;
+}
+
+/* Group hover text colors */
+.group:hover .group-hover\:text-zinc-600 {
+	color: #4b5563;
+}
+
+[data-theme='dark'] .dark\:group-hover\:text-zinc-300 {
+	color: #d1d5db;
+}
+
+/* Ring colors */
+.ring-zinc-200 {
+	--pico-ring-color: #e5e7eb;
+}
+
+[data-theme='dark'] .dark\:ring-zinc-700 {
+	--pico-ring-color: #374151;
+}
+
+/* Background zinc colors */
+.bg-zinc-50 {
+	background-color: #f9fafb;
+}
+
+.bg-neutral-300 {
+	background-color: #d1d5db;
+}
+
+[data-theme='dark'] .dark\:bg-zinc-800\/50 {
+	background-color: color-mix(in srgb, var(--pico-card-background-color) 50%, transparent);
+}
+
+/* Min height */
+.min-h-screen {
+	min-height: 100vh;
+}
+
+/* Grid gap utilities */
+.md\:gap-4 {
+	gap: 1rem;
+}
+
+.gap-2 {
+	gap: 0.5rem;
+}
+
+/* Position negative inset utilities */
+.-inset-y-6 {
+	top: -1.5rem;
+	bottom: -1.5rem;
+}
+
+.-inset-x-4 {
+	left: -1rem;
+	right: -1rem;
+}
+
+.-top-1 {
+	top: -0.25rem;
+}
+
+.-left-16 {
+	left: -4rem;
+}
+
+/* Z-index utilities */
+.z-0 {
+	z-index: 0;
+}
+
+.z-10 {
+	z-index: 10;
+}
+
+.z-20 {
+	z-index: 20;
+}
+
+/* Scale utilities */
+.scale-95 {
+	transform: scale(0.95);
+}
+
+/* Opacity utilities */
+.opacity-0 {
+	opacity: 0;
+}
+
+/* Shadow zinc utilities */
+.shadow-zinc-800\/5 {
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.ring-1 {
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.ring-zinc-900\/5 {
+	--pico-ring-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme='dark'] .dark\:ring-0 {
+	box-shadow: none;
+}
+
+[data-theme='dark'] .dark\:focus-visible\:ring-2:focus-visible {
+	box-shadow: 0 0 0 2px var(--pico-primary);
+}
+
+[data-theme='dark'] .dark\:ring-white\/10 {
+	--pico-ring-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .dark\:hover\:border-zinc-700:hover {
+	border-color: #374151;
+}
+
+[data-theme='dark'] .dark\:hover\:ring-white\/20:hover {
+	--pico-ring-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Antialiased */
+.antialiased {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Display contents */
+.display-contents {
+	display: contents;
+}
+
+/* Flex shrink */
+.flex-shrink-0 {
+	flex-shrink: 0;
+}
+
+/* Inline flex */
+.inline-flex {
+	display: inline-flex;
+}
+
+/* Container element */
+container {
+	display: block;
+}
+
+/* Font mono */
+.font-mono {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+		'Courier New', monospace;
+}
+
+/* Font sans */
+.font-sans {
+	font-family: var(--pico-font-family);
+}
+
+/* Button styles for KV panel */
+.btn {
+	display: inline-block;
+	padding: 0.5rem 1rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	text-align: center;
+	border-radius: var(--pico-border-radius);
+	border: 1px solid transparent;
+	cursor: pointer;
+	transition: all 0.15s ease-in-out;
+}
+
+.btn:hover {
+	opacity: 0.9;
+}
+
+/* Primary filled button */
+.btn.variant-filled-primary {
+	background-color: var(--pico-primary);
+	color: var(--pico-primary-inverse);
+	border-color: var(--pico-primary);
+}
+
+/* Secondary filled button */
+.btn.variant-filled {
+	background-color: var(--pico-secondary);
+	color: var(--pico-secondary-inverse);
+	border-color: var(--pico-secondary);
+}
+
+/* Warning filled button */
+.btn.variant-filled-warning {
+	background-color: var(--pico-color-amber-600, #d97706);
+	color: #fff;
+	border-color: var(--pico-color-amber-600, #d97706);
+}
+
+/* Error filled button */
+.btn.variant-filled-error {
+	background-color: var(--pico-color-red-600, #dc2626);
+	color: #fff;
+	border-color: var(--pico-color-red-600, #dc2626);
+}
+
+/* Small button */
+.btn.btn-sm {
+	padding: 0.25rem 0.5rem;
+	font-size: 0.75rem;
+}
+
+/* Form input styles */
+.input {
+	display: block;
+	width: 100%;
+	padding: 0.5rem 0.75rem;
+	font-size: 0.875rem;
+	line-height: 1.25;
+	color: var(--pico-form-element-color);
+	background-color: var(--pico-form-element-background-color);
+	border: 1px solid var(--pico-form-element-border-color);
+	border-radius: var(--pico-border-radius);
+}
+
+.input:focus {
+	border-color: var(--pico-primary);
+	outline: 0;
+	box-shadow: 0 0 0 3px var(--pico-primary-focus);
+}
+
+.input.input-success {
+	border-color: var(--pico-color-green-600, #16a34a);
+}
+
+.input.input-error {
+	border-color: var(--pico-color-red-600, #dc2626);
+}
+
+/* Form label */
+.label {
+	display: block;
+	margin-bottom: 0.5rem;
+}
+
+/* Pre/code block background */
+.bg-surface-100-900 {
+	background-color: var(--pico-code-background-color);
+}
+
+/* Accordion styles using Pico details/summary */
+details {
+	margin-bottom: 1rem;
+}
+
+details summary {
+	cursor: pointer;
+}
+
+details summary[role='button'] {
+	padding: 0.75rem 1rem;
+}
+
+/* Responsive grid for KV panel */
+.grid-cols-2 {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Item timeline */
+.item {
+	transition: all 0.2s ease-in-out;
 }

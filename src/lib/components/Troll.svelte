@@ -2,12 +2,12 @@
 	import Card from './Card.svelte';
 </script>
 
-<container class="flex flex-col flex-grow w-full mx-auto max-w-2xl items-center">
+<container class="troll-container">
 	<Card>
 		<slot slot="eyebrow" name="eyebrow" />
 		<slot slot="title">Are you looking for the Admin page ?</slot>
-		<div slot="description" class="prose dark:prose-invert">
-			<div class="flex flex-row">
+		<div slot="description" class="prose">
+			<div class="troll-video">
 				<iframe
 					width="420"
 					height="315"
@@ -25,4 +25,19 @@
 </container>
 
 <style>
+	:global(.troll-container) {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+		width: 100%;
+		max-width: 42rem;
+		margin-left: auto;
+		margin-right: auto;
+		align-items: center;
+	}
+
+	:global(.troll-video) {
+		display: flex;
+		flex-direction: row;
+	}
 </style>
