@@ -231,8 +231,10 @@
 <style>
 	:global(.post-layout) {
 		display: flex;
+		justify-content: center;
 		margin-left: auto;
 		margin-right: auto;
+		gap: 2rem;
 	}
 
 	@media (min-width: 1024px) {
@@ -309,7 +311,6 @@
 
 	:global(.post-content) {
 		width: 100%;
-		justify-content: center;
 		margin-left: auto;
 		margin-right: auto;
 		overflow-x: hidden;
@@ -317,12 +318,14 @@
 
 	@media (min-width: 1024px) {
 		:global(.post-content) {
-			width: 66.666667%;
+			max-width: 80rem;
 		}
 	}
 
 	:global(.post-article) {
 		max-width: none;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	:global(.post-header) {
@@ -446,5 +449,10 @@
 		:global(.toc-aside) {
 			display: block;
 		}
+	}
+
+	/* Allow prose to fill the wider container */
+	:global(.post-article .prose) {
+		max-width: 100%;
 	}
 </style>
