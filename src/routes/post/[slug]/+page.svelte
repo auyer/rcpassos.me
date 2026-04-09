@@ -226,16 +226,14 @@
 
 <style>
 	:global(.post-layout) {
-		display: flex;
-		justify-content: center;
-		margin-left: auto;
-		margin-right: auto;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 2rem;
 	}
 
-	@media (min-width: 1024px) {
+	@media (min-width: 1280px) {
 		:global(.post-layout) {
-			max-width: none;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 80ch) minmax(0, 1fr);
 		}
 	}
 
@@ -245,9 +243,8 @@
 
 	@media (min-width: 1024px) {
 		:global(.post-sidebar-left) {
-			display: block;
-			width: 16.666667%;
-			padding-top: 2rem;
+			display: flex;
+			justify-content: flex-end;
 		}
 	}
 
@@ -306,16 +303,7 @@
 	}
 
 	:global(.post-content) {
-		width: 100%;
-		margin-left: auto;
-		margin-right: auto;
 		overflow-x: hidden;
-	}
-
-	@media (min-width: 1024px) {
-		:global(.post-content) {
-			max-width: 80rem;
-		}
 	}
 
 	:global(.post-article) {
@@ -399,14 +387,11 @@
 
 	:global(.post-sidebar-right) {
 		display: none;
-		align-items: flex-start;
-		padding-top: 2.5rem;
 	}
 
 	@media (min-width: 1280px) {
 		:global(.post-sidebar-right) {
 			display: block;
-			width: 33.333333%;
 		}
 	}
 
