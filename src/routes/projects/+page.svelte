@@ -9,17 +9,43 @@
 	<title>{name} | Personal Projects</title>
 </svelte:head>
 
-<container class="w-full mx-auto grid gap-24 max-w-6xl">
-	<div class="mt-16 sm:mt-20">
-		<header class="pt-4">
-			<h1 class="lg:text-4xl font-bold tracking-tight md:text-2xl text-xl">Personal Projects:</h1>
+<container class="projects-container">
+	<article class="projects-article">
+		<header class="projects-header">
+			<h1>Personal Projects</h1>
+			<p>Built with Rust, Go, and determination.</p>
 		</header>
 
-		<div class="mt-16 sm:mt-20">
-			<ProjectList projects={data.projects} />
-		</div>
-	</div>
+		<ProjectList projects={data.projects} />
+	</article>
 </container>
 
 <style>
+	:global(.projects-container) {
+		display: block;
+		max-width: 72rem;
+		margin-left: auto;
+		margin-right: auto;
+		padding-left: 1rem;
+		padding-right: 1rem;
+	}
+
+	:global(.projects-article) {
+		margin-bottom: 2rem;
+	}
+
+	:global(.projects-header) {
+		padding-top: 1rem;
+	}
+
+	:global(.projects-header h1) {
+		font-size: 1.5rem;
+		font-weight: 700;
+		letter-spacing: -0.025em;
+		margin-bottom: 0.5rem;
+	}
+
+	:global(.projects-header p) {
+		color: var(--pico-muted-color);
+	}
 </style>

@@ -46,10 +46,4 @@
 		font-size: 0.875rem;
 		font-weight: 500;
 	}
-
-	:global(.read-more-icon) {
-		width: 1rem;
-		height: 1rem;
-		margin-left: 0.25rem;
-	}
 </style>

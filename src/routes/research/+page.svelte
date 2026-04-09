@@ -1,227 +1,58 @@
-<script lang="js">
-	// TODO: generate this dynamically
-	const papers = [
-		{
-			name: 'Streamlining Analyses on the Linux Kernel with DUKS',
-			published: '13th IEEE VISSOFT',
-			year: 2025,
-			url: 'research/linux-kernel-with-DUKS-vissoft-2025'
-		},
-		{
-			name: 'DUKS: visualizações e análises unificadas para o Kernel Linux',
-			published: 'XIII VEM (CBSoft)',
-			year: 2025,
-			language: 'PT-BR 🇧🇷',
-			url: 'https://doi.org/10.5753/vem.2025.14637'
-		}
-	];
+<script>
+	import { name } from '$lib/info.js';
+	import OrcidBadge from '$lib/components/OrcidBadge.svelte';
+	import PaperList from '$lib/components/PaperList.svelte';
 
-	const co_papers = [
-		{
-			name: 'Guidelines for Boosting Long-Lasting FLOSS Contributors',
-			published: 'DebConf25 Brest',
-			year: 2025,
-			url: 'https://hal.science/hal-05334509'
-		},
-		{
-			name: 'Estratégias de ensino para incentivar a participação consistente em projetos de Software Livre',
-			published: 'XIII VEM (CBSoft)',
-			year: 2025,
-			language: 'PT-BR 🇧🇷',
-			url: 'https://doi.org/10.5753/vem.2025.14524'
-		}
-	];
-
-	// Author's ORCID information
-	const orcidId = '0009-0003-3657-5519';
-	const orcidUrl = `https://orcid.org/${orcidId}`;
+	/** @type {import('./$types').PageData} */
+	export let data;
 </script>
 
-<div class="research-container">
-	<div class="research-card">
+<svelte:head>
+	<title>{name} | Research</title>
+</svelte:head>
+
+<container class="research-container">
+	<article class="research-article">
 		<header class="research-header">
 			<h1>Research Preprint Repository</h1>
 			<p>My academic contributions and research</p>
 		</header>
-		<section>
-			<h3>My ORCID:</h3>
-			<p>
-				<a href={orcidUrl} target="_blank" rel="noopener noreferrer" class="orcid-link">
-					<img src="/assets/ORCID_iD.svg" alt="ORCID iD" width="50" height="50" />
-					<span class="orcid-id">{orcidId}</span>
-				</a>
-			</p>
-		</section>
-		<section>
-			<h3>Publications</h3>
-			<ul class="paper-list">
-				{#each papers as paper (paper.url)}
-					<div class="paper-item">
-						<li>
-							<span class="paper-year">{paper.year} -</span>
-							<a href={paper.url} class="paper-title">
-								{paper.name}
-							</a>
-							<p class="paper-published">
-								{paper.published}
-							</p>
-							{#if paper.language}
-								<p class="paper-language">
-									{paper.language}
-								</p>
-							{/if}
-						</li>
-					</div>
-				{/each}
-			</ul>
-		</section>
-		<section>
-			<h3>Contributions</h3>
-			<ul class="paper-list">
-				{#each co_papers as paper (paper.url)}
-					<div class="paper-item">
-						<li>
-							<span class="paper-year">{paper.year} -</span>
-							<a href={paper.url} class="paper-title">
-								{paper.name}
-							</a>
-							<p class="paper-published">
-								{paper.published}
-							</p>
-							{#if paper.language}
-								<p class="paper-language">
-									{paper.language}
-								</p>
-							{/if}
-						</li>
-					</div>
-				{/each}
-			</ul>
-		</section>
-	</div>
-</div>
+
+		<OrcidBadge orcidId={data.orcidId} orcidUrl={`https://orcid.org/${data.orcidId}`} />
+		<PaperList title="Publications" papers={data.papers} />
+		<PaperList title="Contributions" papers={data.coPapers} />
+	</article>
+</container>
 
 <style>
 	:global(.research-container) {
-		display: flex;
+		display: block;
+		max-width: 72rem;
 		margin-left: auto;
 		margin-right: auto;
-		justify-content: center;
-		align-items: center;
+		padding-left: 1rem;
+		padding-right: 1rem;
 	}
 
-	:global(.research-card) {
-		max-width: 56rem;
-		width: 100%;
-		border-radius: 0.5rem;
-		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-		padding: 1.5rem;
-		background-color: var(--pico-card-background-color);
-		border: 1px solid var(--pico-card-border-color);
-		gap: 1.5rem;
-		display: flex;
-		flex-direction: column;
-	}
-
-	@media (min-width: 768px) {
-		:global(.research-card) {
-			padding: 2rem;
-		}
+	:global(.research-article) {
+		margin-bottom: 2rem;
 	}
 
 	:global(.research-header) {
+		padding-top: 1rem;
 		border-bottom: 1px solid var(--pico-muted-border-color);
 		padding-bottom: 1rem;
 	}
 
 	:global(.research-header h1) {
-		font-size: 1.875rem;
+		font-size: 1.5rem;
 		font-weight: 700;
+		letter-spacing: -0.025em;
 		color: var(--pico-color);
 	}
 
 	:global(.research-header p) {
 		color: var(--pico-muted-color);
-		margin-top: 0.25rem;
-	}
-
-	:global(.research-card section h3) {
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: var(--pico-color);
-		margin-bottom: 0.75rem;
-	}
-
-	:global(.orcid-link) {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 1.875rem;
-		color: var(--pico-muted-color);
-		text-decoration: none;
-		transition: color 0.15s ease-in-out;
-	}
-
-	:global(.orcid-link:hover) {
-		color: #16a34a;
-	}
-
-	:global(.orcid-id) {
-		font-family:
-			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-			monospace;
-		letter-spacing: 0.025em;
-	}
-
-	:global(.orcid-id:hover) {
-		text-decoration: underline;
-	}
-
-	:global(.paper-list) {
-		gap: 0.75rem;
-		display: flex;
-		flex-direction: column;
-		list-style: none;
-		padding: 0;
-		margin: 0;
-	}
-
-	:global(.paper-item) {
-		padding: 1rem;
-		gap: 1rem;
-		border: 1px solid var(--pico-card-border-color);
-		background-color: var(--pico-muted-border-color);
-		margin: 0.5rem;
-	}
-
-	:global(.paper-item li) {
-		display: flex;
-		align-items: flex-start;
-		gap: 0.75rem;
-	}
-
-	:global(.paper-year) {
-		color: var(--pico-muted-color);
-	}
-
-	:global(.paper-title) {
-		color: #2563eb;
-		text-decoration: none;
-	}
-
-	:global(.paper-title:hover) {
-		color: #1d4ed8;
-		text-decoration: underline;
-	}
-
-	:global(.paper-published) {
-		color: var(--pico-color);
-	}
-
-	:global(.paper-language) {
-		font-size: 0.875rem;
-		color: var(--pico-muted-color);
-		margin-left: auto;
-		text-align: end;
+		margin-top: 0.5rem;
 	}
 </style>
