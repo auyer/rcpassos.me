@@ -6,14 +6,14 @@
 </script>
 
 <div class="posts-list">
-	{#each posts as post}
+	{#each posts as post (post.slug)}
 		<article class="post-article">
 			<PostDate class="post-date-desktop" {post} decorate />
-				<PostPreview {post}>
-					<slot slot="eyebrow">
-						<PostDate class="post-date-mobile" {post} collapsed decorate />
-					</slot>
-				</PostPreview>
+			<PostPreview {post}>
+				<slot slot="eyebrow">
+					<PostDate class="post-date-mobile" {post} collapsed decorate />
+				</slot>
+			</PostPreview>
 		</article>
 	{/each}
 </div>
@@ -28,10 +28,6 @@
 		:global(.posts-list) {
 			border-left: 1px solid var(--pico-muted-border-color);
 			padding-left: 1rem;
-		}
-
-		[data-theme='dark'] :global(.posts-list) {
-			border-color: color-mix(in srgb, var(--pico-muted-border-color) 40%, transparent);
 		}
 	}
 
@@ -73,10 +69,6 @@
 		:global(.post-content) {
 			grid-column: 2;
 		}
-	}
-
-	:global(.post-date-mobile) {
-		/* Already handled by PostDate component */
 	}
 
 	@media (min-width: 768px) {

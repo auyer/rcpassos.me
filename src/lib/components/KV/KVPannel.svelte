@@ -110,9 +110,6 @@
 		clearClass();
 		dispatch('cancelBg');
 	}
-
-	/** @type {boolean} */
-	let isFocused = true;
 </script>
 
 <article class="kv-panel">

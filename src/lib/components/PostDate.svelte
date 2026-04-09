@@ -9,7 +9,7 @@
 	export { _class as class };
 </script>
 
-<div class={['post-date', _class].join(' ')} class:decorate={decorate}>
+<div class={['post-date', _class].join(' ')} class:decorate>
 	{#if decorate}
 		<span class="date-decorator" aria-hidden="true">
 			<span class="date-line"></span>

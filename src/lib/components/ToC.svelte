@@ -73,7 +73,7 @@
 			{#if !tocFullyVisible}
 				<li class="toc-ellipsis">...</li>
 			{/if}
-			{#each visibleHeadings as heading}
+			{#each visibleHeadings as heading (heading.id)}
 				<li
 					class="heading"
 					class:active={activeHeading === heading}

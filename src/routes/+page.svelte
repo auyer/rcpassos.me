@@ -36,7 +36,7 @@
 				<SocialLinks />
 			</div>
 			<div class="bio-text">
-				{#each bio_splitted as item}
+				{#each bio_splitted as item (item)}
 					<p>{item}</p>
 				{/each}
 			</div>
@@ -92,10 +92,6 @@
 		font-size: 1.125rem;
 		text-align: center;
 		color: var(--pico-muted-color);
-	}
-
-	[data-theme='dark'] :global(.bio-text p) {
-		color: var(--pico-secondary);
 	}
 
 	:global(.recent-posts) {

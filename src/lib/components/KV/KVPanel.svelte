@@ -110,9 +110,6 @@
 		clearClass();
 		dispatch('cancelBg');
 	}
-
-	/** @type {boolean} */
-	let isFocused = true;
 </script>
 
 <div class="card p-4 m-2 space-y-4">

@@ -46,12 +46,7 @@
 		<section>
 			<h3>My ORCID:</h3>
 			<p>
-				<a
-					href={orcidUrl}
-					target="_blank"
-					rel="noopener noreferrer"
-					class="orcid-link"
-				>
+				<a href={orcidUrl} target="_blank" rel="noopener noreferrer" class="orcid-link">
 					<img src="/assets/ORCID_iD.svg" alt="ORCID iD" width="50" height="50" />
 					<span class="orcid-id">{orcidId}</span>
 				</a>
@@ -60,14 +55,11 @@
 		<section>
 			<h3>Publications</h3>
 			<ul class="paper-list">
-				{#each papers as paper, i}
+				{#each papers as paper (paper.url)}
 					<div class="paper-item">
 						<li>
 							<span class="paper-year">{paper.year} -</span>
-							<a
-								href={paper.url}
-								class="paper-title"
-							>
+							<a href={paper.url} class="paper-title">
 								{paper.name}
 							</a>
 							<p class="paper-published">
@@ -86,14 +78,11 @@
 		<section>
 			<h3>Contributions</h3>
 			<ul class="paper-list">
-				{#each co_papers as paper, i}
+				{#each co_papers as paper (paper.url)}
 					<div class="paper-item">
 						<li>
 							<span class="paper-year">{paper.year} -</span>
-							<a
-								href={paper.url}
-								class="paper-title"
-							>
+							<a href={paper.url} class="paper-title">
 								{paper.name}
 							</a>
 							<p class="paper-published">
@@ -140,11 +129,6 @@
 		}
 	}
 
-	[data-theme='dark'] :global(.research-card) {
-		background-color: var(--pico-background-color);
-		border-color: var(--pico-muted-border-color);
-	}
-
 	:global(.research-header) {
 		border-bottom: 1px solid var(--pico-muted-border-color);
 		padding-bottom: 1rem;
@@ -156,17 +140,9 @@
 		color: var(--pico-color);
 	}
 
-	[data-theme='dark'] :global(.research-header h1) {
-		color: var(--pico-color);
-	}
-
 	:global(.research-header p) {
 		color: var(--pico-muted-color);
 		margin-top: 0.25rem;
-	}
-
-	[data-theme='dark'] :global(.research-header p) {
-		color: var(--pico-secondary);
 	}
 
 	:global(.research-card section h3) {
@@ -174,10 +150,6 @@
 		font-weight: 600;
 		color: var(--pico-color);
 		margin-bottom: 0.75rem;
-	}
-
-	[data-theme='dark'] :global(.research-card section h3) {
-		color: var(--pico-color);
 	}
 
 	:global(.orcid-link) {
@@ -194,13 +166,10 @@
 		color: #16a34a;
 	}
 
-	[data-theme='dark'] :global(.orcid-link:hover) {
-		color: #4ade80;
-	}
-
 	:global(.orcid-id) {
-		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
-			'Courier New', monospace;
+		font-family:
+			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+			monospace;
 		letter-spacing: 0.025em;
 	}
 
@@ -225,11 +194,6 @@
 		margin: 0.5rem;
 	}
 
-	[data-theme='dark'] :global(.paper-item) {
-		background-color: var(--pico-card-background-color);
-		border-color: var(--pico-muted-border-color);
-	}
-
 	:global(.paper-item li) {
 		display: flex;
 		align-items: flex-start;
@@ -238,10 +202,6 @@
 
 	:global(.paper-year) {
 		color: var(--pico-muted-color);
-	}
-
-	[data-theme='dark'] :global(.paper-year) {
-		color: var(--pico-secondary);
 	}
 
 	:global(.paper-title) {
@@ -254,19 +214,7 @@
 		text-decoration: underline;
 	}
 
-	[data-theme='dark'] :global(.paper-title) {
-		color: #60a5fa;
-	}
-
-	[data-theme='dark'] :global(.paper-title:hover) {
-		color: #93c5fd;
-	}
-
 	:global(.paper-published) {
-		color: var(--pico-color);
-	}
-
-	[data-theme='dark'] :global(.paper-published) {
 		color: var(--pico-color);
 	}
 
@@ -275,9 +223,5 @@
 		color: var(--pico-muted-color);
 		margin-left: auto;
 		text-align: end;
-	}
-
-	[data-theme='dark'] :global(.paper-language) {
-		color: var(--pico-muted-color);
 	}
 </style>

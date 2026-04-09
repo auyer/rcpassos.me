@@ -5,7 +5,7 @@
 </script>
 
 <div class="projects-list">
-	{#each projects as project}
+	{#each projects as project (project.link)}
 		<Card href={project.link}>
 			<slot slot="eyebrow" name="eyebrow" />
 			<slot slot="title">{project.name}</slot>
@@ -33,10 +33,6 @@
 		:global(.projects-list) {
 			border-left: 1px solid var(--pico-muted-border-color);
 			padding-left: 1.5rem;
-		}
-
-		[data-theme='dark'] :global(.projects-list) {
-			border-color: color-mix(in srgb, var(--pico-muted-border-color) 40%, transparent);
 		}
 	}
 

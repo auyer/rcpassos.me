@@ -25,8 +25,4 @@
 		padding: 0;
 		margin: 0;
 	}
-
-	[data-theme='dark'] :global(.wal-list) {
-		border-color: var(--pico-muted-border-color);
-	}
 </style>

@@ -20,7 +20,13 @@ export default defineConfig(
 
 		{
 			files: ['**/*.svelte', '**/*.svelte.js'],
-			languageOptions: { parserOptions: { svelteConfig } }
+			languageOptions: { parserOptions: { svelteConfig } },
+			rules: {
+				// resolve() requires TypeScript; this project is JS-only
+				'svelte/no-navigation-without-resolve': 'off',
+				// {@html} is necessary for rendering markdown content from mdsvex
+				'svelte/no-at-html-tags': 'off'
+			}
 		}
 	],
 	prettier,

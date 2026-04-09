@@ -57,19 +57,11 @@
 		color: var(--pico-color);
 	}
 
-	[data-theme='dark'] :global(.card-title) {
-		color: var(--pico-color);
-	}
-
 	:global(.card-description) {
 		position: relative;
 		flex: 1;
 		font-size: 0.875rem;
 		color: var(--pico-muted-color);
-	}
-
-	[data-theme='dark'] :global(.card-description) {
-		color: var(--pico-secondary);
 	}
 
 	:global(.card-description.mt-2) {

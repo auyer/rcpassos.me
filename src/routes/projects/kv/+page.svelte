@@ -62,7 +62,7 @@
 
 	/** @param {{ detail: { key: string } }} event */
 	const deletePrefix = async ({ detail: { key } }) => {
-		const [results, err] = await DeletePrefix(key);
+		const [, err] = await DeletePrefix(key);
 
 		if (err) {
 			panelResults = `ERROR: ${JSON.stringify(err)}`;
@@ -149,12 +149,12 @@
 
 <div class="kv-page">
 	<details class="kv-accordion">
-		<summary role="button">
+		<summary>
 			<h3>MemoryKV: an in memory Key Value DB with Live a feed</h3>
 		</summary>
 		<p>
-			This is a KV in memory database I built in Rust for learning purposes with a live feed
-			of the WAL (Write Ahead Log).
+			This is a KV in memory database I built in Rust for learning purposes with a live feed of the
+			WAL (Write Ahead Log).
 		</p>
 		<p>This page has a control panel and a WebSocket feed.</p>
 		<p>
@@ -163,10 +163,10 @@
 			> Cloudflare Tunnel acting as a reverse Proxy.
 		</p>
 		<p>
-			Play with it, inserting some data, and looking for what is inside the database. When
-			this page is loaded, a background job is started in your browser, sending data to the
-			server every 20 seconds. It should be showing in the feed, among the other requests that
-			might come from other visitors.
+			Play with it, inserting some data, and looking for what is inside the database. When this page
+			is loaded, a background job is started in your browser, sending data to the server every 20
+			seconds. It should be showing in the feed, among the other requests that might come from other
+			visitors.
 		</p>
 		Source code:<a href="http://github.com/auyer/MemoryKV">github.com/auyer/MemoryKV</a>
 	</details>

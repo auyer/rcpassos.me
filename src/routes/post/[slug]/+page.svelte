@@ -45,14 +45,8 @@
 			if (el.querySelector('.katex')) return;
 
 			const text = el.textContent;
-			const inlineRegex = /\$([^\$\n]+?)\$/g;
-			let match;
-			let hasMatch = false;
-
-			while ((match = inlineRegex.exec(text)) !== null) {
-				hasMatch = true;
-				break;
-			}
+			const inlineRegex = /(\$([^$\n]+?)\$)/g;
+			let hasMatch = inlineRegex.test(text);
 
 			if (!hasMatch) return;
 
@@ -74,7 +68,7 @@
 						const span = document.createElement('span');
 						span.innerHTML = rendered;
 						fragment.appendChild(span);
-					} catch (e) {
+					} catch {
 						fragment.appendChild(document.createTextNode('$' + parts[i] + '$'));
 					}
 				}
@@ -119,7 +113,7 @@
 						div.className = 'katex-display';
 						div.innerHTML = rendered;
 						fragment.appendChild(div);
-					} catch (e) {
+					} catch {
 						fragment.appendChild(document.createTextNode('$$' + parts[i] + '$$'));
 					}
 				}
@@ -197,11 +191,7 @@
 		<hr />
 		<div class="post-author">
 			<a href="/" class="avatar-link">
-				<img
-					src={avatar_avif}
-					alt={name}
-					class="avatar-image"
-				/>
+				<img src={avatar_avif} alt={name} class="avatar-image" />
 			</a>
 			<div class="social-links-container">
 				<SocialLinks />
@@ -278,11 +268,6 @@
 		}
 	}
 
-	[data-theme='dark'] :global(.back-button) {
-		background-color: var(--pico-card-background-color);
-		border: 1px solid color-mix(in srgb, var(--pico-muted-border-color) 50%, transparent);
-	}
-
 	:global(.back-icon) {
 		width: 1rem;
 		height: 1rem;
@@ -292,14 +277,6 @@
 
 	:global(.back-button:hover .back-icon) {
 		stroke: #374151;
-	}
-
-	[data-theme='dark'] :global(.back-icon) {
-		stroke: #6b7280;
-	}
-
-	[data-theme='dark'] :global(.back-button:hover .back-icon) {
-		stroke: #9ca3af;
 	}
 
 	:global(.post-content) {
@@ -335,10 +312,6 @@
 		:global(.post-header h1) {
 			font-size: 2.25rem;
 		}
-	}
-
-	[data-theme='dark'] :global(.post-header h1) {
-		color: var(--pico-color);
 	}
 
 	:global(.post-author) {
@@ -379,10 +352,6 @@
 		max-width: 40ch;
 		font-size: 1rem;
 		color: var(--pico-muted-color);
-	}
-
-	[data-theme='dark'] :global(.post-author .bio-text) {
-		color: var(--pico-secondary);
 	}
 
 	:global(.post-sidebar-right) {

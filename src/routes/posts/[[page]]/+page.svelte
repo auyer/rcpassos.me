@@ -18,10 +18,7 @@
 	<article class="posts-article">
 		<header class="posts-header">
 			<h1>Check my posts:</h1>
-			<p>
-				Written by a human. Any inaccuracies are my fault — no text generation
-				used.
-			</p>
+			<p>Written by a human. Any inaccuracies are my fault — no text generation used.</p>
 		</header>
 
 		<PostsList posts={data.posts} />
