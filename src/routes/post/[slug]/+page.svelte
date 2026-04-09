@@ -196,21 +196,17 @@
 		<!-- bio -->
 		<hr />
 		<div class="post-author">
-			<div class="grid gap-8">
-				<div class="social-links-container">
-					<SocialLinks />
-				</div>
-				<div class="avatar-container">
-					<a href="/" class="avatar-link">
-						<img
-							src={avatar_avif}
-							alt={name}
-							class="avatar-image"
-						/>
-					</a>
-				</div>
-				<p class="bio-text">{bio}</p>
+			<a href="/" class="avatar-link">
+				<img
+					src={avatar_avif}
+					alt={name}
+					class="avatar-image"
+				/>
+			</a>
+			<div class="social-links-container">
+				<SocialLinks />
 			</div>
+			<p class="bio-text">{bio}</p>
 		</div>
 	</div>
 
@@ -358,69 +354,46 @@
 	}
 
 	:global(.post-author) {
-		padding-top: 2rem;
-		padding-bottom: 2rem;
-	}
-
-	:global(.grid) {
-		display: grid;
-		gap: 2rem;
-	}
-
-	:global(.social-links-container) {
 		display: flex;
-		justify-content: center;
-		order: 1;
-		gap: 1.5rem;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: 1rem;
+		padding: 2rem;
+		margin-top: 1rem;
 	}
 
-	@media (min-width: 768px) {
-		:global(.social-links-container) {
-			order: 2;
-		}
-	}
-
-	:global(.avatar-container) {
-		display: flex;
-		justify-content: center;
-		order: 2;
-	}
-
-	@media (min-width: 768px) {
-		:global(.avatar-container) {
-			order: 1;
-			grid-column: span 2 / span 2;
-		}
-	}
-
-	:global(.avatar-link) {
+	:global(.post-author .avatar-link) {
 		display: inline-block;
-		border-radius: 9999px;
 	}
 
-	:global(.avatar-image) {
+	:global(.post-author .avatar-image) {
 		width: 6rem;
 		height: 6rem;
-		margin-left: auto;
-		margin-right: auto;
 		border-radius: 9999px;
 		box-shadow: 0 0 0 2px var(--pico-muted-border-color);
 	}
 
 	@media (min-width: 768px) {
-		:global(.avatar-image) {
+		:global(.post-author .avatar-image) {
 			width: 7rem;
 			height: 7rem;
 		}
 	}
 
-	:global(.bio-text) {
-		order: 3;
+	:global(.post-author .social-links-container) {
+		display: flex;
+		justify-content: center;
+		gap: 1.5rem;
+	}
+
+	:global(.post-author .bio-text) {
+		max-width: 40ch;
 		font-size: 1rem;
 		color: var(--pico-muted-color);
 	}
 
-	[data-theme='dark'] :global(.bio-text) {
+	[data-theme='dark'] :global(.post-author .bio-text) {
 		color: var(--pico-secondary);
 	}
 
