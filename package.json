@@ -49,6 +49,7 @@
 		"clsx": "^2.1.1",
 		"date-fns": "^4.1.0",
 		"katex": "^0.16.38",
+		"marked": "^18.0.0",
 		"node-html-parser": "^7.1.0",
 		"reading-time": "^1.5.0",
 		"reading-time-estimator": "^2.1.1",

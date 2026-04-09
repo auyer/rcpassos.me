@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { parse } from 'node-html-parser';
 import readingTime from 'reading-time/lib/reading-time.js';
 import { readFileSync } from 'node:fs';
+import { marked } from 'marked';
 
 // we require some server-side APIs to parse all metadata
 if (browser) {
@@ -27,8 +28,12 @@ export const posts = Object.entries(globResult)
 			? firstParagraphMatch[1].trim()
 			: contentWithoutFrontmatter.split('\n\n')[0];
 
-		const html = parse(`<p>${previewText}</p>`);
-		const preview = post.metadata?.preview ? parse(post.metadata.preview) : html;
+		// Convert markdown to HTML for the preview
+		const previewHtml = post.metadata?.preview
+			? post.metadata.preview
+			: marked.parseInline(previewText);
+		const html = parse(`<div>${previewHtml}</div>`);
+		const preview = html;
 
 		// Calculate reading time from full content (without frontmatter)
 		const fullReadingTime = readingTime(contentWithoutFrontmatter);
