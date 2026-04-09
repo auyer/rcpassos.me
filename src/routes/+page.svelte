@@ -131,9 +131,4 @@
 	:global(.view-all:hover) {
 		text-decoration: underline;
 	}
-
-	:global(.arrow-icon) {
-		width: 1rem;
-		height: 1rem;
-	}
 </style>

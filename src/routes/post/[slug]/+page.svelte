@@ -157,20 +157,16 @@
 
 <div class="post-layout">
 	<div class="post-sidebar-left">
-		<div class="back-button-container">
-			<svelte:element
-				this={canGoBack ? 'button' : 'a'}
-				tabindex="0"
-				role="button"
-				aria-pressed="false"
-				class="back-button"
-				href={canGoBack ? undefined : '/posts'}
+		<div class="post-nav-container">
+			<a
+				href="/posts"
+				class="post-nav-back"
 				aria-label="Go back to posts"
 				onclick={goBack}
 				onkeydown={goBack}
 			>
-				<ArrowLeftIcon class="back-icon" />
-			</svelte:element>
+				<ArrowLeftIcon class="post-nav-icon" />
+			</a>
 		</div>
 	</div>
 
@@ -231,52 +227,67 @@
 		display: none;
 	}
 
-	@media (min-width: 1024px) {
+	@media (min-width: 1280px) {
 		:global(.post-sidebar-left) {
 			display: flex;
 			justify-content: flex-end;
+			width: 100%;
 		}
 	}
 
-	:global(.back-button-container) {
+	.post-nav-container {
 		position: sticky;
 		top: 0;
-		width: 100%;
-		display: flex;
+		display: none;
+		align-items: center;
 		justify-content: flex-end;
 		padding-top: 2.75rem;
 		padding-right: 2rem;
 	}
 
-	:global(.back-button) {
-		display: none;
-		align-items: center;
-		justify-content: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		margin-bottom: 2rem;
-		transition: all 0.15s ease-in-out;
-		background-color: var(--pico-card-background-color);
-		border-radius: 9999px;
-		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-		border: 1px solid color-mix(in srgb, var(--pico-muted-border-color) 50%, transparent);
-	}
-
 	@media (min-width: 1024px) {
-		:global(.back-button) {
-			display: flex;
+		.post-nav-container {
+			display: block;
 		}
 	}
 
-	:global(.back-icon) {
-		width: 1rem;
-		height: 1rem;
+	.post-nav-back {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		margin-bottom: 2rem;
+		width: 2.5rem;
+		height: 2.5rem;
+		border: 1px solid color-mix(in srgb, var(--pico-muted-border-color) 50%, transparent);
+		border-radius: 9999px;
+		background: var(--pico-card-background-color);
+		cursor: pointer;
+		text-decoration: none;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.post-nav-icon {
+		display: block;
 		transition: all 0.15s ease-in-out;
 		stroke: #6b7280;
 	}
 
-	:global(.back-button:hover .back-icon) {
+	.post-nav-back:hover .post-nav-icon {
 		stroke: #374151;
+	}
+
+	[data-theme='dark'] .post-nav-back {
+		background: var(--pico-card-background-color);
+		border-color: color-mix(in srgb, var(--pico-muted-border-color) 50%, transparent);
+	}
+
+	[data-theme='dark'] .post-nav-icon {
+		stroke: #6b7280;
+	}
+
+	[data-theme='dark'] .post-nav-back:hover .post-nav-icon {
+		stroke: #9ca3af;
 	}
 
 	:global(.post-content) {
@@ -361,6 +372,7 @@
 	@media (min-width: 1280px) {
 		:global(.post-sidebar-right) {
 			display: block;
+			width: 100%;
 		}
 	}
 

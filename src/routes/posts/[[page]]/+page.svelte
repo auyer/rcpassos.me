@@ -90,7 +90,6 @@
 	}
 
 	:global(.pagination-icon) {
-		width: 1rem;
-		height: 1rem;
+		color: inherit;
 	}
 </style>
