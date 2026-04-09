@@ -3,8 +3,6 @@ title: A Robust Environment for Building, Testing, and Developing the Linux Kern
 date: 2024-04-20
 ---
 
-# Preface
-
 In my previous [post](https://rcpassos.me/post/compiling-debugging-riscv-xv6-kernel), I talked about my studies on Kernel Development with a simpler Unix-like OS, called xv6.
 After finishing the MIT course [6.S081 Operating System Engineering](https://learncs.me/mit/6.s081) (available online), I decided it was time to learn how to build the Linux Kernel.
 I joined a free software group ([FLUSP](https://flusp.ime.usp.br)) at the University of São Paulo (USP) and started taking a course on Free Software and Linux Kernel Development.

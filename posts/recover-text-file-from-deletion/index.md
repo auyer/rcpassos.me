@@ -3,8 +3,7 @@ title: Recover a Just-Deleted/Overwritten Text File in Linux, Without GUI
 date: 2025-12-13
 ---
 
-## First, the mistake
-
+**First, the mistake.**
 I was changing my fstab from the tty, after moving my home partition.
 To get the disk UUID, I used the following command
 
