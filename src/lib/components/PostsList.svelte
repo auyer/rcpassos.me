@@ -7,7 +7,7 @@
 
 <div class="posts-list">
 	{#each posts as post (post.slug)}
-		<article class="post-article">
+		<article class="posts-list-item">
 			<PostDate class="post-date-desktop" {post} decorate />
 			<PostPreview {post}>
 				<slot slot="eyebrow">
@@ -31,14 +31,14 @@
 		}
 	}
 
-	:global(.post-article) {
+	:global(.posts-list-item) {
 		display: grid;
 		grid-template-columns: 1fr;
 		align-items: start;
 	}
 
 	@media (min-width: 768px) {
-		:global(.post-article) {
+		:global(.posts-list-item) {
 			grid-template-columns: 160px 1fr;
 		}
 	}
@@ -61,12 +61,12 @@
 		}
 	}
 
-	:global(.post-content) {
+	:global(.posts-list-content) {
 		grid-column: 1;
 	}
 
 	@media (min-width: 768px) {
-		:global(.post-content) {
+		:global(.posts-list-content) {
 			grid-column: 2;
 		}
 	}
