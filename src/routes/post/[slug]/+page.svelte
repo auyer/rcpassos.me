@@ -45,7 +45,7 @@
 			if (el.querySelector('.katex')) return;
 
 			const text = el.textContent;
-			const inlineRegex = /(\$([^$\n]+?)\$)/g;
+			const inlineRegex = /\$([^$\n]+?)\$/g;
 			let hasMatch = inlineRegex.test(text);
 
 			if (!hasMatch) return;
