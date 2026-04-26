@@ -58,7 +58,8 @@
 		"rehype-stringify": "^10.0.1",
 		"remark-math": "^6.0.0",
 		"remark-parse": "^11.0.0",
-		"remark-rehype": "^11.1.2"
+		"remark-rehype": "^11.1.2",
+		"svelvet": "^11.0.5"
 	},
 	"packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
 }

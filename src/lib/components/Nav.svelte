@@ -65,6 +65,15 @@
 		</li>
 		<li>
 			<a
+				href="/home-lab"
+				data-sveltekit-preload-data="hover"
+				aria-current={isActive('/home-lab') ? 'page' : undefined}
+			>
+				Home-Lab
+			</a>
+		</li>
+		<li>
+			<a
 				href="https://github.com/auyer/"
 				aria-current={isActive('/projects/github') ? 'page' : undefined}
 			>
