@@ -4,17 +4,17 @@
 
 <svelte:head>
 	<title>Homelab Docs</title>
-	<meta
-		name="description"
-		content="Interactive visualization of my home lab infrastructure."
-	/>
+	<meta name="description" content="Interactive visualization of my home lab infrastructure." />
 </svelte:head>
 
 <container class="homelab-container">
 	<article class="homelab-article">
 		<header class="homelab-header">
 			<h1>Home Lab</h1>
-			<p>Interactive visualization of my home lab infrastructure. Click on any node to view its details.</p>
+			<p>
+				Interactive visualization of my home lab infrastructure. Click on any node to view its
+				details.
+			</p>
 		</header>
 		<HomelabGraph />
 	</article>
