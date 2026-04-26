@@ -25,4 +25,4 @@ export const linkedin = 'passosRafael';
 export const medium = '@rcpassos';
 export const bluesky = 'auyer.rcpassos.me';
 export const stackoverflow = '5621569/auyer?tab=profile';
-export const xmpp = 'xmpp://auyer@chat.rcpassos.me';
+export const xmpp = 'xmpp:auyer@chat.rcpassos.me';
