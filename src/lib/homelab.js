@@ -178,19 +178,19 @@ export const hardware = {
 	},
 	tv: {
 		name: 'TV',
-		layer: 1,
+		layer: 3,
 		kind: 'end-user',
 		os: null
 	},
 	'ups-ts': {
 		name: 'TShara ups',
-		layer: 1,
+		layer: 2,
 		kind: 'ups',
 		os: null
 	},
 	'ups-rag': {
 		name: 'Ragtech ups',
-		layer: 1,
+		layer: 2,
 		kind: 'ups',
 		os: null
 	}
@@ -356,42 +356,27 @@ export function generateNodes() {
 	};
 
 	const allHwKeys = Object.keys(hardware);
-	const upsKeys = allHwKeys.filter(
-		(k) => hardware[k]?.kind === 'ups' || hardware[k]?.kind === 'ups'
-	);
-	const infraKeys = allHwKeys.filter((k) => !hardware[k]?.kind || hardware[k]?.kind === 'infra');
+	const upsKeys = allHwKeys.filter((k) => hardware[k]?.kind === 'ups');
 	const endUserKeys = allHwKeys.filter((k) => hardware[k]?.kind === 'end-user');
+	const firstColKeys = [...upsKeys, ...endUserKeys];
+	const infraKeys = allHwKeys.filter((k) => !firstColKeys.includes(k) && (!hardware[k]?.kind || hardware[k]?.kind === 'infra'));
 
 	const colDefs = [];
 
-	// ups columns (above other hardware)
-	for (const key of upsKeys) {
-		const entry = hardware[key];
-		if (!entry) continue;
-		if (key === 'pi5') {
-			const svcW = 110;
-			const svcGap = 20;
-			const rows = svcConfigs.pi5;
-			let maxRowW = 0;
-			for (const row of rows) {
-				const w = rowSpan(row.keys.length, svcW, svcGap);
-				if (w > maxRowW) maxRowW = w;
-			}
-			colDefs.push({
-				hwKey: 'pi5',
-				y: Y_ups,
-				width: Math.max(maxRowW, HW_WIDTH),
-				svcW,
-				svcGap,
-				rows
-			});
-		} else {
-			colDefs.push({ hwKey: key, y: Y_ups, width: HW_WIDTH });
-		}
+	// First column: pi5 + UPS + end-user, stacked vertically (already defined above)
+	if (firstColKeys.length > 0) {
+		const hasPi5 = firstColKeys.includes('pi5');
+		const pi5W = hasPi5 ? Math.max(rowSpan(3, 110, 20), rowSpan(2, 110, 20), HW_WIDTH) : 0;
+		colDefs.push({
+			hwKey: 'first-col',
+			width: Math.max(pi5W, HW_WIDTH),
+			members: firstColKeys
+		});
 	}
 
 	// Infrastructure columns (individual, at Y_HW)
 	for (const key of infraKeys) {
+		if (key === 'pi5') continue; // pi5 is in first column
 		if (key === 'fbox') {
 			const vmW = 130;
 			const vmGap = 30;
@@ -411,19 +396,6 @@ export function generateNodes() {
 		}
 	}
 
-	// End-user column (grouped into one)
-	if (endUserKeys.length > 0) {
-		const gap = 30;
-		const totalW = rowSpan(endUserKeys.length, HW_WIDTH, gap);
-		colDefs.push({
-			hwKey: 'end-user',
-			y: Y_HW,
-			width: totalW,
-			members: endUserKeys,
-			memberGap: gap
-		});
-	}
-
 	let colX = 50;
 	for (const col of colDefs) {
 		col.x = colX;
@@ -432,24 +404,54 @@ export function generateNodes() {
 	}
 
 	for (const col of colDefs) {
-		if (col.hwKey === 'end-user') {
-			const xs = centerRow(col.members.length, HW_WIDTH, col.memberGap, col.centerX);
-			for (let i = 0; i < col.members.length; i++) {
-				const key = col.members[i];
+		if (col.hwKey === 'first-col') {
+			let stackY = Y_ups;
+			for (const key of col.members) {
 				const entry = hardware[key];
 				if (!entry) continue;
-				nodes.push({
-					id: makeId('hw', key),
-					label: entry.name || key,
-					type: getTypeFor(key),
-					logo: getLogo(getTypeFor(key)),
-					position: { x: xs[i], y: col.y },
-					dimensions: { width: HW_WIDTH, height: 60 },
-					layer: 2,
-					parent: null,
-					data: entry,
-					category: 'hardware'
-				});
+				if (key === 'pi5') {
+					nodes.push({
+						id: makeId('hw', key),
+						label: entry.name || key,
+						type: getTypeFor(key),
+						logo: getLogo(getTypeFor(key)),
+						position: { x: col.centerX - HW_WIDTH / 2, y: stackY },
+						dimensions: { width: HW_WIDTH, height: 60 },
+						layer: 2, parent: null, data: entry, category: 'hardware'
+					});
+					stackY += 70;
+					for (const row of svcConfigs.pi5) {
+						const xs = centerRow(row.keys.length, 110, 20, col.centerX);
+						for (let i = 0; i < row.keys.length; i++) {
+							const skey = row.keys[i];
+							const cat = row.cat || 'package';
+							const prefix = cat === 'package' ? 'pkg' : 'ct';
+							const sdata = entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[skey];
+							nodes.push({
+								id: makeId(prefix, `pi5-${skey}`),
+								label: skey,
+								type: getTypeFor(skey),
+								logo: getLogo(getTypeFor(skey)),
+								position: { x: xs[i], y: stackY },
+								dimensions: { width: 110, height: 50 },
+								layer: 3, parent: 'hw-pi5', data: sdata || {},
+								category: cat === 'package' ? 'package' : 'container'
+							});
+						}
+						stackY += 60;
+					}
+				} else {
+					nodes.push({
+						id: makeId('hw', key),
+						label: entry.name || key,
+						type: getTypeFor(key),
+						logo: getLogo(getTypeFor(key)),
+						position: { x: col.centerX - HW_WIDTH / 2, y: stackY },
+						dimensions: { width: HW_WIDTH, height: 60 },
+						layer: 2, parent: null, data: entry, category: 'hardware'
+					});
+					stackY += 70;
+				}
 			}
 			continue;
 		}
@@ -469,30 +471,6 @@ export function generateNodes() {
 			data: entry,
 			category: 'hardware'
 		});
-
-		if (col.hwKey === 'pi5') {
-			for (const row of col.rows) {
-				const xs = centerRow(row.keys.length, col.svcW, col.svcGap, col.centerX);
-				for (let i = 0; i < row.keys.length; i++) {
-					const key = row.keys[i];
-					const cat = row.cat || 'package';
-					const prefix = cat === 'package' ? 'pkg' : 'ct';
-					const data = entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[key];
-					nodes.push({
-						id: makeId(prefix, `pi5-${key}`),
-						label: key,
-						type: getTypeFor(key),
-						logo: getLogo(getTypeFor(key)),
-						position: { x: xs[i], y: row.y },
-						dimensions: { width: col.svcW, height: 50 },
-						layer: 3,
-						parent: 'hw-pi5',
-						data: data || {},
-						category: cat === 'package' ? 'package' : 'container'
-					});
-				}
-			}
-		}
 
 		if (col.hwKey === 'fbox') {
 			const vmKeys = Object.keys(vms);
@@ -583,6 +561,8 @@ export function generateEdges(nodes) {
 
 	const hwConnections = [
 		['net-ucg-max', 'hw-pi5'],
+		['net-ucg-max', 'hw-ups-ts'],
+		['net-ucg-max', 'hw-ups-rag'],
 		['net-ucg-max', 'hw-fbox'],
 		['net-ucg-max', 'hw-darkforce'],
 		['net-ucg-max', 'hw-feebook'],

@@ -57,7 +57,7 @@
 </script>
 
 <div class="graph-wrapper">
-  <Svelvet {theme} minimap controls edgeStyle="step" zoom="0.5">
+  <Svelvet {theme} minimap controls edgeStyle="step" zoom="0.5" fitView>
     {#each nodes as node}
       <Node id={node.id} dimensions={node.dimensions} position={node.position}>
         <svg viewBox="0 0 {node.dimensions.width} {node.dimensions.height}" width="100%" height="100%">
