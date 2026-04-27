@@ -230,12 +230,12 @@ export const network = {
 	},
 	'ucg-max': {
 		layer: 1,
-		name: 'Ubiquity Cloud Gateway 2.5GBE',
+		name: 'UCG 2.5GBE',
 		connections: ['isp', 'fbox', 'darkforce', 'pi5', 'usw-flex']
 	},
 	'usw-flex': {
 		layer: 1,
-		name: 'Ubiquity USW Flex Switch 2.5GBE',
+		name: 'USW Flex 2.5GBE',
 		connections: ['ucg-max', 'tplink-sg108e', 'u7-pro']
 	},
 	'tplink-sg108e': {
@@ -245,7 +245,7 @@ export const network = {
 	},
 	'u7-pro': {
 		layer: 1,
-		name: 'Ubiquity U7 Pro WiFi AP',
+		name: 'U7 Pro WiFi AP',
 		connections: ['usw-flex']
 	}
 };
@@ -264,7 +264,7 @@ export const logoMap = {
 	grafana: '/logos/Grafana_logo.svg',
 	postgresql: '/logos/Postgresql_elephant.svg',
 	raspberry: '/logos/raspberry-pi.svg',
-	arch: '/logos/Arch_icon.svg',
+	arch: '/logos/arch_logo.svg',
 	fedora: '/logos/Fedora_icon.svg',
 	debian: '/logos/Openlogo-debianV2.svg',
 	server: '/logos/web-server-icon.svg'
