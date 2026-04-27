@@ -376,7 +376,6 @@ export function generateNodes() {
 
 	// Infrastructure columns (individual, at Y_HW)
 	for (const key of infraKeys) {
-		if (key === 'pi5') continue; // pi5 is in first column
 		if (key === 'fbox') {
 			const vmW = 130;
 			const vmGap = 30;
@@ -388,8 +387,15 @@ export function generateNodes() {
 			const lxcRowW = rowSpan(Math.min(nLxcs, 7), lxcW, lxcGap);
 			const colW = Math.max(vmRowW, lxcRowW, HW_WIDTH);
 			colDefs.push({ hwKey: 'fbox', y: Y_HW, width: colW, vmW, vmGap, lxcW, lxcGap, nVms, nLxcs });
+		} else if (key === 'pi5') {
+			const svcW = 130;
+			const svcGap = 20;
+			const row1W = rowSpan(svcConfigs.pi5[0].keys.length, svcW, svcGap);
+			const row2W = rowSpan(svcConfigs.pi5[1].keys.length, svcW, svcGap);
+			const w = Math.max(row1W, row2W);
+			colDefs.push({ hwKey: 'pi5', y: Y_HW, width: Math.max(w, HW_WIDTH), svcW, svcGap });
 		} else if (key === 'pi3b') {
-			const svcW = 110;
+			const svcW = 130;
 			const svcGap = 20;
 			const w = rowSpan(3, svcW, svcGap);
 			colDefs.push({ hwKey: 'pi3b', y: Y_HW, width: Math.max(w, HW_WIDTH), svcW, svcGap });
@@ -512,6 +518,30 @@ export function generateNodes() {
 						parent: 'hw-fbox',
 						data: lxcs[key],
 						category: 'lxc'
+					});
+				}
+			}
+		}
+
+		if (col.hwKey === 'pi5') {
+			for (const row of svcConfigs.pi5) {
+				const xs = centerRow(row.keys.length, col.svcW, col.svcGap, col.centerX);
+				for (let i = 0; i < row.keys.length; i++) {
+					const skey = row.keys[i];
+					const cat = row.cat || 'package';
+					const prefix = cat === 'package' ? 'pkg' : 'ct';
+					const sdata = entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[skey];
+					nodes.push({
+						id: makeId(prefix, `pi5-${skey}`),
+						label: skey,
+						type: getTypeFor(skey),
+						logo: getLogo(getTypeFor(skey)),
+						position: { x: xs[i], y: row.y },
+						dimensions: { width: col.svcW, height: 60 },
+						layer: 3,
+						parent: 'hw-pi5',
+						data: sdata || {},
+						category: cat === 'package' ? 'package' : 'container'
 					});
 				}
 			}

@@ -12,8 +12,8 @@
 		<header class="homelab-header">
 			<h1>Home Lab</h1>
 			<p>
-				Interactive visualization of my home lab infrastructure. Click on any node to view its
-				details.
+				Personal map of my HomeLab.
+				Some of these are configured with Ansible: <a href="https://github.com/auyer/HomeLab">auyer/Homelab</a>.
 			</p>
 		</header>
 		<HomelabGraph />
