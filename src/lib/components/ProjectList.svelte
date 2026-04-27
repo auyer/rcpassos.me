@@ -14,8 +14,10 @@
 			</div>
 			<div slot="actions">
 				<div class="read-more-link">
-					<span class="read-more-text">{project.cta}</span>
-					<ArrowRightIcon class="read-more-icon" />
+					<a href={project.link}>
+						<span class="read-more-text">{project.cta}</span>
+						<ArrowRightIcon class="read-more-icon" />
+					</a>
 				</div>
 			</div>
 		</Card>
