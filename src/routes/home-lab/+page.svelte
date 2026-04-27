@@ -12,8 +12,9 @@
 		<header class="homelab-header">
 			<h1>Home Lab</h1>
 			<p>
-				Personal map of my HomeLab.
-				Some of these are configured with Ansible: <a href="https://github.com/auyer/HomeLab">auyer/Homelab</a>.
+				Personal map of my HomeLab. Some of these are configured with Ansible: <a
+					href="https://github.com/auyer/HomeLab">auyer/Homelab</a
+				>.
 			</p>
 		</header>
 		<HomelabGraph />

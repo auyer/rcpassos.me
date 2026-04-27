@@ -302,14 +302,6 @@ function getTypeFor(key) {
 	return nodeTypeMap[key] || 'server';
 }
 
-function getLogoFor(key, category) {
-	const mapped = nodeTypeMap[key];
-	if (mapped) return getLogo(mapped);
-	if (category === 'lxc') return getLogo('lxc');
-	if (category === 'vm') return getLogo('vm');
-	return getLogo('server');
-}
-
 function makeId(prefix, key) {
 	return `${prefix}-${String(key).replace(/\s+/g, '-')}`;
 }
@@ -336,8 +328,20 @@ function centerRow(n, itemWidth, gap, centerX) {
 function getServiceKeys(entry, row) {
 	const items = [];
 	if (row.category) {
-		const services = row.category === 'vms' ? vms : (row.category === 'lxc' ? lxcs : (entry.services?.[row.category] || {}));
-		const cat = row.category === 'vms' ? 'vm' : (row.category === 'lxc' ? 'lxc' : (row.category === 'packages' ? 'package' : 'container'));
+		const services =
+			row.category === 'vms'
+				? vms
+				: row.category === 'lxc'
+					? lxcs
+					: entry.services?.[row.category] || {};
+		const cat =
+			row.category === 'vms'
+				? 'vm'
+				: row.category === 'lxc'
+					? 'lxc'
+					: row.category === 'packages'
+						? 'package'
+						: 'container';
 		for (const key of Object.keys(services)) {
 			items.push({ key, category: cat });
 		}
@@ -384,8 +388,8 @@ export function generateNodes() {
 	}
 
 	const allHwKeys = Object.keys(hardware);
-	const firstColKeys = allHwKeys.filter(k => hardware[k]?.layout?.column === 'first-col');
-	const infraKeys = allHwKeys.filter(k => hardware[k]?.layout?.column === 'infra');
+	const firstColKeys = allHwKeys.filter((k) => hardware[k]?.layout?.column === 'first-col');
+	const infraKeys = allHwKeys.filter((k) => hardware[k]?.layout?.column === 'infra');
 
 	const colDefs = [];
 
@@ -450,7 +454,10 @@ export function generateNodes() {
 					logo: getLogo(getTypeFor(key)),
 					position: { x: col.centerX - HW_WIDTH / 2, y: stackY },
 					dimensions: { width: HW_WIDTH, height: hwHeight },
-					layer: 2, parent: null, data: entry, category: 'hardware'
+					layer: 2,
+					parent: null,
+					data: entry,
+					category: 'hardware'
 				});
 				stackY += hwHeight + 10;
 
@@ -461,9 +468,26 @@ export function generateNodes() {
 						for (let i = 0; i < items.length; i++) {
 							const item = items[i];
 							const cat = item.category;
-							const prefix = cat === 'package' ? 'pkg' : (cat === 'container' ? 'ct' : (cat === 'vm' ? 'vm' : 'lxc'));
-							const sdata = cat === 'vm' ? vms[item.key] : (cat === 'lxc' ? lxcs[item.key] : entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[item.key]);
-							const nodeId = cat === 'vm' ? makeId('vm', item.key) : (cat === 'lxc' ? makeId('lxc', item.key) : makeId(prefix, `${key}-${item.key}`));
+							const prefix =
+								cat === 'package'
+									? 'pkg'
+									: cat === 'container'
+										? 'ct'
+										: cat === 'vm'
+											? 'vm'
+											: 'lxc';
+							const sdata =
+								cat === 'vm'
+									? vms[item.key]
+									: cat === 'lxc'
+										? lxcs[item.key]
+										: entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[item.key];
+							const nodeId =
+								cat === 'vm'
+									? makeId('vm', item.key)
+									: cat === 'lxc'
+										? makeId('lxc', item.key)
+										: makeId(prefix, `${key}-${item.key}`);
 							nodes.push({
 								id: nodeId,
 								label: item.key,
@@ -471,7 +495,9 @@ export function generateNodes() {
 								logo: getLogo(getTypeFor(item.key)),
 								position: { x: xs[i], y: stackY },
 								dimensions: { width: row.item_width, height: 60 },
-								layer: 3, parent: `hw-${key}`, data: sdata || {},
+								layer: 3,
+								parent: `hw-${key}`,
+								data: sdata || {},
 								category: cat
 							});
 						}
@@ -493,7 +519,10 @@ export function generateNodes() {
 			logo: getLogo(getTypeFor(key)),
 			position: { x: col.centerX - HW_WIDTH / 2, y: Y_HW },
 			dimensions: { width: HW_WIDTH, height: 60 },
-			layer: 2, parent: null, data: entry, category: 'hardware'
+			layer: 2,
+			parent: null,
+			data: entry,
+			category: 'hardware'
 		});
 
 		if (col.child_rows) {
@@ -507,9 +536,20 @@ export function generateNodes() {
 					for (let i = 0; i < rowItems.length; i++) {
 						const item = rowItems[i];
 						const cat = item.category;
-						const prefix = cat === 'package' ? 'pkg' : (cat === 'container' ? 'ct' : (cat === 'vm' ? 'vm' : 'lxc'));
-						const sdata = cat === 'vm' ? vms[item.key] : (cat === 'lxc' ? lxcs[item.key] : entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[item.key]);
-						const nodeId = cat === 'vm' ? makeId('vm', item.key) : (cat === 'lxc' ? makeId('lxc', item.key) : makeId(prefix, `${key}-${item.key}`));
+						const prefix =
+							cat === 'package' ? 'pkg' : cat === 'container' ? 'ct' : cat === 'vm' ? 'vm' : 'lxc';
+						const sdata =
+							cat === 'vm'
+								? vms[item.key]
+								: cat === 'lxc'
+									? lxcs[item.key]
+									: entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[item.key];
+						const nodeId =
+							cat === 'vm'
+								? makeId('vm', item.key)
+								: cat === 'lxc'
+									? makeId('lxc', item.key)
+									: makeId(prefix, `${key}-${item.key}`);
 						const y = Y_HW + row.y_offset + r * 70;
 						const h = cat === 'vm' ? 55 : 50;
 						nodes.push({
@@ -519,7 +559,9 @@ export function generateNodes() {
 							logo: getLogo(getTypeFor(item.key)),
 							position: { x: xs[i], y },
 							dimensions: { width: row.item_width, height: h },
-							layer: 3, parent: `hw-${key}`, data: sdata || {},
+							layer: 3,
+							parent: `hw-${key}`,
+							data: sdata || {},
 							category: cat
 						});
 					}
@@ -609,8 +651,7 @@ export function getNodeDetails(nodeId) {
 		hardware_passthrough: [],
 		storage_pools: [],
 		boards: [],
-		connections: [],
-		method: null
+		connections: []
 	};
 
 	if (node.category === 'network' && node.data) {
