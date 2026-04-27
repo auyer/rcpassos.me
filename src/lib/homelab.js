@@ -88,6 +88,13 @@ export const hardware = {
 	pi5: {
 		name: 'RaspberryPi 5',
 		os: 'Raspberry Pi OS 13',
+		layout: {
+			column: 'infra',
+			child_rows: [
+				{ category: 'packages', y_offset: 150, item_width: 130, item_gap: 20 },
+				{ category: 'containers', y_offset: 230, item_width: 130, item_gap: 20 }
+			]
+		},
 		services: {
 			lxc: null,
 			vms: null,
@@ -121,6 +128,12 @@ export const hardware = {
 	pi3b: {
 		name: 'RaspberryPi 3b',
 		os: 'Raspberry Pi OS 13',
+		layout: {
+			column: 'infra',
+			child_rows: [
+				{ categories: ['packages', 'containers'], y_offset: 150, item_width: 130, item_gap: 20 }
+			]
+		},
 		services: {
 			lxc: null,
 			vms: null,
@@ -145,6 +158,13 @@ export const hardware = {
 	fbox: {
 		name: 'Freebox (HP Mini PC)',
 		os: 'Proxmox VE 9',
+		layout: {
+			column: 'infra',
+			child_rows: [
+				{ category: 'vms', y_offset: 150, item_width: 130, item_gap: 30 },
+				{ category: 'lxc', y_offset: 320, item_width: 120, item_gap: 30, max_per_row: 7 }
+			]
+		},
 		boards: [
 			'Marvell PCIe 4 port Sata Controller',
 			'Intel PCIe I226-V dual 2.5GBE',
@@ -162,37 +182,43 @@ export const hardware = {
 		kind: 'end-user',
 		layer: 3,
 		os: 'Arch Linux',
-		boards: ['AMD Radeon RX 6800 XT']
+		boards: ['AMD Radeon RX 6800 XT'],
+		layout: { column: 'first-col' }
 	},
 	feebook: {
 		name: 'Freebook',
 		kind: 'end-user',
 		layer: 3,
-		os: 'Debian'
+		os: 'Debian',
+		layout: { column: 'first-col' }
 	},
 	guestbook: {
 		name: 'Guestbook',
 		kind: 'end-user',
 		layer: 3,
-		os: 'Fedora'
+		os: 'Fedora',
+		layout: { column: 'first-col' }
 	},
 	tv: {
 		name: 'TV',
 		layer: 3,
 		kind: 'end-user',
-		os: null
+		os: null,
+		layout: { column: 'first-col' }
 	},
 	'ups-ts': {
 		name: 'TShara ups',
 		layer: 2,
 		kind: 'ups',
-		os: null
+		os: null,
+		layout: { column: 'first-col' }
 	},
 	'ups-rag': {
 		name: 'Ragtech ups',
 		layer: 2,
 		kind: 'ups',
-		os: null
+		os: null,
+		layout: { column: 'first-col' }
 	}
 };
 
@@ -307,15 +333,31 @@ function centerRow(n, itemWidth, gap, centerX) {
 	return Array.from({ length: n }, (_, i) => start + i * (itemWidth + gap));
 }
 
+function getServiceKeys(entry, row) {
+	const items = [];
+	if (row.category) {
+		const services = row.category === 'vms' ? vms : (row.category === 'lxc' ? lxcs : (entry.services?.[row.category] || {}));
+		const cat = row.category === 'vms' ? 'vm' : (row.category === 'lxc' ? 'lxc' : (row.category === 'packages' ? 'package' : 'container'));
+		for (const key of Object.keys(services)) {
+			items.push({ key, category: cat });
+		}
+	} else if (row.categories) {
+		for (const catName of row.categories) {
+			const services = entry.services?.[catName] || {};
+			const cat = catName === 'packages' ? 'package' : 'container';
+			for (const key of Object.keys(services)) {
+				items.push({ key, category: cat });
+			}
+		}
+	}
+	return items;
+}
+
 export function generateNodes() {
 	const nodes = [];
 	const Y_NET = 50;
 	const Y_ups = 120;
 	const Y_HW = 200;
-	const Y_SVC1 = 350;
-	const Y_SVC2 = 430;
-	const Y_LXC1 = 520;
-	const Y_LXC2 = 600;
 	const COL_PAD = 80;
 	const HW_WIDTH = 180;
 
@@ -341,65 +383,48 @@ export function generateNodes() {
 		nx += 150;
 	}
 
-	const svcConfigs = {
-		pi5: [
-			{ keys: ['PiHole', 'Nginx (Angie)', 'NUT UPS Mon'], cat: 'package', y: Y_SVC1 },
-			{ keys: ['Uptime Kuma', 'Nebula-sync'], cat: 'container', y: Y_SVC2 }
-		],
-		pi3b: [
-			{
-				keys: ['squeezelite', 'wyoming-satellite', 'openWakeWord'],
-				cats: ['package', 'container', 'container'],
-				y: Y_SVC1
-			}
-		]
-	};
-
 	const allHwKeys = Object.keys(hardware);
-	const upsKeys = allHwKeys.filter((k) => hardware[k]?.kind === 'ups');
-	const endUserKeys = allHwKeys.filter((k) => hardware[k]?.kind === 'end-user');
-	const firstColKeys = [...upsKeys, ...endUserKeys];
-	const infraKeys = allHwKeys.filter((k) => !firstColKeys.includes(k) && (!hardware[k]?.kind || hardware[k]?.kind === 'infra'));
+	const firstColKeys = allHwKeys.filter(k => hardware[k]?.layout?.column === 'first-col');
+	const infraKeys = allHwKeys.filter(k => hardware[k]?.layout?.column === 'infra');
 
 	const colDefs = [];
 
-	// First column: pi5 + UPS + end-user, stacked vertically (already defined above)
+	// First column: UPS + end-user, stacked vertically
 	if (firstColKeys.length > 0) {
-		const hasPi5 = firstColKeys.includes('pi5');
-		const pi5W = hasPi5 ? Math.max(rowSpan(3, 110, 20), rowSpan(2, 110, 20), HW_WIDTH) : 0;
+		let firstColW = HW_WIDTH;
+		for (const k of firstColKeys) {
+			const entry = hardware[k];
+			if (!entry) continue;
+			if (entry.layout?.child_rows) {
+				for (const row of entry.layout.child_rows) {
+					const items = getServiceKeys(entry, row);
+					const w = rowSpan(items.length, row.item_width, row.item_gap);
+					if (w > firstColW) firstColW = w;
+				}
+			}
+		}
 		colDefs.push({
 			hwKey: 'first-col',
-			width: Math.max(pi5W, HW_WIDTH),
+			width: firstColW,
 			members: firstColKeys
 		});
 	}
 
 	// Infrastructure columns (individual, at Y_HW)
 	for (const key of infraKeys) {
-		if (key === 'fbox') {
-			const vmW = 130;
-			const vmGap = 30;
-			const lxcW = 120;
-			const lxcGap = 30;
-			const nVms = Object.keys(vms).length;
-			const nLxcs = Object.keys(lxcs).length;
-			const vmRowW = nVms > 0 ? rowSpan(nVms, vmW, vmGap) : 0;
-			const lxcRowW = rowSpan(Math.min(nLxcs, 7), lxcW, lxcGap);
-			const colW = Math.max(vmRowW, lxcRowW, HW_WIDTH);
-			colDefs.push({ hwKey: 'fbox', y: Y_HW, width: colW, vmW, vmGap, lxcW, lxcGap, nVms, nLxcs });
-		} else if (key === 'pi5') {
-			const svcW = 130;
-			const svcGap = 20;
-			const row1W = rowSpan(svcConfigs.pi5[0].keys.length, svcW, svcGap);
-			const row2W = rowSpan(svcConfigs.pi5[1].keys.length, svcW, svcGap);
-			const w = Math.max(row1W, row2W);
-			colDefs.push({ hwKey: 'pi5', y: Y_HW, width: Math.max(w, HW_WIDTH), svcW, svcGap });
-		} else if (key === 'pi3b') {
-			const svcW = 130;
-			const svcGap = 20;
-			const w = rowSpan(3, svcW, svcGap);
-			colDefs.push({ hwKey: 'pi3b', y: Y_HW, width: Math.max(w, HW_WIDTH), svcW, svcGap });
+		const entry = hardware[key];
+		if (!entry) continue;
+		const layout = entry.layout;
+		if (!layout) continue;
+
+		let colW = HW_WIDTH;
+		for (const row of layout.child_rows) {
+			const items = getServiceKeys(entry, row);
+			const perRow = row.max_per_row || items.length;
+			const rowW = rowSpan(Math.min(items.length, perRow), row.item_width, row.item_gap);
+			if (rowW > colW) colW = rowW;
 		}
+		colDefs.push({ hwKey: key, width: colW, child_rows: layout.child_rows });
 	}
 
 	let colX = 50;
@@ -415,159 +440,90 @@ export function generateNodes() {
 			for (const key of col.members) {
 				const entry = hardware[key];
 				if (!entry) continue;
-				if (key === 'pi5') {
-					nodes.push({
-						id: makeId('hw', key),
-						label: entry.name || key,
-						type: getTypeFor(key),
-						logo: getLogo(getTypeFor(key)),
-						position: { x: col.centerX - HW_WIDTH / 2, y: stackY },
-						dimensions: { width: HW_WIDTH, height: 70 },
-						layer: 2, parent: null, data: entry, category: 'hardware'
-					});
-					stackY += 80;
-					for (const row of svcConfigs.pi5) {
-						const xs = centerRow(row.keys.length, 130, 20, col.centerX);
-						for (let i = 0; i < row.keys.length; i++) {
-							const skey = row.keys[i];
-							const cat = row.cat || 'package';
-							const prefix = cat === 'package' ? 'pkg' : 'ct';
-							const sdata = entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[skey];
+
+				const hasServices = entry.layout?.child_rows?.length > 0;
+				const hwHeight = hasServices ? 70 : 60;
+				nodes.push({
+					id: makeId('hw', key),
+					label: entry.name || key,
+					type: getTypeFor(key),
+					logo: getLogo(getTypeFor(key)),
+					position: { x: col.centerX - HW_WIDTH / 2, y: stackY },
+					dimensions: { width: HW_WIDTH, height: hwHeight },
+					layer: 2, parent: null, data: entry, category: 'hardware'
+				});
+				stackY += hwHeight + 10;
+
+				if (entry.layout?.child_rows) {
+					for (const row of entry.layout.child_rows) {
+						const items = getServiceKeys(entry, row);
+						const xs = centerRow(items.length, row.item_width, row.item_gap, col.centerX);
+						for (let i = 0; i < items.length; i++) {
+							const item = items[i];
+							const cat = item.category;
+							const prefix = cat === 'package' ? 'pkg' : (cat === 'container' ? 'ct' : (cat === 'vm' ? 'vm' : 'lxc'));
+							const sdata = cat === 'vm' ? vms[item.key] : (cat === 'lxc' ? lxcs[item.key] : entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[item.key]);
+							const nodeId = cat === 'vm' ? makeId('vm', item.key) : (cat === 'lxc' ? makeId('lxc', item.key) : makeId(prefix, `${key}-${item.key}`));
 							nodes.push({
-								id: makeId(prefix, `pi5-${skey}`),
-								label: skey,
-								type: getTypeFor(skey),
-								logo: getLogo(getTypeFor(skey)),
+								id: nodeId,
+								label: item.key,
+								type: getTypeFor(item.key),
+								logo: getLogo(getTypeFor(item.key)),
 								position: { x: xs[i], y: stackY },
-								dimensions: { width: 130, height: 60 },
-								layer: 3, parent: 'hw-pi5', data: sdata || {},
-								category: cat === 'package' ? 'package' : 'container'
+								dimensions: { width: row.item_width, height: 60 },
+								layer: 3, parent: `hw-${key}`, data: sdata || {},
+								category: cat
 							});
 						}
 						stackY += 70;
 					}
-				} else {
-					nodes.push({
-						id: makeId('hw', key),
-						label: entry.name || key,
-						type: getTypeFor(key),
-						logo: getLogo(getTypeFor(key)),
-						position: { x: col.centerX - HW_WIDTH / 2, y: stackY },
-						dimensions: { width: HW_WIDTH, height: 60 },
-						layer: 2, parent: null, data: entry, category: 'hardware'
-					});
-					stackY += 70;
 				}
 			}
 			continue;
 		}
 
-		const entry = hardware[col.hwKey];
+		const key = col.hwKey;
+		const entry = hardware[key];
 		if (!entry) continue;
 
 		nodes.push({
-			id: makeId('hw', col.hwKey),
-			label: entry.name || col.hwKey,
-			type: getTypeFor(col.hwKey),
-			logo: getLogo(getTypeFor(col.hwKey)),
-			position: { x: col.centerX - HW_WIDTH / 2, y: col.y },
+			id: makeId('hw', key),
+			label: entry.name || key,
+			type: getTypeFor(key),
+			logo: getLogo(getTypeFor(key)),
+			position: { x: col.centerX - HW_WIDTH / 2, y: Y_HW },
 			dimensions: { width: HW_WIDTH, height: 60 },
-			layer: 2,
-			parent: null,
-			data: entry,
-			category: 'hardware'
+			layer: 2, parent: null, data: entry, category: 'hardware'
 		});
 
-		if (col.hwKey === 'fbox') {
-			const vmKeys = Object.keys(vms);
-			if (vmKeys.length > 0) {
-				const vmXs = centerRow(vmKeys.length, col.vmW, col.vmGap, col.centerX);
-				for (let i = 0; i < vmKeys.length; i++) {
-					const key = vmKeys[i];
-					nodes.push({
-						id: makeId('vm', key),
-						label: vms[key].name || key,
-						type: getTypeFor(key),
-						logo: getLogo(getTypeFor(key)),
-						position: { x: vmXs[i], y: Y_SVC1 },
-						dimensions: { width: col.vmW, height: 55 },
-						layer: 3,
-						parent: 'hw-fbox',
-						data: vms[key],
-						category: 'vm'
-					});
+		if (col.child_rows) {
+			for (const row of col.child_rows) {
+				const items = getServiceKeys(entry, row);
+				const perRow = row.max_per_row || items.length;
+				const nRows = Math.ceil(items.length / perRow);
+				for (let r = 0; r < nRows; r++) {
+					const rowItems = items.slice(r * perRow, (r + 1) * perRow);
+					const xs = centerRow(rowItems.length, row.item_width, row.item_gap, col.centerX);
+					for (let i = 0; i < rowItems.length; i++) {
+						const item = rowItems[i];
+						const cat = item.category;
+						const prefix = cat === 'package' ? 'pkg' : (cat === 'container' ? 'ct' : (cat === 'vm' ? 'vm' : 'lxc'));
+						const sdata = cat === 'vm' ? vms[item.key] : (cat === 'lxc' ? lxcs[item.key] : entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[item.key]);
+						const nodeId = cat === 'vm' ? makeId('vm', item.key) : (cat === 'lxc' ? makeId('lxc', item.key) : makeId(prefix, `${key}-${item.key}`));
+						const y = Y_HW + row.y_offset + r * 70;
+						const h = cat === 'vm' ? 55 : 50;
+						nodes.push({
+							id: nodeId,
+							label: item.key,
+							type: getTypeFor(item.key),
+							logo: getLogo(getTypeFor(item.key)),
+							position: { x: xs[i], y },
+							dimensions: { width: row.item_width, height: h },
+							layer: 3, parent: `hw-${key}`, data: sdata || {},
+							category: cat
+						});
+					}
 				}
-			}
-
-			const lxcKeys = Object.keys(lxcs);
-			const perRow = 7;
-			const nRows = Math.ceil(lxcKeys.length / perRow);
-			for (let r = 0; r < nRows; r++) {
-				const rowKeys = lxcKeys.slice(r * perRow, (r + 1) * perRow);
-				const xs = centerRow(rowKeys.length, col.lxcW, col.lxcGap, col.centerX);
-				for (let i = 0; i < rowKeys.length; i++) {
-					const key = rowKeys[i];
-					nodes.push({
-						id: makeId('lxc', key),
-						label: key,
-						type: nodeTypeMap[key] || 'lxc',
-						logo: getLogoFor(key, 'lxc'),
-						position: { x: xs[i], y: r === 0 ? Y_LXC1 : Y_LXC2 },
-						dimensions: { width: col.lxcW, height: 50 },
-						layer: 3,
-						parent: 'hw-fbox',
-						data: lxcs[key],
-						category: 'lxc'
-					});
-				}
-			}
-		}
-
-		if (col.hwKey === 'pi5') {
-			for (const row of svcConfigs.pi5) {
-				const xs = centerRow(row.keys.length, col.svcW, col.svcGap, col.centerX);
-				for (let i = 0; i < row.keys.length; i++) {
-					const skey = row.keys[i];
-					const cat = row.cat || 'package';
-					const prefix = cat === 'package' ? 'pkg' : 'ct';
-					const sdata = entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[skey];
-					nodes.push({
-						id: makeId(prefix, `pi5-${skey}`),
-						label: skey,
-						type: getTypeFor(skey),
-						logo: getLogo(getTypeFor(skey)),
-						position: { x: xs[i], y: row.y },
-						dimensions: { width: col.svcW, height: 60 },
-						layer: 3,
-						parent: 'hw-pi5',
-						data: sdata || {},
-						category: cat === 'package' ? 'package' : 'container'
-					});
-				}
-			}
-		}
-
-		if (col.hwKey === 'pi3b') {
-			const keys = ['squeezelite', 'wyoming-satellite', 'openWakeWord'];
-			const cats = ['package', 'container', 'container'];
-			const xs = centerRow(keys.length, col.svcW, col.svcGap, col.centerX);
-			for (let i = 0; i < keys.length; i++) {
-				const key = keys[i];
-				const cat = cats[i];
-				const prefix = cat === 'package' ? 'pkg' : 'ct';
-				const data = entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[key];
-				nodes.push({
-					id: makeId(prefix, `pi3b-${key}`),
-					label: key,
-					type: getTypeFor(key),
-					logo: getLogo(getTypeFor(key)),
-					position: { x: xs[i], y: Y_SVC1 },
-					dimensions: { width: col.svcW, height: 50 },
-					layer: 3,
-					parent: 'hw-pi3b',
-					data: data || {},
-					category: cat === 'package' ? 'package' : 'container'
-				});
 			}
 		}
 	}
