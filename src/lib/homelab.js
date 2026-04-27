@@ -312,12 +312,12 @@ export function generateNodes() {
 	const Y_NET = 50;
 	const Y_ups = 120;
 	const Y_HW = 200;
-	const Y_SVC1 = 330;
-	const Y_SVC2 = 400;
-	const Y_LXC1 = 490;
-	const Y_LXC2 = 560;
+	const Y_SVC1 = 350;
+	const Y_SVC2 = 430;
+	const Y_LXC1 = 520;
+	const Y_LXC2 = 600;
 	const COL_PAD = 80;
-	const HW_WIDTH = 150;
+	const HW_WIDTH = 180;
 
 	let nx = 50;
 	const NET_Y_STEP = 10;
@@ -332,7 +332,7 @@ export function generateNodes() {
 			type: getTypeFor(key),
 			logo: getLogo(getTypeFor(key)),
 			position: { x: nx, y: Y_NET + ni * NET_Y_STEP },
-			dimensions: { width: 120, height: 50 },
+			dimensions: { width: 140, height: 60 },
 			layer: 1,
 			parent: null,
 			data: entry,
@@ -416,12 +416,12 @@ export function generateNodes() {
 						type: getTypeFor(key),
 						logo: getLogo(getTypeFor(key)),
 						position: { x: col.centerX - HW_WIDTH / 2, y: stackY },
-						dimensions: { width: HW_WIDTH, height: 60 },
+						dimensions: { width: HW_WIDTH, height: 70 },
 						layer: 2, parent: null, data: entry, category: 'hardware'
 					});
-					stackY += 70;
+					stackY += 80;
 					for (const row of svcConfigs.pi5) {
-						const xs = centerRow(row.keys.length, 110, 20, col.centerX);
+						const xs = centerRow(row.keys.length, 130, 20, col.centerX);
 						for (let i = 0; i < row.keys.length; i++) {
 							const skey = row.keys[i];
 							const cat = row.cat || 'package';
@@ -433,12 +433,12 @@ export function generateNodes() {
 								type: getTypeFor(skey),
 								logo: getLogo(getTypeFor(skey)),
 								position: { x: xs[i], y: stackY },
-								dimensions: { width: 110, height: 50 },
+								dimensions: { width: 130, height: 60 },
 								layer: 3, parent: 'hw-pi5', data: sdata || {},
 								category: cat === 'package' ? 'package' : 'container'
 							});
 						}
-						stackY += 60;
+						stackY += 70;
 					}
 				} else {
 					nodes.push({

@@ -67,7 +67,7 @@
             stroke-width={selectedNodeId === node.id ? 2 : 1} />
           <image href={node.logo} x={(node.dimensions.width - 36) / 2} y="6" width="36" height="28"
             preserveAspectRatio="xMidYMid meet" style="pointer-events: none" />
-          <text x={node.dimensions.width / 2} y={node.dimensions.height - 8} text-anchor="middle" font-size="9"
+          <text x={node.dimensions.width / 2} y={node.dimensions.height - 8} text-anchor="middle" font-size="12"
             fill={selectedNodeId === node.id ? c.textSelected : c.text}
             style="pointer-events: none">{node.label}</text>
           <rect width="100%" height="100%" fill="transparent" role="button" tabindex="0"
@@ -167,6 +167,7 @@
   :global(.svelvet-node) {
     box-shadow: none !important;
     cursor: pointer;
+    padding: 0 !important;
   }
 
   .graph-wrapper {
