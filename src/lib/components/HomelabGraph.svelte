@@ -139,12 +139,6 @@
 			>
 		</header>
 		<div class="detail-body">
-			{#if details.layer}
-				<div class="detail-row">
-					<span class="detail-label">Layer</span>
-					<span class="detail-value">{details.layer}</span>
-				</div>
-			{/if}
 			{#if details.category}
 				<div class="detail-row">
 					<span class="detail-label">Category</span>
@@ -161,6 +155,12 @@
 				<div class="detail-row">
 					<span class="detail-label">Method</span>
 					<span class="detail-value">{details.method}</span>
+				</div>
+			{/if}
+			{#if details.details}
+				<div class="detail-row">
+					<span class="detail-label">Details</span>
+					<span class="detail-value">{details.details}</span>
 				</div>
 			{/if}
 			{#if details.boards?.length}

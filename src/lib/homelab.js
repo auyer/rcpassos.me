@@ -26,45 +26,58 @@ export const lxcs = {
 		layer: 2,
 		method: 'Debian Package'
 	},
-	Transmission: {
+	Grafana: {
 		layer: 3,
-		method: 'Alpine Package'
+		method: 'podman-compose',
+		ansible_roles: ['grafana'],
+		connections: ['Grafana Loki', "Prometheus"],
+		services: ['grafana', 'prometheus', 'unpoller', 'matchtower']
 	},
-	Jellyfin: {
+	"Grafana Loki": {
 		layer: 3,
-		method: 'Alpine Package'
+		ansible_roles: ['loki'],
+		method: 'docker-compose',
+		connections: ['Rustfs']
+	},
+	"Alloy (many)": {
+		layer: 3,
+		method: 'Ansible',
+		ansible_roles: ['alloy', 'compose'],
+		connections: ['Grafana Loki'],
+		details: 'Deployed to each critical component to collect logs and send to loki'
+	},
+	"Prometheus": {
+		layer: 3,
+		method: 'podman-compose',
+		ansible_roles: ['grafana'],
+		details: 'Same compose as Grafana'
 	},
 	'Nginx Proxy Manager': {
 		layer: 2,
 		method: 'podman-compose'
 	},
-	Grafana: {
-		layer: 3,
-		method: 'podman-compose',
-		services: ['grafana', 'prometheus', 'unpoller', 'matchtower']
-	},
 	PostgreSQL: {
 		layer: 3,
 		method: 'Debian Package'
-	},
-	KV: {
-		layer: 3,
-		method: 'Binary install + Systemd'
-	},
-	lore: {
-		layer: 3,
-		method: 'podman-compose'
 	},
 	Prosody: {
 		layer: 3,
 		method: 'podman-compose + Debian Package',
 		services: ['prosody', 'biboumi', 'slidge'],
-		ansible_roles: ['prosody', 'biboumi', 'slidge']
+		ansible_roles: ['prosody', 'biboumi', 'slidge', 'alloy']
+	},
+	// KV: {
+	// 	layer: 3,
+	// 	method: 'Binary install + Systemd'
+	// },
+	lore: {
+		layer: 3,
+		method: 'podman-compose'
 	},
 	Coturn: {
 		layer: 3,
 		method: 'Debian Package',
-		ansible_roles: ['coturn']
+		ansible_roles: ['coturn', 'alloy']
 	},
 	Excalidraw: {
 		layer: 3,
@@ -81,7 +94,19 @@ export const lxcs = {
 	LanguageTool: {
 		layer: 3,
 		method: 'podman-compose'
-	}
+	},
+	Transmission: {
+		layer: 3,
+		method: 'Alpine Package'
+	},
+	Jellyfin: {
+		layer: 3,
+		method: 'Alpine Package'
+	},
+	Rustfs: {
+		layer: 3,
+		method: 'TrueNas Container'
+	},
 };
 
 export const hardware = {
@@ -124,6 +149,28 @@ export const hardware = {
 				}
 			}
 		}
+	},	
+	fbox: {
+		name: 'Freebox (HP Mini PC)',
+		os: 'Proxmox VE 9',
+		layout: {
+			column: 'infra',
+			child_rows: [
+				{ category: 'vms', y_offset: 150, item_width: 130, item_gap: 30 },
+				{ category: 'lxc', y_offset: 320, item_width: 120, item_gap: 30, max_per_row: 7 }
+			]
+		},
+		boards: [
+			'Marvell PCIe 4 port Sata Controller',
+			'Intel PCIe I226-V dual 2.5GBE',
+			'Sonoff Zigbee 3.0 USB Dongle Plus'
+		],
+		services: {
+			lxc: lxcs,
+			vms: vms,
+			packages: null,
+			containers: null
+		}
 	},
 	pi3b: {
 		name: 'RaspberryPi 3b',
@@ -153,28 +200,6 @@ export const hardware = {
 					method: 'podman-compose'
 				}
 			}
-		}
-	},
-	fbox: {
-		name: 'Freebox (HP Mini PC)',
-		os: 'Proxmox VE 9',
-		layout: {
-			column: 'infra',
-			child_rows: [
-				{ category: 'vms', y_offset: 150, item_width: 130, item_gap: 30 },
-				{ category: 'lxc', y_offset: 320, item_width: 120, item_gap: 30, max_per_row: 7 }
-			]
-		},
-		boards: [
-			'Marvell PCIe 4 port Sata Controller',
-			'Intel PCIe I226-V dual 2.5GBE',
-			'Sonoff Zigbee 3.0 USB Dongle Plus'
-		],
-		services: {
-			lxc: lxcs,
-			vms: vms,
-			packages: null,
-			containers: null
 		}
 	},
 	darkforce: {
@@ -261,12 +286,17 @@ export const logoMap = {
 	pihole: '/logos/pi-hole.svg',
 	nginx: '/logos/nginx.svg',
 	npm: '/logos/nginx-proxy-manager.svg',
+	prometheus: '/logos/Prometheus_software_logo.svg',
 	grafana: '/logos/Grafana_logo.svg',
+	alloy: '/logos/grafana-alloy.svg',
+	loki: '/logos/grafana-loki.svg',
+	xmpp: '/logos/XMPP_logo.svg',
 	postgresql: '/logos/Postgresql_elephant.svg',
 	raspberry: '/logos/raspberry-pi.svg',
 	arch: '/logos/arch_logo.svg',
 	fedora: '/logos/Fedora_icon.svg',
 	debian: '/logos/Openlogo-debianV2.svg',
+	rustfs: "/logos/rustfs.svg",
 	server: '/logos/web-server-icon.svg'
 };
 
@@ -295,7 +325,12 @@ const nodeTypeMap = {
 	'Nginx (Angie)': 'nginx',
 	'Nginx Proxy Manager': 'npm',
 	Grafana: 'grafana',
-	PostgreSQL: 'postgresql'
+	"Grafana Loki": 'loki',
+	"Alloy (many)": 'alloy',
+	PostgreSQL: 'postgresql',
+	Prometheus: 'prometheus',
+	Prosody: 'xmpp',
+	Rustfs: "rustfs"
 };
 
 function getTypeFor(key) {
@@ -646,6 +681,7 @@ export function getNodeDetails(nodeId) {
 		layer: node.layer,
 		os: null,
 		method: null,
+		details: null,
 		services: [],
 		ansible_roles: [],
 		hardware_passthrough: [],
@@ -671,6 +707,7 @@ export function getNodeDetails(nodeId) {
 		node.data
 	) {
 		details.method = node.data.method || null;
+		details.details = node.data.details || null;
 		details.services = node.data.services || [];
 		details.ansible_roles = node.data.ansible_roles || [];
 		details.hardware_passthrough = node.data.hardware_passthrough || [];
