@@ -1,5 +1,5 @@
 <script>
-	import { name } from '$lib/info.js';
+	import { name, debian, github, gitlab, codeberg } from '$lib/info.js';
 	import ProjectList from '$lib/components/ProjectList.svelte';
 
 	export let data;
@@ -13,7 +13,19 @@
 	<article class="projects-article">
 		<header class="projects-header">
 			<h1>Personal Projects</h1>
-			<p>Built with Rust, Go, and determination.</p>
+
+			<div class="prose">
+				<p>
+					My personal projects are on <a href={`https://github.com/${github}`}>Github</a>,
+					<a href={gitlab}>Gitlab</a>, <a href={codeberg}>Codebeg</a>. My accounts also have forks
+					of projecs I sent patches to.
+				</p>
+				<p>
+					I also contribute to <a href={debian}>Debian</a>, the
+					<a href="https://lore.kernel.org/all/?q=rafael%40rcpassos.me"> Linux Kernel</a>, and other
+					projects.
+				</p>
+			</div>
 		</header>
 
 		<ProjectList projects={data.projects} />

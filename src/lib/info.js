@@ -29,3 +29,4 @@ export const gitlab = 'https://gitlab.com/auyer/';
 export const bluesky = 'auyer.rcpassos.me';
 export const stackoverflow = '5621569/auyer?tab=profile';
 export const xmpp = 'xmpp:auyer@chat.rcpassos.me';
+export const codeberg = 'https://codeberg.org/auyer';
