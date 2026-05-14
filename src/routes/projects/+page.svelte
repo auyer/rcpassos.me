@@ -15,16 +15,11 @@
 			<h1>Personal Projects</h1>
 
 			<div class="prose">
-				<p>
-					My personal projects are on <a href={`https://github.com/${github}`}>Github</a>,
-					<a href={gitlab}>Gitlab</a>, <a href={codeberg}>Codebeg</a>. My accounts also have forks
-					of projecs I sent patches to.
-				</p>
-				<p>
-					I also contribute to <a href={debian}>Debian</a>, the
-					<a href="https://lore.kernel.org/all/?q=rafael%40rcpassos.me"> Linux Kernel</a>, and other
-					projects.
-				</p>
+				My personal projects are on <a href={`https://github.com/${github}`}>Github</a>,
+				<a href={gitlab}>Gitlab</a>, <a href={codeberg}>Codebeg</a>. My accounts also have forks of
+				projecs I sent patches to. I also contribute to <a href={debian}>Debian</a>, the
+				<a href="https://lore.kernel.org/all/?q=rafael%40rcpassos.me"> Linux Kernel</a>, and other
+				projects.
 			</div>
 		</header>
 
@@ -51,6 +46,7 @@
 	}
 
 	:global(.projects-header h1) {
+		padding-top: 1rem;
 		font-size: 1.5rem;
 		font-weight: 700;
 		letter-spacing: -0.025em;

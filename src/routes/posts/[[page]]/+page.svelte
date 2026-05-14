@@ -67,6 +67,7 @@
 		font-weight: 700;
 		letter-spacing: -0.025em;
 		margin-bottom: 0.5rem;
+		margin-top: 0.5rem;
 	}
 
 	:global(.pagination) {

@@ -30,8 +30,8 @@
 		max-width: 90rem;
 		margin-left: auto;
 		margin-right: auto;
-		padding-left: 1rem;
-		padding-right: 1rem;
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
 	}
 
 	:global(.research-article) {
@@ -45,6 +45,7 @@
 	}
 
 	:global(.research-header h1) {
+		padding-top: 0.5rem;
 		font-size: 1.5rem;
 		font-weight: 700;
 		letter-spacing: -0.025em;
