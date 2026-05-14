@@ -48,6 +48,9 @@
 			<a href="/posts" class="view-all">View All <ArrowRightIcon class="arrow-icon" /></a>
 		</div>
 		<PostsList posts={data.posts} />
+		<div class="section-header">
+			<a href="/posts" class="view-all">View All <ArrowRightIcon class="arrow-icon" /></a>
+		</div>
 	</section>
 </container>
 
