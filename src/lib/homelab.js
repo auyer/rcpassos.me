@@ -30,23 +30,23 @@ export const lxcs = {
 		layer: 3,
 		method: 'podman-compose',
 		ansible_roles: ['grafana'],
-		connections: ['Grafana Loki', "Prometheus"],
+		connections: ['Grafana Loki', 'Prometheus'],
 		services: ['grafana', 'prometheus', 'unpoller', 'matchtower']
 	},
-	"Grafana Loki": {
+	'Grafana Loki': {
 		layer: 3,
 		ansible_roles: ['loki'],
 		method: 'docker-compose',
 		connections: ['Rustfs']
 	},
-	"Alloy (many)": {
+	'Alloy (many)': {
 		layer: 3,
 		method: 'Ansible',
 		ansible_roles: ['alloy', 'compose'],
 		connections: ['Grafana Loki'],
 		details: 'Deployed to each critical component to collect logs and send to loki'
 	},
-	"Prometheus": {
+	Prometheus: {
 		layer: 3,
 		method: 'podman-compose',
 		ansible_roles: ['grafana'],
@@ -106,7 +106,7 @@ export const lxcs = {
 	Rustfs: {
 		layer: 3,
 		method: 'TrueNas Container'
-	},
+	}
 };
 
 export const hardware = {
@@ -149,7 +149,7 @@ export const hardware = {
 				}
 			}
 		}
-	},	
+	},
 	fbox: {
 		name: 'Freebox (HP Mini PC)',
 		os: 'Proxmox VE 9',
@@ -296,7 +296,7 @@ export const logoMap = {
 	arch: '/logos/arch_logo.svg',
 	fedora: '/logos/Fedora_icon.svg',
 	debian: '/logos/Openlogo-debianV2.svg',
-	rustfs: "/logos/rustfs.svg",
+	rustfs: '/logos/rustfs.svg',
 	server: '/logos/web-server-icon.svg'
 };
 
@@ -325,12 +325,12 @@ const nodeTypeMap = {
 	'Nginx (Angie)': 'nginx',
 	'Nginx Proxy Manager': 'npm',
 	Grafana: 'grafana',
-	"Grafana Loki": 'loki',
-	"Alloy (many)": 'alloy',
+	'Grafana Loki': 'loki',
+	'Alloy (many)': 'alloy',
 	PostgreSQL: 'postgresql',
 	Prometheus: 'prometheus',
 	Prosody: 'xmpp',
-	Rustfs: "rustfs"
+	Rustfs: 'rustfs'
 };
 
 function getTypeFor(key) {
