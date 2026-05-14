@@ -22,7 +22,10 @@ export const bio_splitted = bio.split(/\n/).map((line) => line.replace(/\.$/, ''
 // but you can replace with just your username.
 export const github = 'auyer';
 export const linkedin = 'passosRafael';
-export const medium = '@rcpassos';
+// export const medium = '@rcpassos';
+export const medium = false;
+export const debian = 'https://salsa.debian.org/rcpassos';
+export const gitlab = 'https://gitlab.com/auyer/';
 export const bluesky = 'auyer.rcpassos.me';
 export const stackoverflow = '5621569/auyer?tab=profile';
 export const xmpp = 'xmpp:auyer@chat.rcpassos.me';

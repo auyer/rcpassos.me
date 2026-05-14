@@ -64,12 +64,6 @@
 				aria-current={isActive('/home-lab') ? 'page' : undefined}>Home-Lab</a
 			>
 		</li>
-		<li>
-			<a
-				href="https://github.com/auyer/"
-				aria-current={isActive('/projects/github') ? 'page' : undefined}>GitHub</a
-			>
-		</li>
 	</ul>
 
 	<!-- Trail: hamburger + theme toggle -->

@@ -1,5 +1,14 @@
 <script>
-	import { linkedin, github, stackoverflow, medium, bluesky, xmpp } from '$lib/info';
+	import {
+		linkedin,
+		github,
+		stackoverflow,
+		medium,
+		bluesky,
+		xmpp,
+		debian,
+		gitlab
+	} from '$lib/info';
 </script>
 
 {#if xmpp}
@@ -10,17 +19,8 @@
 			version="1.1"
 			xml:space="preserve"
 			viewBox="0 0 200 200"
-			width="24px"
-			height="24px"
-			x="0px"
-			y="0px"
-			enable-background="new 0 0 200 200"
+			class="social-icon"
 		>
-			<style>
-				path {
-					fill: var(--pico-color);
-				}
-			</style>
 			<linearGradient
 				id="SVGID_right_"
 				y2="1.279e-13"
@@ -72,15 +72,19 @@
 				style="fill:#439639"
 			/>
 			<path
+				fill="currentColor"
 				d="m 25.988,172.07799 -13.388,-14.65 h 11.643 l 9.127,10.268 9.129,-10.268 h 11.643 l -13.387,14.646 14.401,14.728 h -12.09 l -9.697,-10.67 -9.693,10.67 H 11.584 l 14.404,-14.73 z"
 			/>
 			<path
+				fill="currentColor"
 				d="m 58.508,157.42799 h 13.836 l 10.183,18.905 10.183,-18.905 h 13.83199 v 29.374 h -8.761983 v -21.096 h -0.08 L 85.893,186.80199 H 79.16 l -11.807,-21.096 h -0.082 v 21.096 h -8.764 v -29.37 z"
 			/>
 			<path
+				fill="currentColor"
 				d="m 112.66199,157.42799 h 24.546 c 8.559,0 10.628,4.302 10.628,10.063 v 2.516 c 0,4.381 -1.908,9.41 -8.275,9.41 h -17.894 v 7.385 h -9.005 v -29.38 z m 9,14.69 h 13.997 c 2.10901,0 2.92401,-1.377 2.92401,-3.123 v -1.135 c 0,-1.99 -0.976,-3.127 -3.694,-3.127 h -13.227 v 7.38 z"
 			/>
 			<path
+				fill="currentColor"
 				d="m 152.72199,157.42799 h 24.546 c 8.561,0 10.63,4.302 10.63,10.063 v 2.516 c 0,4.381 -1.907,9.41 -8.275,9.41 h -17.893 v 7.385 h -9.008 v -29.38 z m 9.01,14.69 h 13.996 c 2.11,0 2.922,-1.377 2.922,-3.123 v -1.135 c 0,-1.99 -0.974,-3.127 -3.693,-3.127 h -13.225 v 7.38 z"
 			/>
 		</svg>
@@ -185,22 +189,59 @@
 	</a>
 {/if}
 
+{#if debian}
+	<a href={debian} class="social-link" aria-label="Check my contributions to Debian">
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			aria-label="Debian"
+			role="img"
+			viewBox="0 0 512 512"
+			class="social-icon debian-icon"
+			><path
+				d="M388 225c.4 11-3 17-6 27-10 3-8 14-9 17-6 3-35 34-25 17-10 7-8 10-24 15l-.4-1c-39 18-94-18-94-68-.4 3-1 2-2 3-1-56 64-88 102-54-25-29-78-31-96 4-10 6-12 26-16 29-5 88 75 145 150 78 8-6 16-16 19-17-3 5.7.6 2-2 7 6-10 1-31 12-16.2.8-19 22-58 11-23 3-12 1-36 6-14-3-12 3-21 5-28-6-15-18-43-4-23-29-60 1-35 12 5-1-10.81-4.9-21.2-8-31 2 1-4-22 3-6-9-33-38-62-65-78 18 18-52-15-69-21 12 7-61 7-20.5.8-14-1-32 4-15-5-10.8.6-25 6-21 1-21 11-85 54-67 31-23 21-37 36-49 64-79 111-2 278 123 325 11 4 29 4 44 4-17-5-20-2-37-8-12-5-15-12-24-20-.7 8-24-.5-16-10-5-.4-14-9-17-14-9 2-17-14-17-20-1 3-37-33-16-23-5-5-12-6-6-12-5-14-18-20-3-15-22-15-35-39-25-40-5-6-5-11-4-19-17-37 1-83 14-114-21 2 38-50 54-50-2-8 11-18 27-23-1-1 56-26 32-8 67-22 141 36 145 96 4 1-.5 45-1 48"
+				fill="#d70a53"
+			/></svg
+		>
+	</a>
+{/if}
+
+{#if gitlab}
+	<a href={gitlab} class="social-link" aria-label="Check me on GitLab">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 380" class="social-icon gitlab-icon">
+			<path
+				d="M282.83,170.73l-.27-.69-26.14-68.22a6.81,6.81,0,0,0-2.69-3.24,7,7,0,0,0-8,.43,7,7,0,0,0-2.32,3.52l-17.65,54H154.29l-17.65-54A6.86,6.86,0,0,0,134.32,99a7,7,0,0,0-8-.43,6.87,6.87,0,0,0-2.69,3.24L97.44,170l-.26.69a48.54,48.54,0,0,0,16.1,56.1l.09.07.24.17,39.82,29.82,19.7,14.91,12,9.06a8.07,8.07,0,0,0,9.76,0l12-9.06,19.7-14.91,40.06-30,.1-.08A48.56,48.56,0,0,0,282.83,170.73Z"
+				fill="currentColor"
+			/>
+		</svg>
+	</a>
+{/if}
+
 <style>
 	:global(.social-link) {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		transition: color 0.15s ease-in-out;
-		color: var(--pico-muted-color);
+		color: var(--terminal-fg2);
 	}
 
 	:global(.social-link:hover) {
-		color: var(--pico-color);
+		color: var(--terminal-fg);
 	}
 
 	:global(.social-icon) {
 		width: 1.5rem;
 		height: 1.5rem;
 		color: inherit;
+	}
+
+	:global(.gitlab-icon) {
+		width: 1.7rem;
+		height: 1.7rem;
+	}
+
+	:global(.debian-icon) {
+		width: 1.7rem;
+		height: 1.7rem;
 	}
 </style>
