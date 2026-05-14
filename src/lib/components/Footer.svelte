@@ -1,7 +1,7 @@
 <footer class="footer">
 	{new Date().getFullYear()} Rafael Passos
 	<a href="https://creativecommons.org/licenses/by-sa/4.0/">
-		<img src="/by-sa.svg" alt="License: CC by-sa 4.0" border="0" width="100" />
+		<img src="/by-sa.svg" alt="License: CC by-sa 4.0" border="0" width="100" height="18" />
 	</a>
 </footer>
 
