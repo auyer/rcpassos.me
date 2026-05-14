@@ -7,7 +7,9 @@
 <header>
 	<Nav />
 </header>
+
 <main>
 	<slot />
-	<Footer />
 </main>
+
+<Footer />

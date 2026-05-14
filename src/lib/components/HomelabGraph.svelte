@@ -214,10 +214,8 @@
 
 	.graph-wrapper {
 		width: 100%;
-		height: calc(100vh - 280px);
-		min-height: 500px;
-		border: 1px solid var(--pico-muted-border-color);
-		border-radius: 8px;
+		height: 100%;
+		min-height: 400px;
 		overflow: hidden;
 	}
 
@@ -229,9 +227,9 @@
 	.detail-panel {
 		margin-top: 1rem;
 		padding: 1rem;
-		background: var(--pico-card-background-color);
-		border: 1px solid var(--pico-muted-border-color);
-		border-radius: 8px;
+		background: var(--terminal-bg0);
+		border: 1px solid var(--terminal-border);
+		border-radius: 0;
 	}
 
 	.detail-header {
@@ -240,7 +238,7 @@
 		gap: 0.75rem;
 		margin-bottom: 1rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid var(--pico-muted-border-color);
+		border-bottom: 1px solid var(--terminal-border);
 	}
 
 	.detail-logo {

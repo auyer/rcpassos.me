@@ -47,7 +47,7 @@
 <style>
 	:global(.posts-container) {
 		display: block;
-		max-width: 72rem;
+		max-width: 90rem;
 		margin-left: auto;
 		margin-right: auto;
 		padding-left: 1rem;

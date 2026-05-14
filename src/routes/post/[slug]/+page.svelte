@@ -156,7 +156,7 @@
 </svelte:head>
 
 <div class="post-layout">
-	<div class="post-sidebar-left">
+	<div class="post-content">
 		<div class="post-nav-container">
 			<a
 				href="/posts"
@@ -168,9 +168,7 @@
 				<ArrowLeftIcon class="post-nav-icon" />
 			</a>
 		</div>
-	</div>
 
-	<div class="post-content">
 		<article class="post-article">
 			<header class="post-header">
 				<h1>{data.post.title}</h1>
@@ -215,34 +213,30 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
 		gap: 2rem;
+		padding-left: 1rem;
+		padding-right: 1rem;
 	}
 
 	@media (min-width: 1280px) {
 		:global(.post-layout) {
-			grid-template-columns: minmax(0, 1fr) minmax(0, 80ch) minmax(0, 1fr);
+			grid-template-columns: minmax(0, 1fr) minmax(auto, 100ch) minmax(0, 1fr);
 		}
-	}
 
-	:global(.post-sidebar-left) {
-		display: none;
-	}
+		:global(.post-layout) > :global(.post-content) {
+			grid-column: 2;
+		}
 
-	@media (min-width: 1280px) {
-		:global(.post-sidebar-left) {
-			display: flex;
-			justify-content: flex-end;
-			width: 100%;
+		:global(.post-layout) > :global(.post-sidebar-right) {
+			grid-column: 3;
 		}
 	}
 
 	.post-nav-container {
-		position: sticky;
+		position: absolute;
+		left: -3rem;
 		top: 0;
-		display: none;
-		align-items: center;
-		justify-content: flex-end;
 		padding-top: 2.75rem;
-		padding-right: 2rem;
+		display: none;
 	}
 
 	@media (min-width: 1024px) {
@@ -259,9 +253,9 @@
 		margin-bottom: 2rem;
 		width: 2.5rem;
 		height: 2.5rem;
-		border: 1px solid color-mix(in srgb, var(--pico-muted-border-color) 50%, transparent);
-		border-radius: 9999px;
-		background: var(--pico-card-background-color);
+		border: 1px solid var(--terminal-border);
+		border-radius: 0;
+		background: var(--terminal-bg);
 		cursor: pointer;
 		text-decoration: none;
 		transition: all 0.15s ease-in-out;
@@ -270,47 +264,51 @@
 	.post-nav-icon {
 		display: block;
 		transition: all 0.15s ease-in-out;
-		stroke: #6b7280;
+		stroke: var(--terminal-fg2);
 	}
 
 	.post-nav-back:hover .post-nav-icon {
-		stroke: #374151;
+		stroke: var(--terminal-fg);
 	}
 
 	[data-theme='dark'] .post-nav-back {
-		background: var(--pico-card-background-color);
-		border-color: color-mix(in srgb, var(--pico-muted-border-color) 50%, transparent);
+		background: var(--terminal-bg);
+		border-color: var(--terminal-border);
 	}
 
 	[data-theme='dark'] .post-nav-icon {
-		stroke: #6b7280;
+		stroke: var(--terminal-fg2);
 	}
 
 	[data-theme='dark'] .post-nav-back:hover .post-nav-icon {
-		stroke: #9ca3af;
+		stroke: var(--terminal-fg);
 	}
 
 	:global(.post-content) {
-		overflow-x: hidden;
+		position: relative;
 	}
 
 	:global(.post-article) {
 		max-width: none;
 		margin-left: auto;
 		margin-right: auto;
+		overflow-x: hidden;
 	}
 
 	:global(.post-header) {
 		display: flex;
 		flex-direction: column;
+		padding-top: 1.5rem;
+		padding-bottom: 1rem;
 	}
 
 	:global(.post-header h1) {
-		margin-top: 1rem;
+		margin-top: 0.75rem;
 		font-weight: 700;
-		letter-spacing: -0.025em;
-		color: var(--pico-color);
-		font-size: 1.5rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--terminal-fg);
+		font-size: 1.25rem;
 	}
 
 	@media (min-width: 768px) {
@@ -342,8 +340,8 @@
 	:global(.post-author .avatar-image) {
 		width: 6rem;
 		height: 6rem;
-		border-radius: 9999px;
-		box-shadow: 0 0 0 2px var(--pico-muted-border-color);
+		border-radius: 0;
+		border: 2px solid var(--terminal-fg);
 	}
 
 	@media (min-width: 768px) {
@@ -362,7 +360,7 @@
 	:global(.post-author .bio-text) {
 		max-width: 40ch;
 		font-size: 1rem;
-		color: var(--pico-muted-color);
+		color: var(--terminal-fg2);
 	}
 
 	:global(.post-sidebar-right) {

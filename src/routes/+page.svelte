@@ -21,14 +21,14 @@
 				<source class="profile" type="image/avif" srcset={avatar_avif} />
 				<img class="profile" src={avatar_png} alt={name} />
 			</picture>
-			<div>
+			<div class="roles-row">
 				<span class="role"
 					>💻 Software Engineer<span class="invert">💻 Software Engineer</span>
 				</span>
 				<span class="role">📡 Researcher<span class="invert">📡 Researcher</span> </span>
 				<span class="role">
-					🐧 FOSS & Linux Enthusiast
-					<span class="invert">🐧 FOSS & Linux Enthusiast</span>
+					🐧 FLOSS & Linux Enthusiast
+					<span class="invert">🐧 FLOSS & Linux Enthusiast</span>
 				</span>
 			</div>
 			<p class="desc"><strong>Stay Curious</strong></p>
@@ -60,7 +60,7 @@
 		flex-direction: column;
 		flex-grow: 1;
 		width: 100%;
-		max-width: 72rem;
+		max-width: 90rem;
 		margin-left: auto;
 		margin-right: auto;
 	}
@@ -82,6 +82,13 @@
 		gap: 1.5rem;
 	}
 
+	:global(.roles-row) {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 0.5rem;
+	}
+
 	:global(.social-links) {
 		display: flex;
 		gap: 1.5rem;
@@ -94,7 +101,7 @@
 	:global(.bio-text p) {
 		font-size: 1.125rem;
 		text-align: center;
-		color: var(--pico-muted-color);
+		color: var(--terminal-fg2);
 	}
 
 	:global(.recent-posts) {
@@ -111,8 +118,10 @@
 
 	:global(.section-header h2) {
 		font-size: 1rem;
-		font-weight: 500;
-		color: var(--pico-muted-color);
+		font-weight: 400;
+		color: var(--terminal-fg2);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
 	}
 
 	@media (min-width: 640px) {
@@ -125,10 +134,12 @@
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
-		font-size: 0.875rem;
-		font-weight: 500;
-		color: var(--pico-primary);
+		font-size: 0.75rem;
+		font-weight: 400;
+		color: var(--terminal-fg);
 		text-decoration: none;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
 	}
 
 	:global(.view-all:hover) {

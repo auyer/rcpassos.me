@@ -15,7 +15,6 @@
 		menuOpen = !menuOpen;
 	}
 
-	// Close menu when navigating
 	$effect(() => {
 		const currentPath = $page.url.pathname;
 		if (currentPath) {
@@ -29,7 +28,8 @@
 	<ul>
 		<li>
 			<a href="/" data-sveltekit-preload-data="hover" class="navbar-brand">
-				<img src="/assets/logo.svg" alt="Auyer" width="30" height="30" />
+				<img src="/assets/logo.svg" alt="Auyer" width="24" height="24" />
+				<span class="cursor-block"></span>
 			</a>
 		</li>
 	</ul>
@@ -40,45 +40,35 @@
 			<a
 				href="/posts"
 				data-sveltekit-preload-data="hover"
-				aria-current={isActive('/posts') ? 'page' : undefined}
+				aria-current={isActive('/posts') ? 'page' : undefined}>Posts</a
 			>
-				Posts
-			</a>
 		</li>
 		<li>
 			<a
 				href="/research"
 				data-sveltekit-preload-data="hover"
-				aria-current={isActive('/research') ? 'page' : undefined}
+				aria-current={isActive('/research') ? 'page' : undefined}>Research</a
 			>
-				Research
-			</a>
 		</li>
 		<li>
 			<a
 				href="/projects"
 				data-sveltekit-preload-data="hover"
-				aria-current={isActive('/projects') ? 'page' : undefined}
+				aria-current={isActive('/projects') ? 'page' : undefined}>Projects</a
 			>
-				Projects
-			</a>
 		</li>
 		<li>
 			<a
 				href="/home-lab"
 				data-sveltekit-preload-data="hover"
-				aria-current={isActive('/home-lab') ? 'page' : undefined}
+				aria-current={isActive('/home-lab') ? 'page' : undefined}>Home-Lab</a
 			>
-				Home-Lab
-			</a>
 		</li>
 		<li>
 			<a
 				href="https://github.com/auyer/"
-				aria-current={isActive('/projects/github') ? 'page' : undefined}
+				aria-current={isActive('/projects/github') ? 'page' : undefined}>GitHub</a
 			>
-				GitHub
-			</a>
 		</li>
 	</ul>
 
@@ -93,8 +83,8 @@
 			>
 				<svg
 					viewBox="0 0 24 24"
-					width="24"
-					height="24"
+					width="20"
+					height="20"
 					fill="none"
 					stroke="currentColor"
 					stroke-width="2"
@@ -110,29 +100,3 @@
 		</li>
 	</ul>
 </nav>
-
-<style>
-	/* Hamburger button */
-	:global(.hamburger-btn) {
-		padding: 0.25rem;
-		min-height: auto;
-		height: auto;
-		border: none;
-		background: transparent;
-		cursor: pointer;
-		color: var(--pico-color);
-	}
-
-	:global(.hamburger-btn:hover) {
-		background-color: var(--pico-primary-hover);
-		color: var(--pico-primary-inverse);
-		border-radius: var(--pico-border-radius);
-	}
-
-	/* LightSwitch button sizing */
-	:global(.navbar .btn-icon) {
-		padding: 0.25rem;
-		min-height: auto;
-		height: auto;
-	}
-</style>
