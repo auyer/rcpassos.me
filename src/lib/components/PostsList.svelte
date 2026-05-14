@@ -26,7 +26,7 @@
 
 	@media (min-width: 768px) {
 		:global(.posts-list) {
-			border-left: 1px solid var(--pico-muted-border-color);
+			border-left: 1px solid var(--terminal-border);
 			padding-left: 1rem;
 		}
 	}
@@ -35,6 +35,14 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		align-items: start;
+		padding-top: 1.25rem;
+		padding-bottom: 1.25rem;
+		border-top: 1px solid var(--terminal-border);
+	}
+
+	:global(.posts-list-item:first-child) {
+		border-top: none;
+		padding-top: 0;
 	}
 
 	@media (min-width: 768px) {

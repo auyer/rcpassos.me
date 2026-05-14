@@ -13,8 +13,10 @@
 	</div>
 	<div slot="actions">
 		<div class="read-more-link">
-			<span class="read-more-text">Read</span>
-			<ArrowRightIcon class="read-more-icon" />
+            <a href={`/post/${post.slug}`}>
+			    <span class="read-more-text">Read</span>
+                <ArrowRightIcon class="read-more-icon" />
+            </a>
 		</div>
 	</div>
 </Card>
