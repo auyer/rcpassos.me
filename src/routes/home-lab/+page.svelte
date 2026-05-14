@@ -7,8 +7,8 @@
 	<meta name="description" content="Interactive visualization of my home lab infrastructure." />
 </svelte:head>
 
-<container class="homelab-container">
-	<article class="homelab-article">
+<div class="homelab-page">
+	<div class="homelab-header-wrap">
 		<header class="homelab-header">
 			<h1>Home Lab</h1>
 			<p>
@@ -17,40 +17,51 @@
 				>.
 			</p>
 		</header>
+	</div>
+
+	<div class="homelab-graph-wrap">
 		<HomelabGraph />
-	</article>
-</container>
+	</div>
+</div>
 
 <style>
-	:global(.homelab-container) {
-		display: block;
-		max-width: 72rem;
-		margin-left: auto;
-		margin-right: auto;
-		padding-left: 1rem;
-		padding-right: 1rem;
+	:global(.homelab-page) {
+		display: flex;
+		flex-direction: column;
+		height: calc(100vh - 5.5rem);
 	}
 
-	:global(.homelab-article) {
-		margin-bottom: 2rem;
+	:global(.homelab-header-wrap) {
+		max-width: 720px;
+		width: 100%;
+		margin: 0 auto;
+		padding: 1rem 1rem 0 1rem;
+		flex-shrink: 0;
 	}
 
 	:global(.homelab-header) {
 		padding-top: 1rem;
-		border-bottom: 1px solid var(--pico-muted-border-color);
+		border-bottom: 1px solid var(--terminal-border);
 		padding-bottom: 1rem;
-		margin-bottom: 1.5rem;
+		margin-bottom: 0;
 	}
 
 	:global(.homelab-header h1) {
-		font-size: 1.5rem;
+		font-size: 1.25rem;
 		font-weight: 700;
-		letter-spacing: -0.025em;
-		color: var(--pico-color);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--terminal-fg);
 	}
 
 	:global(.homelab-header p) {
-		color: var(--pico-muted-color);
+		color: var(--terminal-fg2);
 		margin-top: 0.5rem;
+	}
+
+	:global(.homelab-graph-wrap) {
+		flex: 1 1 0;
+		min-height: 0;
+		padding: 0 1rem 1rem 1rem;
 	}
 </style>
