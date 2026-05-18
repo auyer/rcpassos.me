@@ -1024,17 +1024,18 @@ pacman -S base-devel \
 
 #debian:
 sudo apt install \
-	build-essential \
-	flex \
-	bison \
-	bc \
-	cpio \
-	pahole \
-	perl \
-	libelf-dev \
-	libssl-dev \
-	sqlite3 \
-	rsync
+    build-essential \
+    libncurses-dev \
+    flex \
+    bison \
+    bc \
+    cpio \
+    pahole \
+    perl \
+    libelf-dev \
+    libssl-dev \
+    sqlite3 \
+    rsync
 
 (last two for kw)
 ```
