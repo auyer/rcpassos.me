@@ -34,23 +34,21 @@ export async function load() {
 			name: 'DUKS - Dashboard for Unified Kernel Statistics',
 			description:
 				'A Proof of concept Analytical platform for the Linux Kernel. Part of the PhD research.',
-			link: 'https://duks.rcpassos.me/',
+			link: 'https://gitlab.com/ccsl-usp/codev/DUKS',
 			cta: 'duks.rcpassos.me/'
 		},
 		{
-			name: 'MLH-Archiver',
-			description: `Collect and archive locally emails from mailing lists, and transform them into Parquet Datasets.
-					A multipart software, with an extensible Rust Collector and Python transformation actors.
-						Work in progress.
-						Part of the PhD research`,
-			link: 'https://github.com/linux-duks/MLH-archiver',
-			cta: 'github.com/linux-duks/MLH-archiver'
+			name: 'MailingListsHeritage',
+			description: `Long-lived FLOSS projects, like the Linux kernel, use mailing lists as the traditional medium for all development, bug reporting, and pivotal discussions about the project's future. However, as a consequence of the decentralised development model of these projects, the emails are spread across hundreds of mailing lists, with different communities and code maintenance models. The MailingListsHeritage tool was built as a 4-step pipeline. The first 3 are implemented in Rust; the last is implemented in Python. 1) Archiver: collects raw emails from the configured sources (extensible over a Rust trait), 2) Parser: extracts information from the headers and body of the email (applying normalisation on some fields), 3) Anonymizer: applies a hash-based pseudonymisation step to participant identities, 4) Analysis: test and validate the resulting files.
+						Part of my PhD research`,
+			link: 'https://gitlab.com/ccsl-usp/codev/MailingListsHeritage',
+			cta: 'gitlab.com/ccsl-usp/codev/MailingListsHeritage'
 		},
 		{
 			name: 'PublicInboxStack',
 			description: `Configurable Setup to Mirror and Host the Lore (PublicInbox) Software with Mailing Lists. Part of the PhD research.`,
-			link: 'https://github.com/linux-duks/Public-Inbox-Stack',
-			cta: 'github.com/linux-duks/Public-Inbox-Stack'
+			link: 'https://gitlab.com/ccsl-usp/codev/Public-Inbox-Stack',
+			cta: 'gitlab.com/ccsl-usp/codev/Public-Inbox-Stack'
 		}
 	];
 
