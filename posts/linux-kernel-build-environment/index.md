@@ -1002,6 +1002,19 @@ sudo pacman -S guestfs-tools \
                 qemu-system-aarch64 \
                 qemu-system-arm-firmware \
                 dnsmasq
+
+
+#debian:
+sudo apt install qemu-utils \
+                qemu-system-x86 \
+                qemu-system-arm \
+                qemu-efi-aarch64 \
+                virt-manager \
+                libvirt-daemon \
+                libvirt-daemon-driver-qemu \
+                libvirt-clients \
+                bridge-utils
+                # qemu-system-gui  optional
 ```
 
 For compiling the Linux Kernel:
