@@ -1,5 +1,5 @@
 ---
-title: 'Concurrency in Linux: Intro, How Bugs happen + Paper Review [English/Portuguese]'
+title: '[VIDEO] Concurrency in Linux: Intro, How Bugs happen + Paper Review [English/Portuguese]'
 date: 2026-06-21
 ---
 
