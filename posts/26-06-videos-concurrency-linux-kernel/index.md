@@ -16,7 +16,7 @@ Dado o assunto complexo, decidi primeiro introduzir o tema de concorrência de u
 Link to the original article that motivated this presentation: ["A Comprehensive Study of Concurrency Bugs in the Linux Kernel - ICSE 2026"](https://conf.researchr.org/details/icse-2026/icse-2026-research-track/262/A-Comprehensive-Study-of-Concurrency-Bugs-in-the-Linux-Kernel). I also used resources from [an open MIT course](https://web.mit.edu/6.005/www/fa14/classes/17-concurrency/), the [Linux Docs](https://docs.kernel.org/core-api/index.html#concurrency-primitives) and the [Compiler Explorer](https://godbolt.org/) website.
 
 
-## Video em Português
+## Vídeo em Português
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/mSN9-PnBy_E?si=BuqQ1U6yxQotw5x6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
