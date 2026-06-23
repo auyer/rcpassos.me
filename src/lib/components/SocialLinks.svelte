@@ -7,7 +7,8 @@
 		bluesky,
 		xmpp,
 		debian,
-		gitlab
+		gitlab,
+		mastodon
 	} from '$lib/info';
 </script>
 
@@ -123,7 +124,7 @@
 
 {#if gitlab}
 	<a href={gitlab} class="social-link" aria-label="Check me on GitLab">
-		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 380" class="social-icon gitlab-icon">
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 380" class="social-icon gitlab-icon">
 			<path
 				d="M282.83,170.73l-.27-.69-26.14-68.22a6.81,6.81,0,0,0-2.69-3.24,7,7,0,0,0-8,.43,7,7,0,0,0-2.32,3.52l-17.65,54H154.29l-17.65-54A6.86,6.86,0,0,0,134.32,99a7,7,0,0,0-8-.43,6.87,6.87,0,0,0-2.69,3.24L97.44,170l-.26.69a48.54,48.54,0,0,0,16.1,56.1l.09.07.24.17,39.82,29.82,19.7,14.91,12,9.06a8.07,8.07,0,0,0,9.76,0l12-9.06,19.7-14.91,40.06-30,.1-.08A48.56,48.56,0,0,0,282.83,170.73Z"
 				fill="currentColor"
@@ -131,7 +132,6 @@
 		</svg>
 	</a>
 {/if}
-
 
 {#if github}
 	<a href={`https://github.com/${github}`} class="social-link" aria-label="Follow on GitHub">
@@ -146,6 +146,53 @@
 	</a>
 {/if}
 
+{#if mastodon}
+    <a rel="me"
+        href={mastodon}
+        class="social-link"
+        aria-label="Check me on Mastodon"
+    >
+        <svg
+            class="social-icon"
+            style="height:1em;vertical-align:-.125em;transform-origin:center;overflow:visible"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            viewBox="0 80 250 250"
+        >
+            <path
+                d="m409 290c-5 24-43 50-85 56-86 11-137-6-137-6 3 13-4 54 70 52 31 0 58-7 58-7l2 27c-51 24-107 15-140 6-67-17-79-90-81-162v-59c0-74 49-96 49-96 50-24 180-22 222 0 0 0 49 22 49 96 0 0 1 55-7 93"
+                fill="currentColor" 
+            />
+            <path
+                d="m358 202v91h-35v-88c0-18-8-27-23-27-18 0-27 11-27 33v47h-34v-47c0-22-9-33-27-33-15 0-23 9-23 27v88h-35v-91c0-18 5-60 52-60 39 0 50 37 50 37s10-37 50-37c45 0 52 42 52 60"
+                fill="#ffffff" 
+            />
+        </svg>
+    </a>
+{/if}
+
+{#if bluesky}
+    <a
+        href={`https://bsky.app/profile/${bluesky}`}
+        class="social-link"
+        aria-label="Check me on BlueSky"
+    >
+        <svg
+            class="social-icon"
+            style="height:1em;vertical-align:-.125em;transform-origin:center;overflow:visible"
+            viewBox="0 0 300 460"
+            aria-hidden="true"
+            role="img"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            <path
+                d="M123.121 33.6637C188.241 82.5526 258.281 181.681 284 234.873C309.719 181.681 379.759 82.5526 444.879 33.6637C491.866 -1.61183 568 -28.9064 568 57.9464C568 75.2916 558.055 203.659 552.222 224.501C531.947 296.954 458.067 315.434 392.347 304.249C507.222 323.8 536.444 388.56 473.333 453.32C353.473 576.312 301.061 422.461 287.631 383.039C285.169 375.812 284.017 372.431 284 375.306C283.983 372.431 282.831 375.812 280.369 383.039C266.939 422.461 214.527 576.312 94.6667 453.32C31.5556 388.56 60.7778 323.8 175.653 304.249C109.933 315.434 36.0535 296.954 15.7778 224.501C9.94525 203.659 0 75.2916 0 57.9464C0 -28.9064 76.1345 -1.61183 123.121 33.6637Z"
+                fill="currentColor"
+            />
+        </svg>
+    </a>
+{/if}
+
 {#if stackoverflow}
 	<a
 		href={`https://stackoverflow.com/users/${stackoverflow}`}
@@ -155,7 +202,7 @@
 		<svg
 			class="social-icon"
 			style="height:1em;vertical-align:-.125em;transform-origin:center;overflow:visible"
-			viewBox="0 0 384 512"
+			viewBox="0 0 412 412"
 			aria-hidden="true"
 			role="img"
 			xmlns="http://www.w3.org/2000/svg"
@@ -169,28 +216,6 @@
 				></g
 			></svg
 		>
-	</a>
-{/if}
-
-{#if bluesky}
-	<a
-		href={`https://bsky.app/profile/${bluesky}`}
-		class="social-link"
-		aria-label="Check me on BlueSky"
-	>
-		<svg
-			class="social-icon"
-			style="height:1em;vertical-align:-.125em;transform-origin:center;overflow:visible"
-			viewBox="0 0 640 512"
-			aria-hidden="true"
-			role="img"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path
-				d="M123.121 33.6637C188.241 82.5526 258.281 181.681 284 234.873C309.719 181.681 379.759 82.5526 444.879 33.6637C491.866 -1.61183 568 -28.9064 568 57.9464C568 75.2916 558.055 203.659 552.222 224.501C531.947 296.954 458.067 315.434 392.347 304.249C507.222 323.8 536.444 388.56 473.333 453.32C353.473 576.312 301.061 422.461 287.631 383.039C285.169 375.812 284.017 372.431 284 375.306C283.983 372.431 282.831 375.812 280.369 383.039C266.939 422.461 214.527 576.312 94.6667 453.32C31.5556 388.56 60.7778 323.8 175.653 304.249C109.933 315.434 36.0535 296.954 15.7778 224.501C9.94525 203.659 0 75.2916 0 57.9464C0 -28.9064 76.1345 -1.61183 123.121 33.6637Z"
-				fill="currentColor"
-			/>
-		</svg>
 	</a>
 {/if}
 
