@@ -8,7 +8,7 @@
 		flex-direction: column;
 		flex-grow: 1;
         align-items: center;
-		width: 800%;
+		width: 100%;
 		max-width: 90rem;
 		margin-left: auto;
 		margin-right: auto;
