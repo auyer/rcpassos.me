@@ -2,7 +2,7 @@
 export const website = 'https://rcpassos.me';
 
 export const firstName = 'Rafael';
-export const lastName = '"Auyer" Passos';
+export const lastName = 'Passos';
 export const name = `${firstName} ${lastName}`;
 
 // Used for the landing page & footer of posts
