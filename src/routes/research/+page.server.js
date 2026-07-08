@@ -4,6 +4,12 @@ export async function load() {
 
 	const papers = [
 		{
+			name: 'LKML5Ws: The What, When, Who, Where, and Why in the Linux Kernel Mailing Lists',
+			published: '42nd ICSME (IEEE)',
+			year: 2026,
+			url: 'research/lkml5ws-ICSME-2026'
+		},
+		{
 			name: 'Streamlining Analyses on the Linux Kernel with DUKS',
 			published: '13th IEEE VISSOFT',
 			year: 2025,
