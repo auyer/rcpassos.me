@@ -25,6 +25,12 @@ export async function load() {
 	];
 
 	const coPapers = [
+        {
+			name: 'When Do You Repeat Yourself? Voices from the Trenches of Linux Kernel Maintainers on Code Duplication',
+			published: 'TechDebt 2026 (ICSE)',
+			year: 2026,
+			url: 'https://conf.researchr.org/details/TechDebt-2026/TechDebt-2026-main/8/When-Do-You-Repeat-Yourself-Voices-from-the-Trenches-of-Linux-Kernel-Maintainers-on-'
+		},
 		{
 			name: 'Guidelines for Boosting Long-Lasting FLOSS Contributors',
 			published: 'DebConf25 Brest',
