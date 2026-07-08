@@ -11,7 +11,7 @@ export async function load() {
 		},
 		{
 			name: 'Streamlining Analyses on the Linux Kernel with DUKS',
-			published: '13th IEEE VISSOFT',
+			published: '13th VISSOFT (IEEE)',
 			year: 2025,
 			url: 'research/linux-kernel-with-DUKS-vissoft-2025'
 		},

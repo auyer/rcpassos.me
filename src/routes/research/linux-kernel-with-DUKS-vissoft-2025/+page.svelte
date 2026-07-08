@@ -2,6 +2,10 @@
 	import pdfUrl from './linux-kernel-with-duks-preprint.pdf?url';
 </script>
 
+<svelte:head>
+	<title>Research | Streamlining Analyses on the Linux Kernel with DUKS</title>
+</svelte:head>
+
 <div class="research-article">
 	<article class="prose">
 		<header class="research-header">
