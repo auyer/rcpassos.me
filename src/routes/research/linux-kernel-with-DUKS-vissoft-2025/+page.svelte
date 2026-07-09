@@ -40,7 +40,7 @@
 </div>
 
 <style>
-	:global(.research-article) {
+	.research-article {
 		width: 100%;
 		justify-content: center;
 		margin-left: auto;
@@ -49,17 +49,17 @@
 	}
 
 	@media (min-width: 1024px) {
-		:global(.research-article) {
+		.research-article {
 			width: 66.666667%;
 		}
 	}
 
-	:global(.research-header) {
+	.research-header {
 		display: flex;
 		flex-direction: column;
 	}
 
-	:global(.pdf-embed) {
+	.pdf-embed {
 		width: 100%;
 	}
 </style>

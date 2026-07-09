@@ -25,7 +25,7 @@
 </container>
 
 <style>
-	:global(.research-container) {
+	.research-container {
 		display: block;
 		max-width: 90rem;
 		margin-left: auto;
@@ -34,17 +34,17 @@
 		padding-right: 0.5rem;
 	}
 
-	:global(.research-article) {
+	.research-article {
 		margin-bottom: 2rem;
 	}
 
-	:global(.research-header) {
+	.research-header {
 		padding-top: 1rem;
 		border-bottom: 1px solid var(--pico-muted-border-color);
 		padding-bottom: 1rem;
 	}
 
-	:global(.research-header h1) {
+	.research-header h1 {
 		padding-top: 0.5rem;
 		font-size: 1.5rem;
 		font-weight: 700;
@@ -52,7 +52,7 @@
 		color: var(--pico-color);
 	}
 
-	:global(.research-header p) {
+	.research-header p {
 		color: var(--pico-muted-color);
 		margin-top: 0.5rem;
 	}

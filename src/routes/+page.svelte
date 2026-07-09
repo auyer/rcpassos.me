@@ -94,11 +94,11 @@
 		gap: 1.5rem;
 	}
 
-	:global(.bio-text) {
+	.bio-text {
 		gap: 0.75rem;
 	}
 
-	:global(.bio-text p) {
+	.bio-text p {
 		font-size: 1.125rem;
 		text-align: center;
 		color: var(--terminal-fg2);

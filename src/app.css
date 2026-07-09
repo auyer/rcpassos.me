@@ -1,9 +1,15 @@
-/* ── Fira Code font-face ── */
-@import '/fira/fira_code.css';
-
 /* ── PicoCSS base ── */
 @import '@picocss/pico/css/pico.min.css';
 @import '@picocss/pico/css/pico.colors.min.css';
+
+/* ── Fira Code font-face ── */
+@font-face {
+	font-family: 'Fira Code';
+	src: url('/fira/woff2/FiraCode-VF.woff2') format('woff2-variations');
+	font-weight: 300 700;
+	font-style: normal;
+	font-display: optional;
+}
 
 /* ── Color tokens ── */
 :root,
@@ -130,6 +136,8 @@ body {
 }
 
 html {
+	scrollbar-gutter: stable;
+	overflow-y: scroll;
 	background-color: var(--terminal-bg);
 }
 
