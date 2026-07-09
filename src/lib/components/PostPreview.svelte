@@ -22,7 +22,7 @@
 </Card>
 
 <style>
-	:global(.prose > p) {
+	.prose > :global(p) {
 		margin-top: 0;
 		margin-bottom: 0;
 	}
