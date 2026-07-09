@@ -41,8 +41,10 @@
 
 <style>
 	.research-article {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 		width: 100%;
-		justify-content: center;
 		margin-left: auto;
 		margin-right: auto;
 		overflow-x: hidden;
