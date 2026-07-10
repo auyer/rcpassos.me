@@ -9,16 +9,32 @@
 
 {#if video}
 	<figure class="video-figure">
-		<video
-			class="video-player"
-			controls
-			poster={video.coverImage}
-			title={video.description}
-			aria-label={video.description}
-		>
-			<source src={video.src} type="video/mp4" />
-			Your browser does not support the video tag.
-		</video>
+		{#if video.youtube}
+			<div class="video-embed-wrap">
+				<iframe
+					class="video-iframe"
+					src="https://www.youtube.com/embed/{video.youtube}{video.youtubeSi
+						? `?si=${video.youtubeSi}`
+						: ''}"
+					title={video.title}
+					frameborder="0"
+					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+					referrerpolicy="strict-origin-when-cross-origin"
+					allowfullscreen
+				></iframe>
+			</div>
+		{:else}
+			<video
+				class="video-player"
+				controls
+				poster={video.coverImage}
+				title={video.description}
+				aria-label={video.description}
+			>
+				<source src={video.src} type="video/mp4" />
+				Your browser does not support the video tag.
+			</video>
+		{/if}
 		<figcaption class="video-caption">{video.title}</figcaption>
 	</figure>
 {/if}
@@ -32,6 +48,21 @@
 		width: 100%;
 		max-width: 100%;
 		display: block;
+	}
+
+	.video-embed-wrap {
+		position: relative;
+		width: 100%;
+		padding-bottom: 56.25%;
+	}
+
+	.video-iframe {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border: none;
 	}
 
 	.video-caption {

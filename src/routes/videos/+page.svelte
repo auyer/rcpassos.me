@@ -22,6 +22,11 @@
 						<div class="video-thumb">
 							{#if video.coverImage}
 								<img src={video.coverImage} alt={video.title} />
+							{:else if video.youtube}
+								<img
+									src="https://img.youtube.com/vi/{video.youtube}/mqdefault.jpg"
+									alt={video.title}
+								/>
 							{/if}
 						</div>
 						<div class="video-info">
