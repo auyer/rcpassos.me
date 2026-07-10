@@ -9,6 +9,8 @@ export const videos = [
                     Previously, the Linux Driver for the Wii remotes turned the first LED on every connected controller.
                     Now, each controller that connects receive an ID, and this is used to turn on a specific LED (from 1 to 4).
                     The demo video presents 4 controllers connecting in different order, with a dmesg log in the background.
+
+                    Video also available on YouTube: https://youtu.be/Y1UP-ObZcL0
                     `
 	}
 ];
