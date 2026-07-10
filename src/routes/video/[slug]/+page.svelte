@@ -1,6 +1,7 @@
 <script>
 	import { website, name, bio, avatar_avif } from '$lib/info.js';
 	import ArrowLeftIcon from '$lib/components/ArrowLeftIcon.svelte';
+	import Video from '$lib/components/Video.svelte';
 	import SocialLinks from '$lib/components/SocialLinks.svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { format, parseISO } from 'date-fns';
@@ -73,10 +74,7 @@
 				{/if}
 			</header>
 
-			<video class="video-player" controls poster={data.video.coverImage}>
-				<source src={data.video.src} type="video/mp4" />
-				Your browser does not support the video tag.
-			</video>
+			<Video slug={data.video.slug} />
 
 			{#if data.video.description}
 				<p class="video-description">{data.video.description}</p>
@@ -211,12 +209,6 @@
 	.video-date {
 		color: var(--pico-muted-color);
 		font-size: 0.875rem;
-	}
-
-	.video-player {
-		width: 100%;
-		max-width: 100%;
-		display: block;
 	}
 
 	.video-description {
