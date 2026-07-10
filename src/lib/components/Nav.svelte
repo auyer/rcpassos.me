@@ -64,6 +64,13 @@
 				aria-current={isActive('/home-lab') ? 'page' : undefined}>Home-Lab</a
 			>
 		</li>
+		<li>
+			<a
+				href="/videos"
+				data-sveltekit-preload-data="hover"
+				aria-current={isActive('/videos') ? 'page' : undefined}>Videos</a
+			>
+		</li>
 	</ul>
 
 	<!-- Trail: hamburger + theme toggle -->
