@@ -25,7 +25,7 @@ export async function load() {
 	];
 
 	const coPapers = [
-        {
+		{
 			name: 'When Do You Repeat Yourself? Voices from the Trenches of Linux Kernel Maintainers on Code Duplication',
 			published: 'TechDebt 2026 (ICSE)',
 			year: 2026,

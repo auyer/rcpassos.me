@@ -6,4 +6,3 @@ This blog is where I share posts about projects and technology, covering a varie
 # LICENSE
 
 Shared under `Attribution-ShareAlike 4.0 International`
-
