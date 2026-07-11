@@ -1,5 +1,9 @@
 <script>
 	import pdfUrl from './lkml5ws-icsme2026-preprint.pdf?url';
+	import BibTeX from '$lib/components/BibTeX.svelte';
+	import { papers } from '$lib/data/research';
+
+	const paper = papers.find((p) => p.url === 'research/lkml5ws-ICSME-2026');
 </script>
 
 <svelte:head>
@@ -21,6 +25,9 @@
 		<!-- 		>10.1109/VISSOFT67405.2025.00025</a -->
 		<!-- 	> -->
 		<!-- </p> -->
+		<p>
+			<BibTeX open={true} content={paper?.bibtex}></BibTeX>
+		</p>
 		<p>
 			<a
 				href="https://conf.researchr.org/details/icsme-2026/icsme-2026-tool-demonstration/18/LKML5Ws-The-What-When-Who-Where-and-Why-in-the-Linux-Kernel-Mailing-Lists"

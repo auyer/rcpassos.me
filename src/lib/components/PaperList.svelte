@@ -1,5 +1,7 @@
 <script>
-	/** @type {{ name: string, published: string, year: number, url: string, language?: string }[]} */
+	import BibTeX from './BibTeX.svelte';
+
+	/** @type {{ name: string, published: string, year: number, url: string, language?: string, bibtex?: string }[]} */
 	export let papers;
 	export let title;
 </script>
@@ -15,6 +17,9 @@
 				</a>
 				<p class="paper-published">
 					{paper.published}
+					{#if paper.bibtex}
+						<BibTeX open={false} content={paper.bibtex}></BibTeX>
+					{/if}
 				</p>
 				{#if paper.language}
 					<p class="paper-language">

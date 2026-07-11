@@ -1,5 +1,9 @@
 <script>
 	import pdfUrl from './linux-kernel-with-duks-preprint.pdf?url';
+	import BibTeX from '$lib/components/BibTeX.svelte';
+	import { papers } from '$lib/data/research';
+
+	const paper = papers.find((p) => p.url === 'research/linux-kernel-with-DUKS-vissoft-2025');
 </script>
 
 <svelte:head>
@@ -16,6 +20,9 @@
 			Published by IEEE: <a href="https://doi.org/10.1109/VISSOFT67405.2025.00025"
 				>10.1109/VISSOFT67405.2025.00025</a
 			>
+		</p>
+		<p>
+			<BibTeX open={true} content={paper?.bibtex}></BibTeX>
 		</p>
 		<p>
 			DUKS an innovative framework that supports multiple visualizations and data analyses
