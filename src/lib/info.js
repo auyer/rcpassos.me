@@ -31,3 +31,4 @@ export const mastodon = 'https://mastodon.social/@auyer';
 export const stackoverflow = '5621569/auyer?tab=profile';
 export const xmpp = 'xmpp:auyer@chat.rcpassos.me';
 export const codeberg = 'https://codeberg.org/auyer';
+export const gpg = 'rcpassos.public.asc';

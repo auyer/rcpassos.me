@@ -8,7 +8,8 @@
 		xmpp,
 		debian,
 		gitlab,
-		mastodon
+		mastodon,
+        gpg
 	} from '$lib/info';
 </script>
 
@@ -215,30 +216,20 @@
 	</a>
 {/if}
 
-{#if medium}
-	<a href={`https://medium.com/${medium}`} class="social-link" aria-label="Check me on Medium">
-		<svg
-			class="social-icon"
-			style="height:1em;vertical-align:-.125em;transform-origin:center;overflow:visible"
-			viewBox="0 0 640 512"
-			aria-hidden="true"
-			role="img"
-			xmlns="http://www.w3.org/2000/svg"
-			><g transform="translate(320 256)" transform-origin="160 0"
-				><g transform="translate(0,0) scale(1,1)"
-					><path
-						d="M180.5 74.26C80.81 74.26 0 155.6 0 256S80.82 437.7 180.5 437.7 361 356.4 361 256 280.2 74.26 180.5 74.26zm288.3 10.65c-49.85 0-90.25 76.62-90.25 171.1s40.41 171.1 90.25 171.1 90.25-76.62 90.25-171.1H559C559 161.5 518.6 84.91 468.8 84.91zm139.5 17.82c-17.53 0-31.74 68.63-31.74 153.3s14.2 153.3 31.74 153.3S640 340.6 640 256C640 171.4 625.8 102.7 608.3 102.7z"
-						fill="currentColor"
-						transform="translate(-320 -256)"
-					/></g
-				></g
-			></svg
-		>
+{#if gpg}
+	<a
+		href={`/files/${gpg}`}
+		download={gpg}
+		class="gpg-label"
+		aria-label="Download my GPG Key"
+	>
+	[GPG]
 	</a>
 {/if}
 
+
 <style>
-	:global(.social-link) {
+	.social-link {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -246,23 +237,29 @@
 		color: var(--terminal-fg2);
 	}
 
-	:global(.social-link:hover) {
+	.social-link:hover {
 		color: var(--terminal-fg);
 	}
 
-	:global(.social-icon) {
+	.social-icon {
 		width: 1.5rem;
 		height: 1.5rem;
 		color: inherit;
 	}
 
-	:global(.gitlab-icon) {
+	.gitlab-icon {
 		width: 1.7rem;
 		height: 1.7rem;
 	}
 
-	:global(.debian-icon) {
+	.debian-icon {
 		width: 1.7rem;
 		height: 1.7rem;
+	}
+
+	.gpg-label {
+		font-weight: 600;
+		color: var(--pico-color);
+
 	}
 </style>
