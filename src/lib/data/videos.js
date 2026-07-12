@@ -1,5 +1,18 @@
 export const videos = [
 	{
+		slug: 'debian-debcargo-git-proposal',
+		src: '/videos/debcargo-git-proposal.mp4',
+		coverImage: '/videos/debcargo-git-proposal.png',
+		title: 'Debian debcargo packaging from Git Proposal / Demo',
+		date: '2026-07-11',
+		description: `While working on packaging Niri ans Cosmic DE, we hit a few blocking dependencies being used from git.
+                        Current debcargo implementaion only fetches source code from crates.io.
+                        Alternatively, using gbp works, but differs too much from what current debian rust packages look like.
+                        This video is a demo and a proposal for Debcargo: use Cargo internals to allow fetching packages from git.
+
+                        This video is also available on YouTube: https://youtu.be/0Td2Z4ysZxo`
+	},
+	{
 		slug: 'wiimote-led-linux-driver',
 		src: '/videos/wiimote-led-linux-driver.mp4',
 		coverImage: '/videos/wiimote-led-linux-driver.jpg',
