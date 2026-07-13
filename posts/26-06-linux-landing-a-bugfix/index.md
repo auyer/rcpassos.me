@@ -122,6 +122,48 @@ There is a proper way to register a cleanup function. The review mentioned the _
 I found the `devm_add_action_or_reset` function, which registers a cleanup call during driver initialization.
 I used it in [my v2 patch](https://lore.kernel.org/all/20260602030519.3097058-1-rafael@rcpassos.me/), sent an hour after the first one.
 
+## The patch
+
+(~update)
+
+The patch was accepted into upstream, but due to the short time, it was only merged in the 7.2 merge window.
+When the merge happened, I quickly emailed the stable list, to make sure it is merged early for the 7.1.1 stable release.
+
+This is what it looks like. The `hidinput_cleanup_battery` is the cleanup function, and it is registered inside the `hidinput_setup_battery` with the `devm_add_action_or_reset`:
+
+```c
+diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -519,6 +519,13 @@ static struct hid_battery *hidinput_find_battery(struct hid_device *dev,
+ 	return NULL;
+ }
+ 
++static void hidinput_cleanup_battery(void *res)
++{
++	struct hid_battery *bat = res;
++
++	list_del(&bat->list);
++}
++
+ static int hidinput_setup_battery(struct hid_device *dev, unsigned report_type,
+ 				  struct hid_field *field, bool is_percentage)
+ {
+@@ -610,6 +617,12 @@ static int hidinput_setup_battery(struct hid_device *dev, unsigned report_type,
+ 
+ 	power_supply_powers(bat->ps, &dev->dev);
+ 	list_add_tail(&bat->list, &dev->batteries);
++
++	error = devm_add_action_or_reset(&dev->dev,
++					 hidinput_cleanup_battery, bat);
++	if (error)
++		return error;
++
+ 	return 0;
+ 
+ err_free_name:
+```
+
 ## Two regressions?
 
 In the morning, I was cc'd into another email thread.
