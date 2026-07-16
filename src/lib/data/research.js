@@ -54,7 +54,22 @@ export const coPapers = [
 		name: 'When Do You Repeat Yourself? Voices from the Trenches of Linux Kernel Maintainers on Code Duplication',
 		published: 'TechDebt 2026 (ICSE)',
 		year: 2026,
-		url: 'https://conf.researchr.org/details/TechDebt-2026/TechDebt-2026-main/8/When-Do-You-Repeat-Yourself-Voices-from-the-Trenches-of-Linux-Kernel-Maintainers-on-'
+		url: 'https://dl.acm.org/doi/10.1145/3794915.3795783',
+        bibtex: `@inproceedings{10.1145/3794915.3795783,
+author = {Arcanjo, Luan and Tadokoro, David and Spessoto, Marcelo and Passos, Rafael and Meirelles, Paulo},
+title = {When Do You Repeat Yourself? Voices from the Trenches of Linux Kernel Maintainers on Code Duplication},
+year = {2026},
+isbn = {9798400724855},
+publisher = {Association for Computing Machinery},
+url = {https://doi.org/10.1145/3794915.3795783},
+doi = {10.1145/3794915.3795783},
+abstract = {The Don’t Repeat Yourself (DRY) principle is central to software maintainability, but empirical studies challenge its rigid use, describing beneficial cases of duplication. However, these rely on retrospective analyses, leaving a gap in understanding real-time decision-making and socio-technical dynamics. This paper presents an ethnographic study on how the Linux kernel community manages duplication debt via deduplication contributions. We conducted a multimethod ethnographic study by submitting patches to the AMDGPU and IIO subsystems. Our analysis of the patch reviews identified two tolerated duplications, driver-forking (T1) and readability prioritization (T2), that partially contradict the literature and warrant further investigation. Furthermore, these analyses identify two new Linux-specific factors that affect deduplication acceptance: integration overhead (T3) and performance impact (T4). This work offers a fresh discussion, grounded in new empirical observations and perspectives, of the dogmatic adherence to DRY.},
+booktitle = {Proceedings of the 2026 ACM/IEEE International Conference on Technical Debt},
+pages = {47–52},
+numpages = {6},
+keywords = {Linux kernel, Code Quality, Deduplication, Maintainers},
+series = {TechDebt '26}
+}`
 	},
 	{
 		name: 'Guidelines for Boosting Long-Lasting FLOSS Contributors',
