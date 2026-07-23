@@ -94,7 +94,7 @@
 {/if}
 
 {#if matrix}
-	<a href={`matrix:u/${matrix}`} class="social-link" aria-label="Reach me on Matrix">
+	<a href={`https://matrix.to/#/@${matrix}`} class="social-link" aria-label="Reach me on Matrix">
 		<svg
 			version="1.1"
 			xmlns="http://www.w3.org/2000/svg"
