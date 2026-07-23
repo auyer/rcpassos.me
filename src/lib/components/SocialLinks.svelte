@@ -3,13 +3,12 @@
 		linkedin,
 		github,
 		stackoverflow,
-		medium,
-		bluesky,
 		xmpp,
 		debian,
 		gitlab,
 		mastodon,
-        gpg
+		matrix,
+		gpg
 	} from '$lib/info';
 </script>
 
@@ -93,6 +92,32 @@
 	</a>
 {/if}
 
+{#if matrix}
+	<a href={`matrix:u/${matrix}`} class="social-link" aria-label="Reach me on Matrix">
+		<svg
+			version="1.1"
+			xmlns="http://www.w3.org/2000/svg"
+			x="0px"
+			y="0px"
+			viewBox="0 0 520 520"
+			xml:space="preserve"
+			class="social-icon"
+		>
+			<path d="M13.7,11.9v496.2h35.7V520H0V0h49.4v11.9H13.7z" />
+			<path
+				d="M166.3,169.2v25.1h0.7c6.7-9.6,14.8-17,24.2-22.2c9.4-5.3,20.3-7.9,32.5-7.9c11.7,0,22.4,2.3,32.1,6.8
+            c9.7,4.5,17,12.6,22.1,24c5.5-8.1,13-15.3,22.4-21.5c9.4-6.2,20.6-9.3,33.5-9.3c9.8,0,18.9,1.2,27.3,3.6c8.4,2.4,15.5,6.2,21.5,11.5
+            c6,5.3,10.6,12.1,14,20.6c3.3,8.5,5,18.7,5,30.7v124.1h-50.9V249.6c0-6.2-0.2-12.1-0.7-17.6c-0.5-5.5-1.8-10.3-3.9-14.3
+            c-2.2-4.1-5.3-7.3-9.5-9.7c-4.2-2.4-9.9-3.6-17-3.6c-7.2,0-13,1.4-17.4,4.1c-4.4,2.8-7.9,6.3-10.4,10.8c-2.5,4.4-4.2,9.4-5,15.1
+            c-0.8,5.6-1.3,11.3-1.3,17v103.3h-50.9v-104c0-5.5-0.1-10.9-0.4-16.3c-0.2-5.4-1.3-10.3-3.1-14.9c-1.8-4.5-4.8-8.2-9-10.9
+            c-4.2-2.7-10.3-4.1-18.5-4.1c-2.4,0-5.6,0.5-9.5,1.6c-3.9,1.1-7.8,3.1-11.5,6.1c-3.7,3-6.9,7.3-9.5,12.9c-2.6,5.6-3.9,13-3.9,22.1
+            v107.6h-50.9V169.2H166.3z"
+			/>
+			<path d="M506.3,508.1V11.9h-35.7V0H520v520h-49.4v-11.9H506.3z" />
+		</svg>
+	</a>
+{/if}
+
 {#if linkedin}
 	<a
 		href={`https://www.linkedin.com/in/${linkedin}`}
@@ -168,28 +193,6 @@
 	</a>
 {/if}
 
-{#if bluesky}
-	<a
-		href={`https://bsky.app/profile/${bluesky}`}
-		class="social-link"
-		aria-label="Check me on BlueSky"
-	>
-		<svg
-			class="social-icon"
-			style="height:1em;vertical-align:-.125em;transform-origin:center;overflow:visible"
-			viewBox="0 0 300 460"
-			aria-hidden="true"
-			role="img"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path
-				d="M123.121 33.6637C188.241 82.5526 258.281 181.681 284 234.873C309.719 181.681 379.759 82.5526 444.879 33.6637C491.866 -1.61183 568 -28.9064 568 57.9464C568 75.2916 558.055 203.659 552.222 224.501C531.947 296.954 458.067 315.434 392.347 304.249C507.222 323.8 536.444 388.56 473.333 453.32C353.473 576.312 301.061 422.461 287.631 383.039C285.169 375.812 284.017 372.431 284 375.306C283.983 372.431 282.831 375.812 280.369 383.039C266.939 422.461 214.527 576.312 94.6667 453.32C31.5556 388.56 60.7778 323.8 175.653 304.249C109.933 315.434 36.0535 296.954 15.7778 224.501C9.94525 203.659 0 75.2916 0 57.9464C0 -28.9064 76.1345 -1.61183 123.121 33.6637Z"
-				fill="currentColor"
-			/>
-		</svg>
-	</a>
-{/if}
-
 {#if stackoverflow}
 	<a
 		href={`https://stackoverflow.com/users/${stackoverflow}`}
@@ -217,16 +220,10 @@
 {/if}
 
 {#if gpg}
-	<a
-		href={`/files/${gpg}`}
-		download={gpg}
-		class="gpg-label"
-		aria-label="Download my GPG Key"
-	>
-	[GPG]
+	<a href={`/files/${gpg}`} download={gpg} class="gpg-label" aria-label="Download my GPG Key">
+		[GPG]
 	</a>
 {/if}
-
 
 <style>
 	.social-link {
@@ -260,6 +257,5 @@
 	.gpg-label {
 		font-weight: 600;
 		color: var(--pico-color);
-
 	}
 </style>

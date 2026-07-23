@@ -91,7 +91,15 @@
 
 	:global(.social-links) {
 		display: flex;
-		gap: 1.5rem;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	@media (min-width: 480px) {
+		:global(.social-links) {
+			gap: 1.5rem;
+		}
 	}
 
 	.bio-text {
