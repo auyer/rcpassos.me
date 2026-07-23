@@ -32,9 +32,7 @@
 				</span>
 			</div>
 			<p class="desc"><strong>Stay Curious</strong></p>
-			<div class="social-links">
-				<SocialLinks />
-			</div>
+			<SocialLinks />
 			<div class="bio-text">
 				{#each bio_splitted as item (item)}
 					<p>{item}</p>
@@ -87,19 +85,6 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		gap: 0.5rem;
-	}
-
-	:global(.social-links) {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 1rem;
-	}
-
-	@media (min-width: 480px) {
-		:global(.social-links) {
-			gap: 1.5rem;
-		}
 	}
 
 	.bio-text {

@@ -187,9 +187,7 @@
 			<a href="/" class="avatar-link">
 				<img src={avatar_avif} alt={name} class="avatar-image" />
 			</a>
-			<div class="social-links-container">
-				<SocialLinks />
-			</div>
+			<SocialLinks />
 			<p class="bio-text">{bio}</p>
 		</div>
 	</div>
@@ -349,12 +347,6 @@
 			width: 7rem;
 			height: 7rem;
 		}
-	}
-
-	:global(.post-author .social-links-container) {
-		display: flex;
-		justify-content: center;
-		gap: 1.5rem;
 	}
 
 	:global(.post-author .bio-text) {

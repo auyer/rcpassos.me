@@ -12,6 +12,7 @@
 	} from '$lib/info';
 </script>
 
+<div class="social-links">
 {#if xmpp}
 	<a href={`${xmpp}`} class="social-link" aria-label="Contact me on XMPP">
 		<svg
@@ -224,8 +225,22 @@
 		[GPG]
 	</a>
 {/if}
+</div>
 
 <style>
+	.social-links {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	@media (min-width: 480px) {
+		.social-links {
+			gap: 1.5rem;
+		}
+	}
+
 	.social-link {
 		display: inline-flex;
 		align-items: center;
@@ -239,23 +254,24 @@
 	}
 
 	.social-icon {
-		width: 1.5rem;
-		height: 1.5rem;
+		width: clamp(1.125rem, 4vw, 1.5rem);
+		height: clamp(1.125rem, 4vw, 1.5rem);
 		color: inherit;
 	}
 
 	.gitlab-icon {
-		width: 1.7rem;
-		height: 1.7rem;
+		width: clamp(1.3rem, 4.5vw, 1.7rem);
+		height: clamp(1.3rem, 4.5vw, 1.7rem);
 	}
 
 	.debian-icon {
-		width: 1.7rem;
-		height: 1.7rem;
+		width: clamp(1.3rem, 4.5vw, 1.7rem);
+		height: clamp(1.3rem, 4.5vw, 1.7rem);
 	}
 
 	.gpg-label {
 		font-weight: 600;
+		font-size: clamp(0.75rem, 3vw, 1rem);
 		color: var(--pico-color);
 	}
 </style>
