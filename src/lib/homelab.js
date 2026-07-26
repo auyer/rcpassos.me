@@ -52,9 +52,9 @@ export const lxcs = {
 		ansible_roles: ['grafana'],
 		details: 'Same compose as Grafana'
 	},
-	'Nginx Proxy Manager': {
+	'Traefik': {
 		layer: 2,
-		method: 'podman-compose'
+		method: 'docker-compose'
 	},
 	PostgreSQL: {
 		layer: 3,
@@ -224,13 +224,6 @@ export const hardware = {
 		os: 'Fedora',
 		layout: { column: 'first-col' }
 	},
-	tv: {
-		name: 'TV',
-		layer: 3,
-		kind: 'end-user',
-		os: null,
-		layout: { column: 'first-col' }
-	},
 	'ups-ts': {
 		name: 'TShara ups',
 		layer: 2,
@@ -266,7 +259,7 @@ export const network = {
 	'tplink-sg108e': {
 		layer: 1,
 		name: 'TPLink sg-108e Switch',
-		connections: ['usw-flex', 'tv', 'pi3b']
+		connections: ['usw-flex', 'pi3b']
 	},
 	'u7-pro': {
 		layer: 1,
@@ -285,7 +278,7 @@ export const logoMap = {
 	lxc: '/logos/Linux_Containers_logo.svg',
 	pihole: '/logos/pi-hole.svg',
 	nginx: '/logos/nginx.svg',
-	npm: '/logos/nginx-proxy-manager.svg',
+	traefik: '/logos/traefik.svg',
 	prometheus: '/logos/Prometheus_software_logo.svg',
 	grafana: '/logos/Grafana_logo.svg',
 	alloy: '/logos/grafana-alloy.svg',
@@ -310,7 +303,6 @@ const nodeTypeMap = {
 	'usw-flex': 'switch',
 	'tplink-sg108e': 'switch',
 	'u7-pro': 'wifi',
-	tv: 'server',
 	server: 'server',
 	pi5: 'raspberry',
 	pi3b: 'raspberry',
@@ -323,7 +315,7 @@ const nodeTypeMap = {
 	'PiHole 2': 'pihole',
 	PiHole: 'pihole',
 	'Nginx (Angie)': 'nginx',
-	'Nginx Proxy Manager': 'npm',
+	'Traefik': 'traefik',
 	Grafana: 'grafana',
 	'Grafana Loki': 'loki',
 	'Alloy (many)': 'alloy',
@@ -631,7 +623,6 @@ export function generateEdges(nodes) {
 		['net-ucg-max', 'hw-feebook'],
 		['net-ucg-max', 'hw-guestbook'],
 		['net-tplink-sg108e', 'hw-pi3b'],
-		['net-tplink-sg108e', 'hw-tv']
 	];
 	for (const [from, to] of hwConnections) {
 		if (nodeIds.has(from) && nodeIds.has(to)) edges.push({ from, to });
