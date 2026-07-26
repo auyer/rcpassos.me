@@ -202,11 +202,11 @@ export const hardware = {
 			}
 		}
 	},
-	darkforce: {
-		name: 'Darkforce',
+	sidbox: {
+		name: 'Sidbox (PC)',
 		kind: 'end-user',
 		layer: 3,
-		os: 'Arch Linux',
+        os: 'Debian',
 		boards: ['AMD Radeon RX 6800 XT'],
 		layout: { column: 'first-col' }
 	},
@@ -249,7 +249,7 @@ export const network = {
 	'ucg-max': {
 		layer: 1,
 		name: 'UCG 2.5GBE',
-		connections: ['isp', 'fbox', 'darkforce', 'pi5', 'usw-flex']
+		connections: ['isp', 'fbox', 'sidbox', 'pi5', 'usw-flex']
 	},
 	'usw-flex': {
 		layer: 1,
@@ -307,7 +307,7 @@ const nodeTypeMap = {
 	pi5: 'raspberry',
 	pi3b: 'raspberry',
 	fbox: 'proxmox',
-	darkforce: 'arch',
+	sidbox: 'debian',
 	feebook: 'debian',
 	guestbook: 'fedora',
 	HAOS: 'vm',
@@ -619,7 +619,7 @@ export function generateEdges(nodes) {
 		['net-ucg-max', 'hw-ups-ts'],
 		['net-ucg-max', 'hw-ups-rag'],
 		['net-ucg-max', 'hw-fbox'],
-		['net-ucg-max', 'hw-darkforce'],
+		['net-ucg-max', 'hw-sidbox'],
 		['net-ucg-max', 'hw-feebook'],
 		['net-ucg-max', 'hw-guestbook'],
 		['net-tplink-sg108e', 'hw-pi3b'],
