@@ -71,6 +71,12 @@
 				aria-current={isActive('/videos') ? 'page' : undefined}>Videos</a
 			>
 		</li>
+		<li>
+			<a href="https://lore.rcpassos.me" data-sveltekit-preload-data="hover">Lore</a>
+		</li>
+		<li>
+			<a href="https://uptime.rcpassos.me" data-sveltekit-preload-data="hover">Uptime</a>
+		</li>
 	</ul>
 
 	<!-- Trail: hamburger + theme toggle -->
