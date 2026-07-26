@@ -52,7 +52,7 @@ export const lxcs = {
 		ansible_roles: ['grafana'],
 		details: 'Same compose as Grafana'
 	},
-	'Traefik': {
+	Traefik: {
 		layer: 2,
 		method: 'docker-compose'
 	},
@@ -206,7 +206,7 @@ export const hardware = {
 		name: 'Sidbox (PC)',
 		kind: 'end-user',
 		layer: 3,
-        os: 'Debian',
+		os: 'Debian',
 		boards: ['AMD Radeon RX 6800 XT'],
 		layout: { column: 'first-col' }
 	},
@@ -315,7 +315,7 @@ const nodeTypeMap = {
 	'PiHole 2': 'pihole',
 	PiHole: 'pihole',
 	'Nginx (Angie)': 'nginx',
-	'Traefik': 'traefik',
+	Traefik: 'traefik',
 	Grafana: 'grafana',
 	'Grafana Loki': 'loki',
 	'Alloy (many)': 'alloy',
@@ -622,7 +622,7 @@ export function generateEdges(nodes) {
 		['net-ucg-max', 'hw-sidbox'],
 		['net-ucg-max', 'hw-feebook'],
 		['net-ucg-max', 'hw-guestbook'],
-		['net-tplink-sg108e', 'hw-pi3b'],
+		['net-tplink-sg108e', 'hw-pi3b']
 	];
 	for (const [from, to] of hwConnections) {
 		if (nodeIds.has(from) && nodeIds.has(to)) edges.push({ from, to });

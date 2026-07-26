@@ -138,7 +138,7 @@ diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
 @@ -519,6 +519,13 @@ static struct hid_battery *hidinput_find_battery(struct hid_device *dev,
  	return NULL;
  }
- 
+
 +static void hidinput_cleanup_battery(void *res)
 +{
 +	struct hid_battery *bat = res;
@@ -150,7 +150,7 @@ diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
  				  struct hid_field *field, bool is_percentage)
  {
 @@ -610,6 +617,12 @@ static int hidinput_setup_battery(struct hid_device *dev, unsigned report_type,
- 
+
  	power_supply_powers(bat->ps, &dev->dev);
  	list_add_tail(&bat->list, &dev->batteries);
 +
@@ -160,7 +160,7 @@ diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
 +		return error;
 +
  	return 0;
- 
+
  err_free_name:
 ```
 

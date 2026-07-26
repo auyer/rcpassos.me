@@ -55,7 +55,7 @@ export const coPapers = [
 		published: 'TechDebt 2026 (ICSE)',
 		year: 2026,
 		url: 'https://dl.acm.org/doi/10.1145/3794915.3795783',
-        bibtex: `@inproceedings{10.1145/3794915.3795783,
+		bibtex: `@inproceedings{10.1145/3794915.3795783,
 author = {Arcanjo, Luan and Tadokoro, David and Spessoto, Marcelo and Passos, Rafael and Meirelles, Paulo},
 title = {When Do You Repeat Yourself? Voices from the Trenches of Linux Kernel Maintainers on Code Duplication},
 year = {2026},
