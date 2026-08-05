@@ -240,13 +240,9 @@ export function computeLayout() {
 			height: n.height
 		}));
 
-		const absNodes = adjusted.map((n) =>
-			homelabNode(n.id, n.x, n.y, n.width, n.height)
-		);
+		const absNodes = adjusted.map((n) => homelabNode(n.id, n.x, n.y, n.width, n.height));
 
-		const groupEntities = absNodes.filter(
-			(n) => getEntity(n.id)?.group === true
-		);
+		const groupEntities = absNodes.filter((n) => getEntity(n.id)?.group === true);
 
 		const depths = {};
 		(function walk(id, d) {
@@ -254,18 +250,14 @@ export function computeLayout() {
 			for (const ch of getChildren(id)) walk(ch.id, d + 1);
 		})(serverId, 0);
 
-		groupEntities.sort(
-			(a, b) => (depths[b.id] || 0) - (depths[a.id] || 0)
-		);
+		groupEntities.sort((a, b) => (depths[b.id] || 0) - (depths[a.id] || 0));
 
 		const claimed = new Set();
 		const newGroups = [];
 
 		for (const gEntity of groupEntities) {
 			const gid = gEntity.id + '-group';
-			const descIds = new Set(
-				getAllDescendants(gEntity.id).map((d) => d.id)
-			);
+			const descIds = new Set(getAllDescendants(gEntity.id).map((d) => d.id));
 			descIds.add(gEntity.id);
 
 			const members = absNodes.filter((n) => {
@@ -304,14 +296,7 @@ export function computeLayout() {
 				claimed.add(m.id);
 			}
 
-			const gn = groupNode(
-				gid,
-				gx,
-				gy,
-				gw,
-				gh,
-				gEntity.data?.label || gEntity.id
-			);
+			const gn = groupNode(gid, gx, gy, gw, gh, gEntity.data?.label || gEntity.id);
 			newGroups.push(gn);
 		}
 
@@ -362,9 +347,7 @@ export function computeLayout() {
 		if (n.data?.entity?.runsOn) {
 			for (const pid of n.data.entity.runsOn) {
 				if (nodeIds.has(pid)) {
-					const exists = allEdges.find(
-						(e) => e.source === pid && e.target === n.id
-					);
+					const exists = allEdges.find((e) => e.source === pid && e.target === n.id);
 					if (!exists) {
 						allEdges.push({
 							id: `e-${pid}-${n.id}`,

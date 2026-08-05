@@ -8,12 +8,7 @@
 	<Handle type="target" position={Position.Top} class="dot-handle">
 		<span class="handle-dot"></span>
 	</Handle>
-	<img
-		src={data.logoUrl}
-		alt={data.label}
-		loading="lazy"
-		decoding="async"
-	/>
+	<img src={data.logoUrl} alt={data.label} loading="lazy" decoding="async" />
 	<span>{data.label}</span>
 	<Handle type="source" position={Position.Bottom} class="dot-handle">
 		<span class="handle-dot"></span>
@@ -36,7 +31,9 @@
 		padding: 8px 4px 4px 4px;
 		box-sizing: border-box;
 		overflow: hidden;
-		transition: border-color 0.2s, background 0.2s;
+		transition:
+			border-color 0.2s,
+			background 0.2s;
 		cursor: pointer;
 	}
 
@@ -47,8 +44,8 @@
 	}
 
 	:global(.dot-handle.svelte-flow__handle) {
-        height: 20px;
-        width: 20px;
+		height: 20px;
+		width: 20px;
 		background: transparent !important;
 		border: none !important;
 		padding: 0 !important;

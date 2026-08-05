@@ -1,12 +1,6 @@
 <script lang="js">
 	import '@xyflow/svelte/dist/style.css';
-	import {
-		SvelteFlow,
-		Controls,
-		MiniMap,
-		Background,
-		BackgroundVariant
-	} from '@xyflow/svelte';
+	import { SvelteFlow, Controls, MiniMap, Background, BackgroundVariant } from '@xyflow/svelte';
 	import HomelabNode from './HomelabNode.svelte';
 	import { computeLayout } from '$lib/homelab-layout.js';
 	import { getNodeDetails, getLogoPath, resolveLogo } from '$lib/homelab.js';
@@ -62,11 +56,7 @@
 {#if details}
 	<article class="detail-panel">
 		<header class="detail-header">
-			<img
-				src={getLogoPath(resolveLogo(details.type))}
-				alt={details.type}
-				class="detail-logo"
-			/>
+			<img src={getLogoPath(resolveLogo(details.type))} alt={details.type} class="detail-logo" />
 			<h3>{details.name}</h3>
 			<button
 				class="close-btn"

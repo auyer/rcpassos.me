@@ -2,42 +2,42 @@ export const entities = {
 	'isp-modem': {
 		entityType: 'infrastructure',
 		kind: 'modem',
-		name: 'ISP Modem',
+		name: 'ISP Modem'
 	},
 	'ucg-max': {
 		entityType: 'infrastructure',
 		kind: 'router',
 		name: 'UCG 2.5GBE',
-		logo: 'generic-router-flat-label-colour',
+		logo: 'generic-router-flat-label-colour'
 	},
 	'usw-flex': {
 		entityType: 'infrastructure',
 		kind: 'switch',
 		name: 'USW Flex 2.5GBE',
-		logo: 'generic-switch-flat-l2-label-v2-mono',
+		logo: 'generic-switch-flat-l2-label-v2-mono'
 	},
 	'tplink-sg108e': {
 		entityType: 'infrastructure',
 		kind: 'switch',
-		name: 'TPLink sg-108e Switch',
+		name: 'TPLink sg-108e Switch'
 	},
 	'u7-pro': {
 		entityType: 'infrastructure',
 		kind: 'wifi-ap',
-		name: 'U7 Pro WiFi AP',
+		name: 'U7 Pro WiFi AP'
 	},
 
 	'ups-ts': {
 		entityType: 'infrastructure',
 		kind: 'ups',
 		name: 'TShara ups',
-        logo: 'ups'
+		logo: 'ups'
 	},
 	'ups-rag': {
 		entityType: 'infrastructure',
 		kind: 'ups',
 		name: 'Ragtech ups',
-        logo: 'ups'
+		logo: 'ups'
 	},
 
 	fbox: {
@@ -48,20 +48,20 @@ export const entities = {
 		boards: [
 			'Marvell PCIe 4 port Sata Controller',
 			'Intel PCIe I226-V dual 2.5GBE',
-			'Sonoff Zigbee 3.0 USB Dongle Plus',
-		],
+			'Sonoff Zigbee 3.0 USB Dongle Plus'
+		]
 	},
 	pi5: {
 		entityType: 'infrastructure',
 		kind: 'raspberry-pi',
-		name: 'RaspberryPi 5',
+		name: 'RaspberryPi 5'
 	},
 	pi3b: {
 		entityType: 'infrastructure',
 		kind: 'raspberry-pi',
-		name: 'RaspberryPi 3b',
+		name: 'RaspberryPi 3b'
 	},
-    // client computers
+	// client computers
 	// sidbox: {
 	// 	entityType: 'infrastructure',
 	// 	kind: 'desktop',
@@ -86,21 +86,21 @@ export const entities = {
 		entityType: 'platform',
 		kind: 'hypervisor',
 		name: 'Proxmox VE 9',
-		runsOn: ['fbox'],
+		runsOn: ['fbox']
 	},
 	'qemu-fbox': {
 		entityType: 'platform',
 		kind: 'qemu',
 		name: 'Qemu',
 		runsOn: ['proxmox-fbox'],
-		group: true,
+		group: true
 	},
 	'lxc-fbox': {
 		entityType: 'platform',
 		kind: 'lxc-runtime',
 		name: 'LXC',
 		runsOn: ['proxmox-fbox'],
-		group: true,
+		group: true
 	},
 
 	truenas: {
@@ -116,51 +116,51 @@ export const entities = {
 				disks: [
 					'Seagate IronWolf 4TB CMR 5400rpm',
 					'Seagate IronWolf 4TB CMR 5400rpm',
-					'WD RED 4TB CMR 5400rpm',
-				],
-			},
-		],
+					'WD RED 4TB CMR 5400rpm'
+				]
+			}
+		]
 	},
 
-    // Proxmox VMs 
+	// Proxmox VMs
 	haos: {
 		entityType: 'service',
 		kind: 'vm',
 		name: 'Home Assistant OS',
 		runsOn: ['qemu-fbox'],
-		passthrough: ['Sonoff Zigbee 3.0 USB Dongle Plus'],
+		passthrough: ['Sonoff Zigbee 3.0 USB Dongle Plus']
 	},
 
 	'vm-k3': {
 		entityType: 'platform',
 		kind: 'vm',
 		name: 'K3S Node 3',
-        logo: "k3s",
-		runsOn: ['qemu-fbox'],
+		logo: 'k3s',
+		runsOn: ['qemu-fbox']
 	},
 	'vm-k2': {
 		entityType: 'platform',
 		kind: 'vm',
 		name: 'K3S Node 2',
-        logo: "k3s",
-		runsOn: ['qemu-fbox'],
+		logo: 'k3s',
+		runsOn: ['qemu-fbox']
 	},
 	'vm-k1': {
 		entityType: 'platform',
 		kind: 'vm',
 		name: 'K3S Node 1',
-        logo: "k3s",
-		runsOn: ['qemu-fbox'],
+		logo: 'k3s',
+		runsOn: ['qemu-fbox']
 	},
 
-    // Proxmox LXCs
+	// Proxmox LXCs
 	'lxc-pihole2': {
 		entityType: 'service',
 		kind: 'lxc',
 		name: 'PiHole 2',
 		runsOn: ['lxc-fbox'],
 		method: 'Debian Package',
-		logo: 'pi-hole',
+		logo: 'pi-hole'
 	},
 	'lxc-grafana': {
 		entityType: 'service',
@@ -171,7 +171,7 @@ export const entities = {
 		ansibleRoles: ['grafana'],
 		logo: 'grafana',
 		connections: ['lxc-loki', 'lxc-prometheus'],
-		nestedServices: ['grafana', 'prometheus', 'unpoller', 'matchtower'],
+		nestedServices: ['grafana', 'prometheus', 'unpoller', 'matchtower']
 	},
 	'lxc-loki': {
 		entityType: 'service',
@@ -181,7 +181,7 @@ export const entities = {
 		method: 'docker-compose',
 		ansibleRoles: ['loki'],
 		logo: 'grafana-loki',
-		connections: ['truenas-rustfs'],
+		connections: ['truenas-rustfs']
 	},
 	'lxc-prometheus': {
 		entityType: 'service',
@@ -191,7 +191,7 @@ export const entities = {
 		method: 'podman-compose',
 		ansibleRoles: ['grafana'],
 		logo: 'prometheus',
-		details: 'Same compose as Grafana',
+		details: 'Same compose as Grafana'
 	},
 	'lxc-traefik': {
 		entityType: 'service',
@@ -199,7 +199,7 @@ export const entities = {
 		name: 'Traefik',
 		runsOn: ['lxc-fbox'],
 		method: 'docker-compose',
-		logo: 'traefik',
+		logo: 'traefik'
 	},
 	'lxc-prosody': {
 		entityType: 'service',
@@ -209,49 +209,49 @@ export const entities = {
 		method: 'Debian Packages + podman-compose',
 		ansibleRoles: ['prosody', 'biboumi', 'alloy'],
 		logo: 'xmpp',
-		nestedServices: ['prosody', 'biboumi'],
+		nestedServices: ['prosody', 'biboumi']
 	},
 	'lxc-lore': {
 		entityType: 'service',
 		kind: 'lxc',
 		name: 'lore',
 		runsOn: ['lxc-fbox'],
-		method: 'podman-compose',
+		method: 'podman-compose'
 	},
 	'lxc-copyparty': {
 		entityType: 'service',
 		kind: 'lxc',
 		name: 'Copyparty',
 		runsOn: ['lxc-fbox'],
-		method: 'podman-compose',
+		method: 'podman-compose'
 	},
 	'lxc-immich': {
 		entityType: 'service',
 		kind: 'lxc',
 		name: 'Immich',
 		runsOn: ['lxc-fbox'],
-		method: 'podman-compose',
+		method: 'podman-compose'
 	},
 	'lxc-transmission': {
 		entityType: 'service',
 		kind: 'lxc',
 		name: 'Transmission',
 		runsOn: ['lxc-fbox'],
-		method: 'Alpine Package',
+		method: 'Alpine Package'
 	},
 	'lxc-jellyfin': {
 		entityType: 'service',
 		kind: 'lxc',
 		name: 'Jellyfin',
 		runsOn: ['lxc-fbox'],
-		method: 'Alpine Package',
+		method: 'Alpine Package'
 	},
 	'netbird-fbox': {
 		entityType: 'service',
 		kind: 'package',
 		name: 'NetBird Peer',
 		runsOn: ['lxc-fbox'],
-		method: 'Docker',
+		method: 'Docker'
 	},
 	'lxc-alloy': {
 		entityType: 'service',
@@ -262,41 +262,41 @@ export const entities = {
 		ansibleRoles: ['alloy', 'compose'],
 		logo: 'grafana-alloy',
 		details: 'Deployed to each critical component to collect logs and send to loki',
-		connections: ['lxc-loki'],
+		connections: ['lxc-loki']
 	},
 
-    // Truenas Containers
+	// Truenas Containers
 	'truenas-rustfs': {
 		entityType: 'service',
 		kind: 'container',
 		name: 'Rustfs',
 		runsOn: ['truenas'],
 		method: 'TrueNas Container',
-		logo: 'rustfs',
+		logo: 'rustfs'
 	},
 	'truenas-rsyncd': {
 		entityType: 'service',
 		kind: 'container',
 		name: 'rsyncd',
 		runsOn: ['truenas'],
-		method: 'TrueNas Container',
+		method: 'TrueNas Container'
 	},
 	'truenas-nextcloud': {
 		entityType: 'service',
 		kind: 'container',
 		name: 'Nextcloud',
 		runsOn: ['truenas'],
-		method: 'TrueNas Container',
+		method: 'TrueNas Container'
 	},
 	'truenas-distribution': {
 		entityType: 'service',
 		kind: 'container',
 		name: 'Distribution',
 		runsOn: ['truenas'],
-		method: 'TrueNas Container',
+		method: 'TrueNas Container'
 	},
 
-    // Pi5 services
+	// Pi5 services
 
 	'pkg-pi5-pihole': {
 		entityType: 'service',
@@ -304,7 +304,7 @@ export const entities = {
 		name: 'PiHole',
 		runsOn: ['pi5'],
 		method: 'Debian Package',
-		logo: 'pi-hole',
+		logo: 'pi-hole'
 	},
 	'pkg-pi5-nginx': {
 		entityType: 'service',
@@ -313,37 +313,37 @@ export const entities = {
 		runsOn: ['pi5'],
 		method: 'Debian Package',
 		ansibleRoles: ['angie'],
-		logo: 'nginx',
+		logo: 'nginx'
 	},
 	'pkg-pi5-nut': {
 		entityType: 'service',
 		kind: 'package',
 		name: 'NUT UPS Mon',
 		runsOn: ['pi5'],
-		method: 'Debian Package',
+		method: 'Debian Package'
 	},
 	'netbird-pi5': {
 		entityType: 'service',
 		kind: 'package',
 		name: 'NetBird Peer',
 		runsOn: ['pi5'],
-		method: 'Docker',
+		method: 'Docker'
 	},
 	'pi5-nebulasync': {
 		entityType: 'service',
 		kind: 'container',
 		name: 'Nebula-sync',
 		runsOn: ['pi5'],
-		method: 'podman-compose',
+		method: 'podman-compose'
 	},
 
-    // pi3 services
+	// pi3 services
 	'pkg-pi3b-squeezelite': {
 		entityType: 'service',
 		kind: 'package',
 		name: 'squeezelite',
 		runsOn: ['pi3b'],
-		method: 'Debian Package',
+		method: 'Debian Package'
 	},
 
 	'pi3b-wyoming': {
@@ -351,47 +351,47 @@ export const entities = {
 		kind: 'container',
 		name: 'wyoming-satellite',
 		runsOn: ['pi3b'],
-		method: 'podman-compose',
+		method: 'podman-compose'
 	},
 	'pi3b-openwakeword': {
 		entityType: 'service',
 		kind: 'container',
 		name: 'openWakeWord',
 		runsOn: ['pi3b'],
-		method: 'podman-compose',
+		method: 'podman-compose'
 	},
 
-    // k8s
+	// k8s
 	k3s: {
 		entityType: 'platform',
 		kind: 'orchestrator',
 		name: 'K3S Cluster',
 		group: true,
 		runsOn: ['vm-k1', 'vm-k2', 'vm-k3'],
-        logo: "k8s",
-		method: 'ansible',
+		logo: 'k8s',
+		method: 'ansible'
 	},
-	'languagetool': {
+	languagetool: {
 		entityType: 'service',
 		kind: 'pod',
 		name: 'LanguageTool',
 		runsOn: ['k3s'],
-		method: 'podman-compose',
+		method: 'podman-compose'
 	},
 	'pi5-uptimekuma': {
 		entityType: 'service',
 		kind: 'pod',
 		name: 'Uptime Kuma',
 		runsOn: ['k3s'],
-		method: 'helm',
+		method: 'helm'
 	},
-	'matrix': {
+	matrix: {
 		entityType: 'service',
 		kind: 'pod',
 		name: 'Matrix (Continuwuity)',
 		runsOn: ['k3s'],
-		method: 'helm',
-	},
+		method: 'helm'
+	}
 };
 
 export const networkEdges = [
@@ -406,7 +406,7 @@ export const networkEdges = [
 	['usw-flex', 'ups-rag'],
 	['usw-flex', 'tplink-sg108e'],
 	['usw-flex', 'u7-pro'],
-	['tplink-sg108e', 'pi3b'],
+	['tplink-sg108e', 'pi3b']
 ];
 
 const DEFAULT_LOGOS = {
@@ -441,7 +441,7 @@ const DEFAULT_LOGOS = {
 	prometheus: 'Prometheus_software_logo',
 	postgresql: 'Postgresql_elephant',
 	xmpp: 'XMPP_logo',
-	rustfs: 'rustfs',
+	rustfs: 'rustfs'
 };
 
 export function resolveLogo(kindOrEntity) {
@@ -514,12 +514,7 @@ export function getNodeDetails(nodeId) {
 	let osValue = entity.os || null;
 	if (!osValue && entity.entityType === 'infrastructure') {
 		const platformChildren = Object.entries(entities)
-			.filter(
-				([, e]) =>
-					e.runsOn &&
-					e.runsOn.includes(nodeId) &&
-					e.entityType === 'platform',
-			)
+			.filter(([, e]) => e.runsOn && e.runsOn.includes(nodeId) && e.entityType === 'platform')
 			.map(([, e]) => e.name);
 		if (platformChildren.length > 0) {
 			osValue = platformChildren.join(', ');
@@ -549,6 +544,6 @@ export function getNodeDetails(nodeId) {
 		hardware_passthrough: entity.passthrough || [],
 		storage_pools: entity.storagePools || [],
 		boards: entity.boards || [],
-		connections,
+		connections
 	};
 }
