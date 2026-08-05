@@ -1,139 +1,80 @@
 <script lang="js">
-	import { onMount } from 'svelte';
-	import { Svelvet, Node, Anchor } from 'svelvet';
+	import '@xyflow/svelte/dist/style.css';
 	import {
-		generateNodes,
-		generateEdges,
-		computeAnchorDirections,
-		getNodeDetails,
-		getLogo,
-		getLogoPath
-	} from '$lib/homelab.js';
+		SvelteFlow,
+		Controls,
+		MiniMap,
+		Background,
+		BackgroundVariant
+	} from '@xyflow/svelte';
+	import HomelabNode from './HomelabNode.svelte';
+	import { computeLayout } from '$lib/homelab-layout.js';
+	import { getNodeDetails, getLogoPath, resolveLogo } from '$lib/homelab.js';
 
-	const nodes = generateNodes();
-	const edges = generateEdges(nodes);
-	const { outgoingMap, incomingMap } = computeAnchorDirections(nodes, edges);
+	const nodeTypes = { homelab: HomelabNode };
 
-	const COLORS = {
-		dark: {
-			fill: '#1f2937',
-			fillSelected: '#1e1b4b',
-			stroke: '#374151',
-			strokeSelected: '#6366f1',
-			text: '#e5e7eb',
-			textSelected: '#818cf8'
-		},
-		light: {
-			fill: '#f9fafb',
-			fillSelected: '#eef2ff',
-			stroke: '#d1d5db',
-			strokeSelected: '#6366f1',
-			text: '#1f2937',
-			textSelected: '#4f46e5'
-		}
-	};
+	const { nodes: initialNodes, edges: initialEdges } = computeLayout();
 
-	let selectedNodeId = null;
-	let details = null;
-	let theme = 'dark';
-	let c = COLORS.dark;
+	let nodes = $state.raw(initialNodes);
+	let edges = $state.raw(initialEdges);
+	let selectedNodeId = $state(null);
+	let details = $state(null);
 
-	onMount(() => {
-		const t = document.documentElement.getAttribute('data-theme');
-		theme = t === 'light' ? 'light' : 'dark';
-		c = COLORS[theme];
+	function handleNodeClick({ node }) {
+		if (node.type !== 'homelab') return;
 
-		const observer = new MutationObserver(() => {
-			const t = document.documentElement.getAttribute('data-theme');
-			theme = t === 'light' ? 'light' : 'dark';
-			c = COLORS[theme];
+		const prev = selectedNodeId;
+		const next = prev === node.id ? null : node.id;
+
+		selectedNodeId = next;
+		details = next ? getNodeDetails(next) : null;
+
+		nodes = nodes.map((n) => {
+			if (n.id === prev) return { ...n, data: { ...n.data, selected: false } };
+			if (n.id === next) return { ...n, data: { ...n.data, selected: true } };
+			return n;
 		});
-		observer.observe(document.documentElement, {
-			attributes: true,
-			attributeFilter: ['data-theme']
-		});
-		return () => observer.disconnect();
-	});
-
-	function handleNodeClick(nodeId) {
-		if (selectedNodeId === nodeId) {
-			selectedNodeId = null;
-			details = null;
-		} else {
-			selectedNodeId = nodeId;
-			details = getNodeDetails(nodeId);
-		}
 	}
 </script>
 
-<div class="graph-wrapper">
-	<Svelvet {theme} minimap controls edgeStyle="step" zoom="0.7">
-		{#each nodes as node (node.id)}
-			<Node id={node.id} dimensions={node.dimensions} position={node.position}>
-				<svg
-					viewBox="0 0 {node.dimensions.width} {node.dimensions.height}"
-					width="100%"
-					height="100%"
-				>
-					<rect
-						width="100%"
-						height="100%"
-						rx="8"
-						ry="8"
-						fill={selectedNodeId === node.id ? c.fillSelected : c.fill}
-						stroke={selectedNodeId === node.id ? c.strokeSelected : c.stroke}
-						stroke-width={selectedNodeId === node.id ? 2 : 1}
-					/>
-					<image
-						href={getLogoPath(node.logo)}
-						x={(node.dimensions.width - 36) / 2}
-						y="6"
-						width="36"
-						height="28"
-						preserveAspectRatio="xMidYMid meet"
-						style="pointer-events: none"
-					/>
-					<text
-						x={node.dimensions.width / 2}
-						y={node.dimensions.height - 8}
-						text-anchor="middle"
-						font-size="12"
-						fill={selectedNodeId === node.id ? c.textSelected : c.text}
-						style="pointer-events: none">{node.label}</text
-					>
-					<rect
-						width="100%"
-						height="100%"
-						fill="transparent"
-						role="button"
-						tabindex="0"
-						on:click={() => handleNodeClick(node.id)}
-						on:keydown={(e) => e.key === 'Enter' && handleNodeClick(node.id)}
-					/>
-				</svg>
-				{#if incomingMap[node.id]}
-					{#each incomingMap[node.id] as inc (inc.direction + inc.from)}
-						<Anchor direction={inc.direction} invisible />
-					{/each}
-				{/if}
-				{#if outgoingMap[node.id]}
-					{#each outgoingMap[node.id] as out (out.direction + out.to)}
-						<Anchor direction={out.direction} invisible connections={[out.to]} />
-					{/each}
-				{/if}
-			</Node>
-		{/each}
-	</Svelvet>
+<div class="graph-wrapper" style="width:100%; height:100%; min-height:500px;">
+	<SvelteFlow
+		bind:nodes
+		bind:edges
+		{nodeTypes}
+		fitView
+		nodesDraggable
+		nodesConnectable={false}
+		elementsSelectable={false}
+		deleteKey={null}
+		disableKeyboardA11y
+		defaultEdgeOptions={{ type: 'smoothstep' }}
+		colorMode="system"
+		onnodeclick={handleNodeClick}
+		style="height: 100%;"
+	>
+		<Controls />
+		<Background variant={BackgroundVariant.Dots} gap={20} size={1} />
+		<MiniMap />
+	</SvelteFlow>
 </div>
 
 {#if details}
 	<article class="detail-panel">
 		<header class="detail-header">
-			<img src={getLogo(details.type)} alt={details.type} class="detail-logo" />
+			<img
+				src={getLogoPath(resolveLogo(details.type))}
+				alt={details.type}
+				class="detail-logo"
+			/>
 			<h3>{details.name}</h3>
 			<button
 				class="close-btn"
 				on:click={() => {
+					nodes = nodes.map((n) => ({
+						...n,
+						data: { ...n.data, selected: false }
+					}));
 					selectedNodeId = null;
 					details = null;
 				}}>x</button
@@ -192,7 +133,9 @@
 				<div class="detail-row detail-row--block">
 					<span class="detail-label">Storage Pools</span>
 					{#each details.storage_pools as pool (pool.scheme)}
-						<div class="detail-value"><strong>{pool.scheme}</strong>: {pool.disks.join(', ')}</div>
+						<div class="detail-value">
+							<strong>{pool.scheme}</strong>: {pool.disks.join(', ')}
+						</div>
 					{/each}
 				</div>
 			{/if}
@@ -207,22 +150,24 @@
 {/if}
 
 <style>
-	:global(.svelvet-node) {
-		box-shadow: none !important;
-		cursor: pointer;
-		padding: 0 !important;
+	:global(.svelte-flow__node-group) {
+		border-color: var(--terminal-border);
+		border-radius: 10px;
 	}
 
-	.graph-wrapper {
-		width: 100%;
-		height: 100%;
-		min-height: 400px;
-		overflow: hidden;
+	:global(.svelte-flow__node-group div) {
+		color: var(--terminal-fg2) !important;
+		font-size: 0.85rem !important;
+		padding: 4px 8px !important;
 	}
 
-	.graph-wrapper :global(.svelvet-wrapper) {
-		height: 100% !important;
-		width: 100% !important;
+	:global(.svelte-flow__edge-path) {
+		stroke: var(--pico-muted-color, #888) !important;
+		stroke-width: 1.5px;
+	}
+
+	:global(.svelte-flow__edge:hover .svelte-flow__edge-path) {
+		stroke: var(--pico-color, #aaa) !important;
 	}
 
 	.detail-panel {

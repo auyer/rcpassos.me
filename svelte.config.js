@@ -9,7 +9,8 @@ const config = {
 
 	preprocess: [
 		preprocess({
-			scss: true
+			scss: true,
+			typescript: false
 		}),
 		mdsvex(mdsvexConfig)
 	],
