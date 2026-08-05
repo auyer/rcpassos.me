@@ -6,7 +6,8 @@
 		generateEdges,
 		computeAnchorDirections,
 		getNodeDetails,
-		getLogo
+		getLogo,
+		getLogoPath
 	} from '$lib/homelab.js';
 
 	const nodes = generateNodes();
@@ -84,7 +85,7 @@
 						stroke-width={selectedNodeId === node.id ? 2 : 1}
 					/>
 					<image
-						href={node.logo}
+						href={getLogoPath(node.logo)}
 						x={(node.dimensions.width - 36) / 2}
 						y="6"
 						width="36"

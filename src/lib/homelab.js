@@ -1,337 +1,831 @@
-export const vms = {
-	HAOS: {
-		name: 'Home Assistant OS',
-		layer: 3,
-		hardware_passthrough: ['Sonoff Zigbee 3.0 USB Dongle Plus']
+export const entities = {
+	// ═══ NETWORK INFRASTRUCTURE ═══
+	'isp-modem': {
+		entityType: 'infrastructure',
+		kind: 'modem',
+		name: 'ISP Modem',
 	},
-	TRUENAS: {
-		name: 'TrueNas Scale 25',
-		layer: 3,
-		hardware_passthrough: ['Marvell PCIe 4 port Sata Controller'],
-		storage_pools: [
+	'ucg-max': {
+		entityType: 'infrastructure',
+		kind: 'router',
+		name: 'UCG 2.5GBE',
+		logo: 'generic-router-flat-label-colour',
+	},
+	'usw-flex': {
+		entityType: 'infrastructure',
+		kind: 'switch',
+		name: 'USW Flex 2.5GBE',
+		logo: 'generic-switch-flat-l2-label-v2-mono',
+	},
+	'tplink-sg108e': {
+		entityType: 'infrastructure',
+		kind: 'switch',
+		name: 'TPLink sg-108e Switch',
+	},
+	'u7-pro': {
+		entityType: 'infrastructure',
+		kind: 'wifi-ap',
+		name: 'U7 Pro WiFi AP',
+	},
+
+	// ═══ UPS INFRASTRUCTURE ═══
+	'ups-ts': {
+		entityType: 'infrastructure',
+		kind: 'ups',
+		name: 'TShara ups',
+	},
+	'ups-rag': {
+		entityType: 'infrastructure',
+		kind: 'ups',
+		name: 'Ragtech ups',
+	},
+
+	// ═══ COMPUTE HARDWARE ═══
+	fbox: {
+		entityType: 'infrastructure',
+		kind: 'server',
+		name: 'Freebox (HP Mini PC)',
+		logo: 'server',
+		boards: [
+			'Marvell PCIe 4 port Sata Controller',
+			'Intel PCIe I226-V dual 2.5GBE',
+			'Sonoff Zigbee 3.0 USB Dongle Plus',
+		],
+	},
+	pi5: {
+		entityType: 'infrastructure',
+		kind: 'raspberry-pi',
+		name: 'RaspberryPi 5',
+	},
+	pi3b: {
+		entityType: 'infrastructure',
+		kind: 'raspberry-pi',
+		name: 'RaspberryPi 3b',
+	},
+	sidbox: {
+		entityType: 'infrastructure',
+		kind: 'desktop',
+		name: 'Sidbox (PC)',
+		logo: 'debian',
+		boards: ['AMD Radeon RX 6800 XT'],
+	},
+	feebook: {
+		entityType: 'infrastructure',
+		kind: 'laptop',
+		name: 'Freebook',
+		logo: 'debian',
+	},
+	guestbook: {
+		entityType: 'infrastructure',
+		kind: 'laptop',
+		name: 'Guestbook',
+		logo: 'fedora',
+	},
+
+	// ═══ PLATFORMS ═══
+	'proxmox-fbox': {
+		entityType: 'platform',
+		kind: 'hypervisor',
+		name: 'Proxmox VE 9',
+		runsOn: ['fbox'],
+	},
+	'qemu-fbox': {
+		entityType: 'platform',
+		kind: 'qemu',
+		name: 'Qemu',
+		runsOn: ['proxmox-fbox'],
+	},
+	'lxc-fbox': {
+		entityType: 'platform',
+		kind: 'lxc-runtime',
+		name: 'LXC',
+		runsOn: ['proxmox-fbox'],
+	},
+	'rpi-os-pi5': {
+		entityType: 'platform',
+		kind: 'os',
+		name: 'Raspberry Pi OS 13',
+		runsOn: ['pi5'],
+	},
+	'rpi-os-pi3b': {
+		entityType: 'platform',
+		kind: 'os',
+		name: 'Raspberry Pi OS 13',
+		runsOn: ['pi3b'],
+	},
+
+	// ═══ SERVICES — VMs on proxmox-fbox ═══
+	haos: {
+		entityType: 'service',
+		kind: 'vm',
+		name: 'Home Assistant OS',
+		runsOn: ['qemu-fbox'],
+		passthrough: ['Sonoff Zigbee 3.0 USB Dongle Plus'],
+	},
+	truenas: {
+		entityType: 'service',
+		kind: 'vm',
+		name: 'TrueNas Scale',
+		runsOn: ['qemu-fbox'],
+		passthrough: ['Marvell PCIe 4 port Sata Controller'],
+		storagePools: [
 			{
 				scheme: 'Raid Z1',
 				disks: [
 					'Seagate IronWolf 4TB CMR 5400rpm',
 					'Seagate IronWolf 4TB CMR 5400rpm',
-					'WD RED 4TB CMR 5400rpm'
-				]
-			}
-		]
-	}
-};
-
-export const lxcs = {
-	'PiHole 2': {
-		layer: 2,
-		method: 'Debian Package'
-	},
-	Grafana: {
-		layer: 3,
-		method: 'podman-compose',
-		ansible_roles: ['grafana'],
-		connections: ['Grafana Loki', 'Prometheus'],
-		services: ['grafana', 'prometheus', 'unpoller', 'matchtower']
-	},
-	'Grafana Loki': {
-		layer: 3,
-		ansible_roles: ['loki'],
-		method: 'docker-compose',
-		connections: ['Rustfs']
-	},
-	'Alloy (many)': {
-		layer: 3,
-		method: 'Ansible',
-		ansible_roles: ['alloy', 'compose'],
-		connections: ['Grafana Loki'],
-		details: 'Deployed to each critical component to collect logs and send to loki'
-	},
-	Prometheus: {
-		layer: 3,
-		method: 'podman-compose',
-		ansible_roles: ['grafana'],
-		details: 'Same compose as Grafana'
-	},
-	Traefik: {
-		layer: 2,
-		method: 'docker-compose'
-	},
-	PostgreSQL: {
-		layer: 3,
-		method: 'Debian Package'
-	},
-	Prosody: {
-		layer: 3,
-		method: 'podman-compose + Debian Package',
-		services: ['prosody', 'biboumi', 'slidge'],
-		ansible_roles: ['prosody', 'biboumi', 'slidge', 'alloy']
-	},
-	// KV: {
-	// 	layer: 3,
-	// 	method: 'Binary install + Systemd'
-	// },
-	lore: {
-		layer: 3,
-		method: 'podman-compose'
-	},
-	Coturn: {
-		layer: 3,
-		method: 'Debian Package',
-		ansible_roles: ['coturn', 'alloy']
-	},
-	Excalidraw: {
-		layer: 3,
-		method: 'podman-compose'
-	},
-	Copyparty: {
-		layer: 3,
-		method: 'podman-compose'
-	},
-	Immich: {
-		layer: 3,
-		method: 'podman-compose'
-	},
-	LanguageTool: {
-		layer: 3,
-		method: 'podman-compose'
-	},
-	Transmission: {
-		layer: 3,
-		method: 'Alpine Package'
-	},
-	Jellyfin: {
-		layer: 3,
-		method: 'Alpine Package'
-	},
-	Rustfs: {
-		layer: 3,
-		method: 'TrueNas Container'
-	}
-};
-
-export const hardware = {
-	pi5: {
-		name: 'RaspberryPi 5',
-		os: 'Raspberry Pi OS 13',
-		layout: {
-			column: 'infra',
-			child_rows: [
-				{ category: 'packages', y_offset: 150, item_width: 130, item_gap: 20 },
-				{ category: 'containers', y_offset: 230, item_width: 130, item_gap: 20 }
-			]
-		},
-		services: {
-			lxc: null,
-			vms: null,
-			packages: {
-				PiHole: {
-					layer: 2,
-					method: 'Debian Package'
-				},
-				'Nginx (Angie)': {
-					layer: 2,
-					method: 'Debian Package',
-					ansible_roles: ['angie']
-				},
-				'NUT UPS Mon': {
-					layer: 1,
-					method: 'Debian Package'
-				}
+					'WD RED 4TB CMR 5400rpm',
+				],
 			},
-			containers: {
-				'Uptime Kuma': {
-					layer: 3,
-					method: 'podman-compose'
-				},
-				'Nebula-sync': {
-					layer: 3,
-					method: 'podman-compose'
-				}
-			}
-		}
-	},
-	fbox: {
-		name: 'Freebox (HP Mini PC)',
-		os: 'Proxmox VE 9',
-		layout: {
-			column: 'infra',
-			child_rows: [
-				{ category: 'vms', y_offset: 150, item_width: 130, item_gap: 30 },
-				{ category: 'lxc', y_offset: 320, item_width: 120, item_gap: 30, max_per_row: 7 }
-			]
-		},
-		boards: [
-			'Marvell PCIe 4 port Sata Controller',
-			'Intel PCIe I226-V dual 2.5GBE',
-			'Sonoff Zigbee 3.0 USB Dongle Plus'
 		],
-		services: {
-			lxc: lxcs,
-			vms: vms,
-			packages: null,
-			containers: null
-		}
 	},
-	pi3b: {
-		name: 'RaspberryPi 3b',
-		os: 'Raspberry Pi OS 13',
-		layout: {
-			column: 'infra',
-			child_rows: [
-				{ categories: ['packages', 'containers'], y_offset: 150, item_width: 130, item_gap: 20 }
-			]
-		},
-		services: {
-			lxc: null,
-			vms: null,
-			packages: {
-				squeezelite: {
+
+	// ═══ SERVICES — VMs: K3S nodes on qemu-fbox ═══
+	'vm-k1': {
+		entityType: 'service',
+		kind: 'vm',
+		name: 'K3S Node 1',
+		runsOn: ['qemu-fbox'],
+	},
+	'vm-k2': {
+		entityType: 'service',
+		kind: 'vm',
+		name: 'K3S Node 2',
+		runsOn: ['qemu-fbox'],
+	},
+	'vm-k3': {
+		entityType: 'service',
+		kind: 'vm',
+		name: 'K3S Node 3',
+		runsOn: ['qemu-fbox'],
+	},
+
+	// ═══ SERVICES — LXCs on lxc-fbox ═══
+	'lxc-pihole2': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'PiHole 2',
+		runsOn: ['lxc-fbox'],
+		method: 'Debian Package',
+		logo: 'pi-hole',
+	},
+	'lxc-grafana': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Grafana',
+		runsOn: ['lxc-fbox'],
+		method: 'podman-compose',
+		ansibleRoles: ['grafana'],
+		logo: 'grafana',
+		connections: ['lxc-loki', 'lxc-prometheus'],
+		nestedServices: ['grafana', 'prometheus', 'unpoller', 'matchtower'],
+	},
+	'lxc-loki': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Grafana Loki',
+		runsOn: ['lxc-fbox'],
+		method: 'docker-compose',
+		ansibleRoles: ['loki'],
+		logo: 'grafana-loki',
+		connections: ['ct-truenas-rustfs'],
+	},
+	'lxc-prometheus': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Prometheus',
+		runsOn: ['lxc-fbox'],
+		method: 'podman-compose',
+		ansibleRoles: ['grafana'],
+		logo: 'prometheus',
+		details: 'Same compose as Grafana',
+	},
+	'lxc-traefik': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Traefik',
+		runsOn: ['lxc-fbox'],
+		method: 'docker-compose',
+		logo: 'traefik',
+	},
+	'lxc-postgresql': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'PostgreSQL',
+		runsOn: ['lxc-fbox'],
+		method: 'Debian Package',
+		logo: 'postgresql',
+	},
+	'lxc-prosody': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Prosody',
+		runsOn: ['lxc-fbox'],
+		method: 'podman-compose + Debian Package',
+		ansibleRoles: ['prosody', 'biboumi', 'slidge', 'alloy'],
+		logo: 'xmpp',
+		nestedServices: ['prosody', 'biboumi', 'slidge'],
+	},
+	'lxc-coturn': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Coturn',
+		runsOn: ['lxc-fbox'],
+		method: 'Debian Package',
+		ansibleRoles: ['coturn', 'alloy'],
+	},
+	'lxc-lore': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'lore',
+		runsOn: ['lxc-fbox'],
+		method: 'podman-compose',
+	},
+	'lxc-excalidraw': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Excalidraw',
+		runsOn: ['lxc-fbox'],
+		method: 'podman-compose',
+	},
+	'lxc-copyparty': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Copyparty',
+		runsOn: ['lxc-fbox'],
+		method: 'podman-compose',
+	},
+	'lxc-immich': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Immich',
+		runsOn: ['lxc-fbox'],
+		method: 'podman-compose',
+	},
+	'lxc-languagetool': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'LanguageTool',
+		runsOn: ['lxc-fbox'],
+		method: 'podman-compose',
+	},
+	'lxc-transmission': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Transmission',
+		runsOn: ['lxc-fbox'],
+		method: 'Alpine Package',
+	},
+	'lxc-jellyfin': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Jellyfin',
+		runsOn: ['lxc-fbox'],
+		method: 'Alpine Package',
+	},
+    'netbird-fbox': {
+		entityType: 'service',
+		kind: 'package',
+		name: 'NetBird Peer',
+		runsOn: ['lxc-fbox'],
+		method: 'Docker',
+	},
+	'ct-truenas-rustfs': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'Rustfs',
+		runsOn: ['truenas'],
+		method: 'TrueNas Container',
+		logo: 'rustfs',
+	},
+	'ct-truenas-rsyncd': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'rsyncd',
+		runsOn: ['truenas'],
+		method: 'TrueNas Container',
+	},
+	'ct-truenas-nextcloud': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'Nextcloud',
+		runsOn: ['truenas'],
+		method: 'TrueNas Container',
+	},
+	'ct-truenas-distribution': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'Distribution',
+		runsOn: ['truenas'],
+		method: 'TrueNas Container',
+	},
+    'lxc-alloy': {
+		entityType: 'service',
+		kind: 'lxc',
+		name: 'Alloy (sidecar)',
+		runsOn: ['lxc-fbox'],
+		method: 'Ansible',
+		ansibleRoles: ['alloy', 'compose'],
+		logo: 'grafana-alloy',
+		details: 'Deployed to each critical component to collect logs and send to loki',
+		connections: ['lxc-loki'],
+	},
+
+	// ═══ SERVICES — Packages on pi5 ═══
+	'pkg-pi5-pihole': {
+		entityType: 'service',
+		kind: 'package',
+		name: 'PiHole',
+		runsOn: ['rpi-os-pi5'],
+		method: 'Debian Package',
+		logo: 'pi-hole',
+	},
+	'pkg-pi5-nginx': {
+		entityType: 'service',
+		kind: 'package',
+		name: 'Nginx (Angie)',
+		runsOn: ['rpi-os-pi5'],
+		method: 'Debian Package',
+		ansibleRoles: ['angie'],
+		logo: 'nginx',
+	},
+	'pkg-pi5-nut': {
+		entityType: 'service',
+		kind: 'package',
+		name: 'NUT UPS Mon',
+		runsOn: ['rpi-os-pi5'],
+		method: 'Debian Package',
+	},
+	'netbird-pi5': {
+		entityType: 'service',
+		kind: 'package',
+		name: 'NetBird Peer',
+		runsOn: ['rpi-os-pi5'],
+		method: 'Docker',
+	},
+
+	// ═══ SERVICES — Containers on pi5 ═══
+	'ct-pi5-uptimekuma': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'Uptime Kuma',
+		runsOn: ['rpi-os-pi5'],
+		method: 'podman-compose',
+	},
+	'ct-pi5-nebulasync': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'Nebula-sync',
+		runsOn: ['rpi-os-pi5'],
+		method: 'podman-compose',
+	},
+
+	// ═══ SERVICES — Packages on pi3b ═══
+	'pkg-pi3b-squeezelite': {
+		entityType: 'service',
+		kind: 'package',
+		name: 'squeezelite',
+		runsOn: ['rpi-os-pi3b'],
+		method: 'Debian Package',
+	},
+
+	// ═══ SERVICES — Containers on pi3b ═══
+	'ct-pi3b-wyoming': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'wyoming-satellite',
+		runsOn: ['rpi-os-pi3b'],
+		method: 'podman-compose',
+	},
+	'ct-pi3b-openwakeword': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'openWakeWord',
+		runsOn: ['rpi-os-pi3b'],
+		method: 'podman-compose',
+	},
+};
+
+// ═══════════════════════════════════════════════════════
+// Network topology edges
+// ═══════════════════════════════════════════════════════
+
+export const networkEdges = [
+	['isp-modem', 'ucg-max'],
+	['ucg-max', 'usw-flex'],
+	['ucg-max', 'fbox'],
+	['ucg-max', 'pi5'],
+	['ucg-max', 'sidbox'],
+	['ucg-max', 'feebook'],
+	['ucg-max', 'guestbook'],
+	['ucg-max', 'ups-ts'],
+	['ucg-max', 'ups-rag'],
+	['usw-flex', 'tplink-sg108e'],
+	['usw-flex', 'u7-pro'],
+	['tplink-sg108e', 'pi3b'],
+];
+
+// ═══════════════════════════════════════════════════════
+// Logo resolution — kind or specific name → logo stem
+// ═══════════════════════════════════════════════════════
+
+const DEFAULT_LOGOS = {
+	hypervisor: 'proxmox',
+	vm: 'Qemu_logo',
+	lxc: 'Linux_Containers_logo',
+	'lxc-runtime': 'Linux_Containers_logo',
+	container: 'web-server-icon',
+	package: 'web-server-icon',
+	qemu: 'Qemu_logo',
+	router: 'generic-router-flat-label-colour',
+	switch: 'generic-switch-flat-l2-label-v2-mono',
+	'wifi-ap': 'generic-switch-flat-l2-label-v2-mono',
+	modem: 'generic-switch-flat-l2-label-v2-mono',
+	server: 'web-server-icon',
+	'raspberry-pi': 'raspberry-pi',
+	desktop: 'Openlogo-debianV2',
+	laptop: 'Openlogo-debianV2',
+	ups: 'web-server-icon',
+	os: 'web-server-icon',
+	orchestrator: 'web-server-icon',
+
+	debian: 'Openlogo-debianV2',
+	fedora: 'Fedora_icon',
+	proxmox: 'proxmox',
+	'pi-hole': 'pi-hole',
+	nginx: 'nginx',
+	traefik: 'traefik',
+	grafana: 'Grafana_logo',
+	'grafana-loki': 'grafana-loki',
+	'grafana-alloy': 'grafana-alloy',
+	prometheus: 'Prometheus_software_logo',
+	postgresql: 'Postgresql_elephant',
+	xmpp: 'XMPP_logo',
+	rustfs: 'rustfs',
+};
+
+export function resolveLogo(kindOrEntity) {
+	if (typeof kindOrEntity === 'string') {
+		return DEFAULT_LOGOS[kindOrEntity] || 'web-server-icon';
+	}
+	return kindOrEntity.logo || DEFAULT_LOGOS[kindOrEntity.kind] || 'web-server-icon';
+}
+
+export function getLogoPath(logo) {
+	return `/logos/${logo}.svg`;
+}
+
+export function getLogo(kindOrName) {
+	return getLogoPath(resolveLogo(kindOrName));
+}
+
+// ═══════════════════════════════════════════════════════
+// Node generation — DAG walk + automatic layout
+// ═══════════════════════════════════════════════════════
+
+function getChildren(parentId) {
+	return Object.entries(entities)
+		.filter(([, e]) => e.runsOn && e.runsOn.includes(parentId))
+		.map(([id, e]) => ({ id, ...e }));
+}
+
+function rowSpan(n, w, gap) {
+	return n * w + (n - 1) * gap;
+}
+
+function centerRow(n, w, gap, centerX) {
+	const total = rowSpan(n, w, gap);
+	const start = centerX - total / 2;
+	return Array.from({ length: n }, (_, i) => start + i * (w + gap));
+}
+
+export function generateNodes() {
+	const nodes = [];
+	const Y_NET = 50;
+	const Y_UPS = 120;
+	const Y_HW = 200;
+	const COL_PAD = 80;
+	const HW_WIDTH = 180;
+	const ITEM_WIDTH = 120;
+	const ITEM_GAP = 20;
+	const MAX_PER_ROW = 7;
+
+	const networkKinds = new Set(['modem', 'router', 'switch', 'wifi-ap']);
+	const networkIds = Object.entries(entities)
+		.filter(([, e]) => networkKinds.has(e.kind) && !e.runsOn)
+		.map(([id]) => id);
+
+	const adj = {};
+	const indeg = {};
+	for (const id of networkIds) {
+		adj[id] = [];
+		indeg[id] = 0;
+	}
+	for (const [from, to] of networkEdges) {
+		if (adj[from] && adj[to]) {
+			adj[from].push(to);
+			indeg[to]++;
+		}
+	}
+
+	const queue = networkIds.filter((id) => indeg[id] === 0);
+	const netOrder = [];
+	while (queue.length) {
+		const cur = queue.shift();
+		netOrder.push(cur);
+		for (const nb of adj[cur]) {
+			indeg[nb]--;
+			if (indeg[nb] === 0) queue.push(nb);
+		}
+	}
+
+	let nx = 50;
+	for (let ni = 0; ni < netOrder.length; ni++) {
+		const id = netOrder[ni];
+		const entity = entities[id];
+		nodes.push({
+			id,
+			label: entity.name || id,
+			type: entity.logo || entity.kind,
+			logo: resolveLogo(entity),
+			position: { x: nx, y: Y_NET + ni * 10 },
+			dimensions: { width: 140, height: 60 },
+			layer: 1,
+			parent: null,
+			data: entity,
+			category: entity.entityType,
+		});
+		nx += 150;
+	}
+
+	const rootEntries = Object.entries(entities).filter(([, e]) => !e.runsOn);
+	const upsAndEndUserKinds = new Set(['ups', 'desktop', 'laptop']);
+	const serverKinds = new Set(['server', 'raspberry-pi']);
+
+	const leftColIds = [];
+	const serverIds = [];
+
+	for (const [id, e] of rootEntries) {
+		if (networkIds.includes(id)) continue;
+		if (upsAndEndUserKinds.has(e.kind)) {
+			leftColIds.push(id);
+		} else if (serverKinds.has(e.kind)) {
+			serverIds.push(id);
+		}
+	}
+
+	function getSubtreeWidth(entityId) {
+		const children = getChildren(entityId);
+		if (children.length === 0) return HW_WIDTH;
+
+		const platformChildren = children.filter((c) => c.entityType === 'platform');
+		const serviceChildren = children.filter((c) => c.entityType === 'service');
+
+		let maxW = HW_WIDTH;
+
+		for (const kind of ['vm', 'lxc', 'package', 'container']) {
+			const group = serviceChildren.filter((s) => s.kind === kind);
+			if (group.length > 0) {
+				const itemW = kind === 'vm' ? 130 : ITEM_WIDTH;
+				const itemGap = kind === 'vm' ? 30 : ITEM_GAP;
+				const perRow = kind === 'lxc' ? MAX_PER_ROW : group.length;
+				const w = rowSpan(Math.min(group.length, perRow), itemW, itemGap);
+				if (w > maxW) maxW = w;
+			}
+		}
+
+		for (const svc of serviceChildren) {
+			const subW = getSubtreeWidth(svc.id);
+			if (subW > maxW) maxW = subW;
+		}
+
+		if (platformChildren.length === 0) return maxW;
+		if (platformChildren.length === 1) {
+			return Math.max(maxW, getSubtreeWidth(platformChildren[0].id));
+		}
+
+		const totalPlatformW =
+			platformChildren.reduce((sum, p) => sum + getSubtreeWidth(p.id), 0) +
+			(platformChildren.length - 1) * COL_PAD;
+		return Math.max(maxW, totalPlatformW);
+	}
+
+	function layoutChildren(parentId, colCenterX, startY, colWidth) {
+		const children = getChildren(parentId);
+		if (children.length === 0) return startY;
+
+		const platformChildren = children.filter((c) => c.entityType === 'platform');
+		const serviceChildren = children.filter((c) => c.entityType === 'service');
+
+		let currentY = startY;
+
+		if (platformChildren.length === 1) {
+			const platform = platformChildren[0];
+			nodes.push({
+				id: platform.id,
+				label: platform.name,
+				type: platform.logo || platform.kind,
+				logo: resolveLogo(platform),
+				position: { x: colCenterX - HW_WIDTH / 2, y: currentY },
+				dimensions: { width: HW_WIDTH, height: 60 },
+				layer: 3,
+				parent: parentId,
+				data: platform,
+				category: platform.entityType,
+			});
+			currentY += 70;
+			currentY = layoutChildren(platform.id, colCenterX, currentY, colWidth);
+		} else if (platformChildren.length > 1) {
+			const subWidths = platformChildren.map((p) => getSubtreeWidth(p.id));
+			const totalW =
+				subWidths.reduce((a, b) => a + b, 0) +
+				(platformChildren.length - 1) * COL_PAD;
+			let subStartX = colCenterX - totalW / 2;
+			let maxEndY = currentY;
+
+			for (let i = 0; i < platformChildren.length; i++) {
+				const platform = platformChildren[i];
+				const subW = subWidths[i];
+				const subCenterX = subStartX + subW / 2;
+
+				nodes.push({
+					id: platform.id,
+					label: platform.name,
+					type: platform.logo || platform.kind,
+					logo: resolveLogo(platform),
+					position: { x: subCenterX - HW_WIDTH / 2, y: currentY },
+					dimensions: { width: HW_WIDTH, height: 60 },
 					layer: 3,
-					method: 'Debian Package'
-				}
-			},
-			containers: {
-				'wyoming-satellite': {
-					layer: 3,
-					method: 'podman-compose'
-				},
-				openWakeWord: {
-					layer: 3,
-					method: 'podman-compose'
+					parent: parentId,
+					data: platform,
+					category: platform.entityType,
+				});
+
+				const endY = layoutChildren(platform.id, subCenterX, currentY + 70, subW);
+				if (endY > maxEndY) maxEndY = endY;
+
+				subStartX += subW + COL_PAD;
+			}
+
+			currentY = maxEndY;
+		}
+
+		if (serviceChildren.length > 0) {
+			const groups = {};
+			for (const s of serviceChildren) {
+				(groups[s.kind] || (groups[s.kind] = [])).push(s);
+			}
+			for (const kind of ['vm', 'lxc', 'package', 'container']) {
+				const group = groups[kind];
+				if (!group || group.length === 0) continue;
+
+				const itemW = kind === 'vm' ? 130 : ITEM_WIDTH;
+				const itemGap = kind === 'vm' ? 30 : ITEM_GAP;
+				const perRow = kind === 'lxc' ? MAX_PER_ROW : group.length;
+				const nRows = Math.ceil(group.length / perRow);
+
+				for (let r = 0; r < nRows; r++) {
+					const rowItems = group.slice(r * perRow, (r + 1) * perRow);
+					const xs = centerRow(rowItems.length, itemW, itemGap, colCenterX);
+					for (let i = 0; i < rowItems.length; i++) {
+						const item = rowItems[i];
+						const h = kind === 'vm' ? 55 : 50;
+						nodes.push({
+							id: item.id,
+							label: item.name,
+							type: item.logo || item.kind,
+							logo: resolveLogo(item),
+							position: { x: xs[i], y: currentY },
+							dimensions: { width: itemW, height: h },
+							layer: 4,
+							parent: parentId,
+							data: item,
+							category: item.entityType,
+						});
+					}
+					currentY += 70;
 				}
 			}
 		}
-	},
-	sidbox: {
-		name: 'Sidbox (PC)',
-		kind: 'end-user',
-		layer: 3,
-		os: 'Debian',
-		boards: ['AMD Radeon RX 6800 XT'],
-		layout: { column: 'first-col' }
-	},
-	feebook: {
-		name: 'Freebook',
-		kind: 'end-user',
-		layer: 3,
-		os: 'Debian',
-		layout: { column: 'first-col' }
-	},
-	guestbook: {
-		name: 'Guestbook',
-		kind: 'end-user',
-		layer: 3,
-		os: 'Fedora',
-		layout: { column: 'first-col' }
-	},
-	'ups-ts': {
-		name: 'TShara ups',
-		layer: 2,
-		kind: 'ups',
-		os: null,
-		layout: { column: 'first-col' }
-	},
-	'ups-rag': {
-		name: 'Ragtech ups',
-		layer: 2,
-		kind: 'ups',
-		os: null,
-		layout: { column: 'first-col' }
+
+		for (const service of serviceChildren) {
+			const subChildren = getChildren(service.id);
+			if (subChildren.length > 0) {
+				currentY = layoutChildren(service.id, colCenterX, currentY, colWidth);
+			}
+		}
+
+		return currentY;
 	}
-};
 
-export const network = {
-	'isp-modem': {
-		layer: 1,
-		name: 'ISP Modem',
-		connections: ['isp', 'ucg-max']
-	},
-	'ucg-max': {
-		layer: 1,
-		name: 'UCG 2.5GBE',
-		connections: ['isp', 'fbox', 'sidbox', 'pi5', 'usw-flex']
-	},
-	'usw-flex': {
-		layer: 1,
-		name: 'USW Flex 2.5GBE',
-		connections: ['ucg-max', 'tplink-sg108e', 'u7-pro']
-	},
-	'tplink-sg108e': {
-		layer: 1,
-		name: 'TPLink sg-108e Switch',
-		connections: ['usw-flex', 'pi3b']
-	},
-	'u7-pro': {
-		layer: 1,
-		name: 'U7 Pro WiFi AP',
-		connections: ['usw-flex']
+	let leftColX = 50;
+	let leftStackY = Y_UPS;
+	let leftColWidth = HW_WIDTH;
+
+	for (const id of leftColIds) {
+		const entity = entities[id];
+		const hasChildren = getChildren(id).length > 0;
+		const hwHeight = hasChildren ? 70 : 60;
+
+		nodes.push({
+			id,
+			label: entity.name || id,
+			type: entity.logo || entity.kind,
+			logo: resolveLogo(entity),
+			position: { x: leftColX + (leftColWidth - HW_WIDTH) / 2, y: leftStackY },
+			dimensions: { width: HW_WIDTH, height: hwHeight },
+			layer: 2,
+			parent: null,
+			data: entity,
+			category: entity.entityType,
+		});
+
+		leftStackY += hwHeight + 10;
+
+		if (hasChildren) {
+			leftStackY = layoutChildren(id, leftColX + leftColWidth / 2, leftStackY, leftColWidth);
+		}
 	}
-};
 
-export const logoMap = {
-	router: '/logos/generic-router-flat-label-colour.svg',
-	switch: '/logos/generic-switch-flat-l2-label-v2-mono.svg',
-	wifi: '/logos/generic-switch-flat-l2-label-v2-mono.svg',
-	firewall: '/logos/generic-switch-flat-l2-label-v2-mono.svg',
-	proxmox: '/logos/proxmox.svg',
-	vm: '/logos/Qemu_logo.svg',
-	lxc: '/logos/Linux_Containers_logo.svg',
-	pihole: '/logos/pi-hole.svg',
-	nginx: '/logos/nginx.svg',
-	traefik: '/logos/traefik.svg',
-	prometheus: '/logos/Prometheus_software_logo.svg',
-	grafana: '/logos/Grafana_logo.svg',
-	alloy: '/logos/grafana-alloy.svg',
-	loki: '/logos/grafana-loki.svg',
-	xmpp: '/logos/XMPP_logo.svg',
-	postgresql: '/logos/Postgresql_elephant.svg',
-	raspberry: '/logos/raspberry-pi.svg',
-	arch: '/logos/arch_logo.svg',
-	fedora: '/logos/Fedora_icon.svg',
-	debian: '/logos/Openlogo-debianV2.svg',
-	rustfs: '/logos/rustfs.svg',
-	server: '/logos/web-server-icon.svg'
-};
+	let colX = leftColX + leftColWidth + COL_PAD;
 
-export function getLogo(type) {
-	return logoMap[type] || logoMap.server;
+	for (const id of serverIds) {
+		const entity = entities[id];
+		const children = getChildren(id);
+
+		let colW = getSubtreeWidth(id);
+
+		const centerX = colX + colW / 2;
+
+		nodes.push({
+			id,
+			label: entity.name || id,
+			type: entity.logo || entity.kind,
+			logo: resolveLogo(entity),
+			position: { x: colX + (colW - HW_WIDTH) / 2, y: Y_HW },
+			dimensions: { width: HW_WIDTH, height: 60 },
+			layer: 2,
+			parent: null,
+			data: entity,
+			category: entity.entityType,
+		});
+
+		let childY = Y_HW + 70;
+
+		const platforms = children.filter((c) => c.entityType === 'platform');
+		for (const platform of platforms) {
+			nodes.push({
+				id: platform.id,
+				label: platform.name,
+				type: platform.logo || platform.kind,
+				logo: resolveLogo(platform),
+				position: { x: colX + (colW - HW_WIDTH) / 2, y: childY },
+				dimensions: { width: HW_WIDTH, height: 60 },
+				layer: 3,
+				parent: id,
+				data: platform,
+				category: platform.entityType,
+			});
+			childY += 70;
+			childY = layoutChildren(platform.id, centerX, childY, colW);
+		}
+
+		colX += colW + COL_PAD;
+	}
+
+	return nodes;
 }
 
-const nodeTypeMap = {
-	'isp-modem': 'firewall',
-	'ucg-max': 'router',
-	'usw-flex': 'switch',
-	'tplink-sg108e': 'switch',
-	'u7-pro': 'wifi',
-	server: 'server',
-	pi5: 'raspberry',
-	pi3b: 'raspberry',
-	fbox: 'proxmox',
-	sidbox: 'debian',
-	feebook: 'debian',
-	guestbook: 'fedora',
-	HAOS: 'vm',
-	TRUENAS: 'vm',
-	'PiHole 2': 'pihole',
-	PiHole: 'pihole',
-	'Nginx (Angie)': 'nginx',
-	Traefik: 'traefik',
-	Grafana: 'grafana',
-	'Grafana Loki': 'loki',
-	'Alloy (many)': 'alloy',
-	PostgreSQL: 'postgresql',
-	Prometheus: 'prometheus',
-	Prosody: 'xmpp',
-	Rustfs: 'rustfs'
-};
+// ═══════════════════════════════════════════════════════
+// Edge generation
+// ═══════════════════════════════════════════════════════
 
-function getTypeFor(key) {
-	return nodeTypeMap[key] || 'server';
+export function generateEdges(nodes) {
+	const edges = [];
+	const nodeIds = new Set(nodes.map((n) => n.id));
+
+	for (const [from, to] of networkEdges) {
+		if (nodeIds.has(from) && nodeIds.has(to)) {
+			edges.push({ from, to });
+		}
+	}
+
+	for (const node of nodes) {
+		if (node.data && node.data.runsOn) {
+			for (const parentId of node.data.runsOn) {
+				if (nodeIds.has(parentId)) {
+					edges.push({ from: parentId, to: node.id });
+				}
+			}
+		}
+	}
+
+	return edges;
 }
 
-function makeId(prefix, key) {
-	return `${prefix}-${String(key).replace(/\s+/g, '-')}`;
-}
+// ═══════════════════════════════════════════════════════
+// Anchor direction calculation (preserved from old code)
+// ═══════════════════════════════════════════════════════
 
 function directionBetween(fromPos, toPos) {
 	const dx = toPos.x - fromPos.x;
@@ -340,301 +834,6 @@ function directionBetween(fromPos, toPos) {
 		return dy > 0 ? 'south' : 'north';
 	}
 	return dx > 0 ? 'east' : 'west';
-}
-
-function rowSpan(n, itemWidth, gap) {
-	return n * itemWidth + (n - 1) * gap;
-}
-
-function centerRow(n, itemWidth, gap, centerX) {
-	const total = rowSpan(n, itemWidth, gap);
-	const start = centerX - total / 2;
-	return Array.from({ length: n }, (_, i) => start + i * (itemWidth + gap));
-}
-
-function getServiceKeys(entry, row) {
-	const items = [];
-	if (row.category) {
-		const services =
-			row.category === 'vms'
-				? vms
-				: row.category === 'lxc'
-					? lxcs
-					: entry.services?.[row.category] || {};
-		const cat =
-			row.category === 'vms'
-				? 'vm'
-				: row.category === 'lxc'
-					? 'lxc'
-					: row.category === 'packages'
-						? 'package'
-						: 'container';
-		for (const key of Object.keys(services)) {
-			items.push({ key, category: cat });
-		}
-	} else if (row.categories) {
-		for (const catName of row.categories) {
-			const services = entry.services?.[catName] || {};
-			const cat = catName === 'packages' ? 'package' : 'container';
-			for (const key of Object.keys(services)) {
-				items.push({ key, category: cat });
-			}
-		}
-	}
-	return items;
-}
-
-export function generateNodes() {
-	const nodes = [];
-	const Y_NET = 50;
-	const Y_ups = 120;
-	const Y_HW = 200;
-	const COL_PAD = 80;
-	const HW_WIDTH = 180;
-
-	let nx = 50;
-	const NET_Y_STEP = 10;
-	const netOrder = ['isp-modem', 'ucg-max', 'usw-flex', 'tplink-sg108e', 'u7-pro'];
-	for (let ni = 0; ni < netOrder.length; ni++) {
-		const key = netOrder[ni];
-		const entry = network[key];
-		if (!entry) continue;
-		nodes.push({
-			id: makeId('net', key),
-			label: entry.name || key,
-			type: getTypeFor(key),
-			logo: getLogo(getTypeFor(key)),
-			position: { x: nx, y: Y_NET + ni * NET_Y_STEP },
-			dimensions: { width: 140, height: 60 },
-			layer: 1,
-			parent: null,
-			data: entry,
-			category: 'network'
-		});
-		nx += 150;
-	}
-
-	const allHwKeys = Object.keys(hardware);
-	const firstColKeys = allHwKeys.filter((k) => hardware[k]?.layout?.column === 'first-col');
-	const infraKeys = allHwKeys.filter((k) => hardware[k]?.layout?.column === 'infra');
-
-	const colDefs = [];
-
-	// First column: UPS + end-user, stacked vertically
-	if (firstColKeys.length > 0) {
-		let firstColW = HW_WIDTH;
-		for (const k of firstColKeys) {
-			const entry = hardware[k];
-			if (!entry) continue;
-			if (entry.layout?.child_rows) {
-				for (const row of entry.layout.child_rows) {
-					const items = getServiceKeys(entry, row);
-					const w = rowSpan(items.length, row.item_width, row.item_gap);
-					if (w > firstColW) firstColW = w;
-				}
-			}
-		}
-		colDefs.push({
-			hwKey: 'first-col',
-			width: firstColW,
-			members: firstColKeys
-		});
-	}
-
-	// Infrastructure columns (individual, at Y_HW)
-	for (const key of infraKeys) {
-		const entry = hardware[key];
-		if (!entry) continue;
-		const layout = entry.layout;
-		if (!layout) continue;
-
-		let colW = HW_WIDTH;
-		for (const row of layout.child_rows) {
-			const items = getServiceKeys(entry, row);
-			const perRow = row.max_per_row || items.length;
-			const rowW = rowSpan(Math.min(items.length, perRow), row.item_width, row.item_gap);
-			if (rowW > colW) colW = rowW;
-		}
-		colDefs.push({ hwKey: key, width: colW, child_rows: layout.child_rows });
-	}
-
-	let colX = 50;
-	for (const col of colDefs) {
-		col.x = colX;
-		col.centerX = colX + col.width / 2;
-		colX += col.width + COL_PAD;
-	}
-
-	for (const col of colDefs) {
-		if (col.hwKey === 'first-col') {
-			let stackY = Y_ups;
-			for (const key of col.members) {
-				const entry = hardware[key];
-				if (!entry) continue;
-
-				const hasServices = entry.layout?.child_rows?.length > 0;
-				const hwHeight = hasServices ? 70 : 60;
-				nodes.push({
-					id: makeId('hw', key),
-					label: entry.name || key,
-					type: getTypeFor(key),
-					logo: getLogo(getTypeFor(key)),
-					position: { x: col.centerX - HW_WIDTH / 2, y: stackY },
-					dimensions: { width: HW_WIDTH, height: hwHeight },
-					layer: 2,
-					parent: null,
-					data: entry,
-					category: 'hardware'
-				});
-				stackY += hwHeight + 10;
-
-				if (entry.layout?.child_rows) {
-					for (const row of entry.layout.child_rows) {
-						const items = getServiceKeys(entry, row);
-						const xs = centerRow(items.length, row.item_width, row.item_gap, col.centerX);
-						for (let i = 0; i < items.length; i++) {
-							const item = items[i];
-							const cat = item.category;
-							const prefix =
-								cat === 'package'
-									? 'pkg'
-									: cat === 'container'
-										? 'ct'
-										: cat === 'vm'
-											? 'vm'
-											: 'lxc';
-							const sdata =
-								cat === 'vm'
-									? vms[item.key]
-									: cat === 'lxc'
-										? lxcs[item.key]
-										: entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[item.key];
-							const nodeId =
-								cat === 'vm'
-									? makeId('vm', item.key)
-									: cat === 'lxc'
-										? makeId('lxc', item.key)
-										: makeId(prefix, `${key}-${item.key}`);
-							nodes.push({
-								id: nodeId,
-								label: item.key,
-								type: getTypeFor(item.key),
-								logo: getLogo(getTypeFor(item.key)),
-								position: { x: xs[i], y: stackY },
-								dimensions: { width: row.item_width, height: 60 },
-								layer: 3,
-								parent: `hw-${key}`,
-								data: sdata || {},
-								category: cat
-							});
-						}
-						stackY += 70;
-					}
-				}
-			}
-			continue;
-		}
-
-		const key = col.hwKey;
-		const entry = hardware[key];
-		if (!entry) continue;
-
-		nodes.push({
-			id: makeId('hw', key),
-			label: entry.name || key,
-			type: getTypeFor(key),
-			logo: getLogo(getTypeFor(key)),
-			position: { x: col.centerX - HW_WIDTH / 2, y: Y_HW },
-			dimensions: { width: HW_WIDTH, height: 60 },
-			layer: 2,
-			parent: null,
-			data: entry,
-			category: 'hardware'
-		});
-
-		if (col.child_rows) {
-			for (const row of col.child_rows) {
-				const items = getServiceKeys(entry, row);
-				const perRow = row.max_per_row || items.length;
-				const nRows = Math.ceil(items.length / perRow);
-				for (let r = 0; r < nRows; r++) {
-					const rowItems = items.slice(r * perRow, (r + 1) * perRow);
-					const xs = centerRow(rowItems.length, row.item_width, row.item_gap, col.centerX);
-					for (let i = 0; i < rowItems.length; i++) {
-						const item = rowItems[i];
-						const cat = item.category;
-						const prefix =
-							cat === 'package' ? 'pkg' : cat === 'container' ? 'ct' : cat === 'vm' ? 'vm' : 'lxc';
-						const sdata =
-							cat === 'vm'
-								? vms[item.key]
-								: cat === 'lxc'
-									? lxcs[item.key]
-									: entry.services?.[cat === 'package' ? 'packages' : 'containers']?.[item.key];
-						const nodeId =
-							cat === 'vm'
-								? makeId('vm', item.key)
-								: cat === 'lxc'
-									? makeId('lxc', item.key)
-									: makeId(prefix, `${key}-${item.key}`);
-						const y = Y_HW + row.y_offset + r * 70;
-						const h = cat === 'vm' ? 55 : 50;
-						nodes.push({
-							id: nodeId,
-							label: item.key,
-							type: getTypeFor(item.key),
-							logo: getLogo(getTypeFor(item.key)),
-							position: { x: xs[i], y },
-							dimensions: { width: row.item_width, height: h },
-							layer: 3,
-							parent: `hw-${key}`,
-							data: sdata || {},
-							category: cat
-						});
-					}
-				}
-			}
-		}
-	}
-
-	return nodes;
-}
-
-export function generateEdges(nodes) {
-	const edges = [];
-	const nodeIds = new Set(nodes.map((n) => n.id));
-
-	const netEdges = [
-		['net-isp-modem', 'net-ucg-max'],
-		['net-ucg-max', 'net-usw-flex'],
-		['net-usw-flex', 'net-tplink-sg108e'],
-		['net-usw-flex', 'net-u7-pro']
-	];
-	for (const [from, to] of netEdges) {
-		if (nodeIds.has(from) && nodeIds.has(to)) edges.push({ from, to });
-	}
-
-	const hwConnections = [
-		['net-ucg-max', 'hw-pi5'],
-		['net-ucg-max', 'hw-ups-ts'],
-		['net-ucg-max', 'hw-ups-rag'],
-		['net-ucg-max', 'hw-fbox'],
-		['net-ucg-max', 'hw-sidbox'],
-		['net-ucg-max', 'hw-feebook'],
-		['net-ucg-max', 'hw-guestbook'],
-		['net-tplink-sg108e', 'hw-pi3b']
-	];
-	for (const [from, to] of hwConnections) {
-		if (nodeIds.has(from) && nodeIds.has(to)) edges.push({ from, to });
-	}
-
-	for (const node of nodes) {
-		if (node.parent && nodeIds.has(node.parent)) {
-			edges.push({ from: node.parent, to: node.id });
-		}
-	}
-
-	return edges;
 }
 
 export function computeAnchorDirections(nodes, edges) {
@@ -660,69 +859,52 @@ export function computeAnchorDirections(nodes, edges) {
 	return { outgoingMap, incomingMap };
 }
 
+// ═══════════════════════════════════════════════════════
+// Detail panel data
+// ═══════════════════════════════════════════════════════
+
 export function getNodeDetails(nodeId) {
-	const allNodes = generateNodes();
-	const node = allNodes.find((n) => n.id === nodeId);
-	if (!node) return null;
+	const entity = entities[nodeId];
+	if (!entity) return null;
 
-	const details = {
-		name: node.label,
-		type: node.type,
-		category: node.category,
-		layer: node.layer,
-		os: null,
-		method: null,
-		details: null,
-		services: [],
-		ansible_roles: [],
-		hardware_passthrough: [],
-		storage_pools: [],
-		boards: [],
-		connections: []
+	let osValue = entity.os || null;
+	if (!osValue && entity.entityType === 'infrastructure') {
+		const platformChildren = Object.entries(entities)
+			.filter(
+				([, e]) =>
+					e.runsOn &&
+					e.runsOn.includes(nodeId) &&
+					e.entityType === 'platform',
+			)
+			.map(([, e]) => e.name);
+		if (platformChildren.length > 0) {
+			osValue = platformChildren.join(', ');
+		}
+	}
+
+	let connections = entity.connections || [];
+	if (entity.entityType === 'infrastructure') {
+		const netConns = networkEdges
+			.filter(([a, b]) => a === nodeId || b === nodeId)
+			.map(([a, b]) => (a === nodeId ? b : a));
+		for (const c of netConns) {
+			if (!connections.includes(c)) connections.push(c);
+		}
+	}
+
+	return {
+		name: entity.name,
+		type: entity.logo || entity.kind,
+		category: entity.entityType,
+		layer: null,
+		os: osValue,
+		method: entity.method || null,
+		details: entity.details || null,
+		services: entity.nestedServices || [],
+		ansible_roles: entity.ansibleRoles || [],
+		hardware_passthrough: entity.passthrough || [],
+		storage_pools: entity.storagePools || [],
+		boards: entity.boards || [],
+		connections,
 	};
-
-	if (node.category === 'network' && node.data) {
-		details.connections = node.data.connections || [];
-	}
-
-	if (node.category === 'hardware' && node.data) {
-		details.os = node.data.os;
-		details.boards = node.data.boards || [];
-	}
-
-	if (
-		(node.category === 'vm' ||
-			node.category === 'lxc' ||
-			node.category === 'package' ||
-			node.category === 'container') &&
-		node.data
-	) {
-		details.method = node.data.method || null;
-		details.details = node.data.details || null;
-		details.services = node.data.services || [];
-		details.ansible_roles = node.data.ansible_roles || [];
-		details.hardware_passthrough = node.data.hardware_passthrough || [];
-		details.storage_pools = node.data.storage_pools || [];
-	}
-
-	if (node.category === 'vm') {
-		const vmKey = Object.keys(vms).find((k) => makeId('vm', k) === nodeId);
-		if (vmKey) {
-			const vmData = vms[vmKey];
-			details.hardware_passthrough = vmData.hardware_passthrough || [];
-			details.storage_pools = vmData.storage_pools || [];
-		}
-	}
-
-	if (node.category === 'lxc') {
-		const lxcKey = Object.keys(lxcs).find((k) => makeId('lxc', k) === nodeId);
-		if (lxcKey) {
-			const lxcData = lxcs[lxcKey];
-			details.method = lxcData.method || null;
-			details.services = lxcData.services || [];
-			details.ansible_roles = lxcData.ansible_roles || [];
-		}
-	}
-
-	return details;
 }
