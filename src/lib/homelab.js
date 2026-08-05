@@ -114,16 +114,9 @@ export const entities = {
 		runsOn: ['pi3b'],
 	},
 
-	// ═══ SERVICES — VMs on proxmox-fbox ═══
-	haos: {
-		entityType: 'service',
-		kind: 'vm',
-		name: 'Home Assistant OS',
-		runsOn: ['qemu-fbox'],
-		passthrough: ['Sonoff Zigbee 3.0 USB Dongle Plus'],
-	},
+	// ═══ SERVICES — VMs on proxmox-fbox ═══	
 	truenas: {
-		entityType: 'service',
+		entityType: 'platform',
 		kind: 'vm',
 		name: 'TrueNas Scale',
 		runsOn: ['qemu-fbox'],
@@ -142,22 +135,30 @@ export const entities = {
 
 	// ═══ SERVICES — VMs: K3S nodes on qemu-fbox ═══
 	'vm-k1': {
-		entityType: 'service',
+		entityType: 'platform',
 		kind: 'vm',
 		name: 'K3S Node 1',
 		runsOn: ['qemu-fbox'],
 	},
 	'vm-k2': {
-		entityType: 'service',
+		entityType: 'platform',
 		kind: 'vm',
 		name: 'K3S Node 2',
 		runsOn: ['qemu-fbox'],
 	},
 	'vm-k3': {
-		entityType: 'service',
+		entityType: 'platform',
 		kind: 'vm',
 		name: 'K3S Node 3',
 		runsOn: ['qemu-fbox'],
+	},
+
+    haos: {
+		entityType: 'service',
+		kind: 'vm',
+		name: 'Home Assistant OS',
+		runsOn: ['qemu-fbox'],
+		passthrough: ['Sonoff Zigbee 3.0 USB Dongle Plus'],
 	},
 
 	// ═══ SERVICES — LXCs on lxc-fbox ═══
@@ -208,32 +209,32 @@ export const entities = {
 		method: 'docker-compose',
 		logo: 'traefik',
 	},
-	'lxc-postgresql': {
-		entityType: 'service',
-		kind: 'lxc',
-		name: 'PostgreSQL',
-		runsOn: ['lxc-fbox'],
-		method: 'Debian Package',
-		logo: 'postgresql',
-	},
+	// 'lxc-postgresql': {
+	// 	entityType: 'service',
+	// 	kind: 'lxc',
+	// 	name: 'PostgreSQL',
+	// 	runsOn: ['lxc-fbox'],
+	// 	method: 'Debian Package',
+	// 	logo: 'postgresql',
+	// },
 	'lxc-prosody': {
 		entityType: 'service',
 		kind: 'lxc',
 		name: 'Prosody',
 		runsOn: ['lxc-fbox'],
-		method: 'podman-compose + Debian Package',
-		ansibleRoles: ['prosody', 'biboumi', 'slidge', 'alloy'],
+		method: 'Debian Packages + podman-compose',
+		ansibleRoles: ['prosody', 'biboumi', 'alloy'],
 		logo: 'xmpp',
-		nestedServices: ['prosody', 'biboumi', 'slidge'],
+		nestedServices: ['prosody', 'biboumi'],
 	},
-	'lxc-coturn': {
-		entityType: 'service',
-		kind: 'lxc',
-		name: 'Coturn',
-		runsOn: ['lxc-fbox'],
-		method: 'Debian Package',
-		ansibleRoles: ['coturn', 'alloy'],
-	},
+	// 'lxc-coturn': {
+	// 	entityType: 'service',
+	// 	kind: 'lxc',
+	// 	name: 'Coturn',
+	// 	runsOn: ['lxc-fbox'],
+	// 	method: 'Debian Package',
+	// 	ansibleRoles: ['coturn', 'alloy'],
+	// },
 	'lxc-lore': {
 		entityType: 'service',
 		kind: 'lxc',
@@ -241,13 +242,13 @@ export const entities = {
 		runsOn: ['lxc-fbox'],
 		method: 'podman-compose',
 	},
-	'lxc-excalidraw': {
-		entityType: 'service',
-		kind: 'lxc',
-		name: 'Excalidraw',
-		runsOn: ['lxc-fbox'],
-		method: 'podman-compose',
-	},
+	// 'lxc-excalidraw': {
+	// 	entityType: 'service',
+	// 	kind: 'lxc',
+	// 	name: 'Excalidraw',
+	// 	runsOn: ['lxc-fbox'],
+	// 	method: 'podman-compose',
+	// },
 	'lxc-copyparty': {
 		entityType: 'service',
 		kind: 'lxc',
@@ -365,13 +366,6 @@ export const entities = {
 	},
 
 	// ═══ SERVICES — Containers on pi5 ═══
-	'ct-pi5-uptimekuma': {
-		entityType: 'service',
-		kind: 'container',
-		name: 'Uptime Kuma',
-		runsOn: ['rpi-os-pi5'],
-		method: 'podman-compose',
-	},
 	'ct-pi5-nebulasync': {
 		entityType: 'service',
 		kind: 'container',
@@ -404,6 +398,23 @@ export const entities = {
 		runsOn: ['rpi-os-pi3b'],
 		method: 'podman-compose',
 	},
+	// ═══ K3S cluster
+    'k3s': {
+		entityType: 'platform',
+		kind: 'orchestrator',
+		name: 'K3S Cluster',
+		// runsOn: ['vm-k1'],
+		runsOn: ['vm-k1', "vm-k2", "vm-k3"],
+		method: 'ansible',
+	},
+	'ct-pi5-uptimekuma': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'Uptime Kuma',
+		runsOn: ['k3s'],
+		method: 'helm',
+	},
+
 };
 
 // ═══════════════════════════════════════════════════════
@@ -501,6 +512,7 @@ function centerRow(n, w, gap, centerX) {
 
 export function generateNodes() {
 	const nodes = [];
+	const visited = new Set();
 	const Y_NET = 50;
 	const Y_UPS = 120;
 	const Y_HW = 200;
@@ -508,7 +520,7 @@ export function generateNodes() {
 	const HW_WIDTH = 180;
 	const ITEM_WIDTH = 120;
 	const ITEM_GAP = 20;
-	const MAX_PER_ROW = 7;
+	const MAX_PER_ROW = 5;
 
 	const networkKinds = new Set(['modem', 'router', 'switch', 'wifi-ap']);
 	const networkIds = Object.entries(entities)
@@ -555,6 +567,7 @@ export function generateNodes() {
 			data: entity,
 			category: entity.entityType,
 		});
+		visited.add(id);
 		nx += 150;
 	}
 
@@ -611,7 +624,8 @@ export function generateNodes() {
 	}
 
 	function layoutChildren(parentId, colCenterX, startY, colWidth) {
-		const children = getChildren(parentId);
+		const allChildren = getChildren(parentId);
+		const children = allChildren.filter((c) => !visited.has(c.id));
 		if (children.length === 0) return startY;
 
 		const platformChildren = children.filter((c) => c.entityType === 'platform');
@@ -633,6 +647,7 @@ export function generateNodes() {
 				data: platform,
 				category: platform.entityType,
 			});
+			visited.add(platform.id);
 			currentY += 70;
 			currentY = layoutChildren(platform.id, colCenterX, currentY, colWidth);
 		} else if (platformChildren.length > 1) {
@@ -660,6 +675,7 @@ export function generateNodes() {
 					data: platform,
 					category: platform.entityType,
 				});
+				visited.add(platform.id);
 
 				const endY = layoutChildren(platform.id, subCenterX, currentY + 70, subW);
 				if (endY > maxEndY) maxEndY = endY;
@@ -672,6 +688,7 @@ export function generateNodes() {
 
 		if (serviceChildren.length > 0) {
 			const groups = {};
+			const positions = {};
 			for (const s of serviceChildren) {
 				(groups[s.kind] || (groups[s.kind] = [])).push(s);
 			}
@@ -702,17 +719,28 @@ export function generateNodes() {
 							data: item,
 							category: item.entityType,
 						});
+						visited.add(item.id);
+						positions[item.id] = { x: xs[i], w: itemW };
 					}
 					currentY += 70;
 				}
 			}
-		}
 
-		for (const service of serviceChildren) {
-			const subChildren = getChildren(service.id);
-			if (subChildren.length > 0) {
-				currentY = layoutChildren(service.id, colCenterX, currentY, colWidth);
+			const subChildBaseY = currentY + 20;
+			let maxSubEndY = currentY;
+			for (const service of serviceChildren) {
+				const subChildren = getChildren(service.id).filter(
+					(c) => !visited.has(c.id),
+				);
+				if (subChildren.length > 0) {
+					const pos = positions[service.id];
+					const subCenterX = pos.x + pos.w / 2;
+					const subW = getSubtreeWidth(service.id);
+					const endY = layoutChildren(service.id, subCenterX, subChildBaseY, subW);
+					if (endY > maxSubEndY) maxSubEndY = endY;
+				}
 			}
+			currentY = maxSubEndY;
 		}
 
 		return currentY;
@@ -739,6 +767,7 @@ export function generateNodes() {
 			data: entity,
 			category: entity.entityType,
 		});
+		visited.add(id);
 
 		leftStackY += hwHeight + 10;
 
@@ -769,6 +798,7 @@ export function generateNodes() {
 			data: entity,
 			category: entity.entityType,
 		});
+		visited.add(id);
 
 		let childY = Y_HW + 70;
 
@@ -786,6 +816,7 @@ export function generateNodes() {
 				data: platform,
 				category: platform.entityType,
 			});
+			visited.add(platform.id);
 			childY += 70;
 			childY = layoutChildren(platform.id, centerX, childY, colW);
 		}
@@ -830,9 +861,8 @@ export function generateEdges(nodes) {
 function directionBetween(fromPos, toPos) {
 	const dx = toPos.x - fromPos.x;
 	const dy = toPos.y - fromPos.y;
-	if (Math.abs(dy) > Math.abs(dx)) {
-		return dy > 0 ? 'south' : 'north';
-	}
+	if (dy > 30) return 'south';
+	if (dy < -30) return 'north';
 	return dx > 0 ? 'east' : 'west';
 }
 

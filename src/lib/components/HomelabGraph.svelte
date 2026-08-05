@@ -112,7 +112,7 @@
 					/>
 				</svg>
 				{#if incomingMap[node.id]}
-					{#each incomingMap[node.id] as inc (inc.direction + inc.to)}
+					{#each incomingMap[node.id] as inc (inc.direction + inc.from)}
 						<Anchor direction={inc.direction} invisible />
 					{/each}
 				{/if}
