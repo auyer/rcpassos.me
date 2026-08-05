@@ -61,6 +61,7 @@ export const entities = {
 		kind: 'raspberry-pi',
 		name: 'RaspberryPi 3b',
 	},
+    // client computers
 	// sidbox: {
 	// 	entityType: 'infrastructure',
 	// 	kind: 'desktop',
@@ -121,10 +122,19 @@ export const entities = {
 		],
 	},
 
-	'vm-k1': {
+    // Proxmox VMs 
+	haos: {
+		entityType: 'service',
+		kind: 'vm',
+		name: 'Home Assistant OS',
+		runsOn: ['qemu-fbox'],
+		passthrough: ['Sonoff Zigbee 3.0 USB Dongle Plus'],
+	},
+
+	'vm-k3': {
 		entityType: 'platform',
 		kind: 'vm',
-		name: 'K3S Node 1',
+		name: 'K3S Node 3',
         logo: "k3s",
 		runsOn: ['qemu-fbox'],
 	},
@@ -135,22 +145,15 @@ export const entities = {
         logo: "k3s",
 		runsOn: ['qemu-fbox'],
 	},
-	'vm-k3': {
+	'vm-k1': {
 		entityType: 'platform',
 		kind: 'vm',
-		name: 'K3S Node 3',
+		name: 'K3S Node 1',
         logo: "k3s",
 		runsOn: ['qemu-fbox'],
 	},
 
-	haos: {
-		entityType: 'service',
-		kind: 'vm',
-		name: 'Home Assistant OS',
-		runsOn: ['qemu-fbox'],
-		passthrough: ['Sonoff Zigbee 3.0 USB Dongle Plus'],
-	},
-
+    // Proxmox LXCs
 	'lxc-pihole2': {
 		entityType: 'service',
 		kind: 'lxc',
@@ -178,7 +181,7 @@ export const entities = {
 		method: 'docker-compose',
 		ansibleRoles: ['loki'],
 		logo: 'grafana-loki',
-		connections: ['ct-truenas-rustfs'],
+		connections: ['truenas-rustfs'],
 	},
 	'lxc-prometheus': {
 		entityType: 'service',
@@ -250,35 +253,6 @@ export const entities = {
 		runsOn: ['lxc-fbox'],
 		method: 'Docker',
 	},
-	'ct-truenas-rustfs': {
-		entityType: 'service',
-		kind: 'container',
-		name: 'Rustfs',
-		runsOn: ['truenas'],
-		method: 'TrueNas Container',
-		logo: 'rustfs',
-	},
-	'ct-truenas-rsyncd': {
-		entityType: 'service',
-		kind: 'container',
-		name: 'rsyncd',
-		runsOn: ['truenas'],
-		method: 'TrueNas Container',
-	},
-	'ct-truenas-nextcloud': {
-		entityType: 'service',
-		kind: 'container',
-		name: 'Nextcloud',
-		runsOn: ['truenas'],
-		method: 'TrueNas Container',
-	},
-	'ct-truenas-distribution': {
-		entityType: 'service',
-		kind: 'container',
-		name: 'Distribution',
-		runsOn: ['truenas'],
-		method: 'TrueNas Container',
-	},
 	'lxc-alloy': {
 		entityType: 'service',
 		kind: 'lxc',
@@ -290,6 +264,39 @@ export const entities = {
 		details: 'Deployed to each critical component to collect logs and send to loki',
 		connections: ['lxc-loki'],
 	},
+
+    // Truenas Containers
+	'truenas-rustfs': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'Rustfs',
+		runsOn: ['truenas'],
+		method: 'TrueNas Container',
+		logo: 'rustfs',
+	},
+	'truenas-rsyncd': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'rsyncd',
+		runsOn: ['truenas'],
+		method: 'TrueNas Container',
+	},
+	'truenas-nextcloud': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'Nextcloud',
+		runsOn: ['truenas'],
+		method: 'TrueNas Container',
+	},
+	'truenas-distribution': {
+		entityType: 'service',
+		kind: 'container',
+		name: 'Distribution',
+		runsOn: ['truenas'],
+		method: 'TrueNas Container',
+	},
+
+    // Pi5 services
 
 	'pkg-pi5-pihole': {
 		entityType: 'service',
@@ -322,8 +329,7 @@ export const entities = {
 		runsOn: ['pi5'],
 		method: 'Docker',
 	},
-
-	'ct-pi5-nebulasync': {
+	'pi5-nebulasync': {
 		entityType: 'service',
 		kind: 'container',
 		name: 'Nebula-sync',
@@ -331,6 +337,7 @@ export const entities = {
 		method: 'podman-compose',
 	},
 
+    // pi3 services
 	'pkg-pi3b-squeezelite': {
 		entityType: 'service',
 		kind: 'package',
@@ -339,20 +346,22 @@ export const entities = {
 		method: 'Debian Package',
 	},
 
-	'ct-pi3b-wyoming': {
+	'pi3b-wyoming': {
 		entityType: 'service',
 		kind: 'container',
 		name: 'wyoming-satellite',
 		runsOn: ['pi3b'],
 		method: 'podman-compose',
 	},
-	'ct-pi3b-openwakeword': {
+	'pi3b-openwakeword': {
 		entityType: 'service',
 		kind: 'container',
 		name: 'openWakeWord',
 		runsOn: ['pi3b'],
 		method: 'podman-compose',
 	},
+
+    // k8s
 	k3s: {
 		entityType: 'platform',
 		kind: 'orchestrator',
@@ -362,17 +371,24 @@ export const entities = {
         logo: "k8s",
 		method: 'ansible',
 	},
-	'lxc-languagetool': {
+	'languagetool': {
 		entityType: 'service',
-		kind: 'lxc',
+		kind: 'pod',
 		name: 'LanguageTool',
 		runsOn: ['k3s'],
 		method: 'podman-compose',
 	},
-	'ct-pi5-uptimekuma': {
+	'pi5-uptimekuma': {
 		entityType: 'service',
-		kind: 'container',
+		kind: 'pod',
 		name: 'Uptime Kuma',
+		runsOn: ['k3s'],
+		method: 'helm',
+	},
+	'matrix': {
+		entityType: 'service',
+		kind: 'pod',
+		name: 'Matrix (Continuwuity)',
 		runsOn: ['k3s'],
 		method: 'helm',
 	},
