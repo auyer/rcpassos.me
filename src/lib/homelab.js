@@ -391,6 +391,13 @@ export const entities = {
 		name: 'Matrix (Continuwuity)',
 		runsOn: ['k3s'],
 		method: 'helm'
+	},
+    kubewarden: {
+		entityType: 'service',
+		kind: 'controller',
+		name: 'Kubewarden',
+		runsOn: ['k3s'],
+		method: 'helm'
 	}
 };
 
