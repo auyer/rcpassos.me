@@ -14,15 +14,15 @@ import {
 } from './homelab.js';
 
 const MAX_PER_ROW = 5;
-const HW_WIDTH = 180;
+const HW_WIDTH = 150;
 const HW_HEIGHT = 60;
-const ITEM_WIDTH = 120;
+const ITEM_WIDTH = 110;
 const ITEM_HEIGHT = 50;
 const VM_WIDTH = 130;
 const VM_HEIGHT = 55;
-const COL_PAD = 60;
-const GROUP_PAD = 16;
-const GROUP_GAP = 20;
+const COL_PAD = 20;
+const GROUP_PAD = 10;
+const GROUP_GAP = 10;
 
 function nodeWidth(entity) {
 	if (isPlatform(entity.id) || isService(entity.id)) {
@@ -64,7 +64,7 @@ function computeRanks(serverId) {
 function layoutServerSubtree(serverId) {
 	const ranks = computeRanks(serverId);
 	const g = new Graph({ multigraph: true });
-	g.setGraph({ rankdir: 'TB', ranksep: 60, nodesep: 15, edgesep: 10 });
+	g.setGraph({ rankdir: 'TB', ranksep: 60, nodesep: 8, edgesep: 10 });
 	g.setDefaultEdgeLabel(() => ({}));
 
 	const subtreeIds = new Set([serverId]);
@@ -105,6 +105,120 @@ function layoutServerSubtree(serverId) {
 		});
 	}
 	return { nodes };
+}
+
+function layoutServerGroup(serverIds) {
+	const allIds = new Set();
+	for (const sid of serverIds) {
+		allIds.add(sid);
+		const desc = getAllDescendants(sid).map((d) => d.id);
+		desc.forEach((d) => allIds.add(d));
+	}
+
+	const ranks = {};
+	const queue = serverIds.map((id) => ({ id, rank: 0 }));
+	const visited = new Set();
+
+	while (queue.length) {
+		const { id, rank } = queue.shift();
+		if (visited.has(id)) continue;
+		visited.add(id);
+
+		const existing = ranks[id];
+		if (existing === undefined || rank < existing) {
+			ranks[id] = rank;
+		}
+
+		const children = getChildren(id);
+		const platforms = children.filter((c) => isPlatform(c.id));
+		const services = children.filter((c) => isService(c.id));
+
+		for (const p of platforms) {
+			queue.push({ id: p.id, rank: rank + 1 });
+		}
+		services.forEach((s, i) => {
+			const wrapRow = Math.floor(i / MAX_PER_ROW);
+			queue.push({ id: s.id, rank: rank + 1 + wrapRow });
+		});
+	}
+
+	const g = new Graph({ multigraph: true });
+	g.setGraph({ rankdir: 'TB', ranksep: 60, nodesep: 15, edgesep: 10 });
+	g.setDefaultEdgeLabel(() => ({}));
+
+	for (const id of allIds) {
+		const entity = getEntity(id);
+		if (!entity) continue;
+		const w = nodeWidth({ id, ...entity });
+		const h = nodeHeight({ id, ...entity });
+		g.setNode(id, { width: w, height: h, rank: ranks[id] || 0 });
+	}
+
+	for (const id of allIds) {
+		const entity = getEntity(id);
+		if (entity?.runsOn) {
+			for (const parentId of entity.runsOn) {
+				if (allIds.has(parentId)) {
+					g.setEdge(parentId, id, { minlen: 1, weight: 1 });
+				}
+			}
+		}
+	}
+
+	layout(g);
+
+	const nodes = [];
+	for (const id of allIds) {
+		const n = g.node(id);
+		if (!n) continue;
+		nodes.push({
+			id,
+			x: n.x - n.width / 2,
+			y: n.y - n.height / 2,
+			width: n.width || HW_WIDTH,
+			height: n.height || HW_HEIGHT
+		});
+	}
+	return { nodes };
+}
+
+function findOverlappingGroups(serverIds, subtrees) {
+	const groups = [];
+	const remaining = new Set(serverIds);
+
+	while (remaining.size > 0) {
+		const seed = remaining.values().next().value;
+		remaining.delete(seed);
+		const group = new Set([seed]);
+		let changed = true;
+
+		while (changed) {
+			changed = false;
+			for (const sid of remaining) {
+				for (const gid of group) {
+					if (hasOverlap(subtrees[gid], subtrees[sid])) {
+						group.add(sid);
+						changed = true;
+						break;
+					}
+				}
+			}
+			for (const sid of group) remaining.delete(sid);
+		}
+
+		groups.push(Array.from(group));
+	}
+
+	return groups;
+}
+
+function hasOverlap(setA, setB) {
+	const [smaller, larger] =
+		setA.size <= setB.size ? [setA, setB] : [setB, setA];
+	for (const item of smaller) {
+		if (larger.has(item)) return true;
+	}
+	return false;
 }
 
 function buildNetworkNodes() {
@@ -217,7 +331,7 @@ export function computeLayout() {
 
 	const sideEndX = sideRaw.length > 0 ? maxX(sideRaw) : 50;
 	let colX = sideEndX + COL_PAD;
-	const TOP_Y = 160;
+	const TOP_Y = 220;
 
 	const allNodes = [];
 	const allEdges = [];
@@ -225,8 +339,27 @@ export function computeLayout() {
 	for (const n of netRaw) allNodes.push(homelabNode(n.id, n.x, n.y, n.width, n.height));
 	for (const n of sideRaw) allNodes.push(homelabNode(n.id, n.x, n.y, n.width, n.height));
 
-	for (const serverId of serverIds) {
-		const { nodes: dagreNodes } = layoutServerSubtree(serverId);
+	const subtrees = {};
+	for (const sid of serverIds) {
+		const desc = getAllDescendants(sid).map((d) => d.id);
+		subtrees[sid] = new Set(desc);
+	}
+	let allGroups = [];
+	if (serverIds.length === 1) {
+		allGroups = [[serverIds[0]]];
+	} else {
+		allGroups = findOverlappingGroups(serverIds, subtrees);
+	}
+
+	for (const group of allGroups) {
+		const isMulti = group.length > 1;
+		const multiIds = new Set(group);
+		const firstId = group[0];
+
+		const { nodes: dagreNodes } = isMulti
+			? layoutServerGroup(group)
+			: layoutServerSubtree(firstId);
+
 		if (!dagreNodes.length) continue;
 
 		const minX = Math.min(...dagreNodes.map((n) => n.x));
@@ -240,24 +373,36 @@ export function computeLayout() {
 			height: n.height
 		}));
 
-		const absNodes = adjusted.map((n) => homelabNode(n.id, n.x, n.y, n.width, n.height));
+		const absNodes = adjusted.map((n) =>
+			homelabNode(n.id, n.x, n.y, n.width, n.height)
+		);
 
-		const groupEntities = absNodes.filter((n) => getEntity(n.id)?.group === true);
+		const groupEntities = absNodes.filter(
+			(n) => getEntity(n.id)?.group === true
+		);
 
 		const depths = {};
-		(function walk(id, d) {
-			depths[id] = d;
-			for (const ch of getChildren(id)) walk(ch.id, d + 1);
-		})(serverId, 0);
+		for (const sid of group) {
+			(function walk(id, d) {
+				if (depths[id] === undefined || d < depths[id]) {
+					depths[id] = d;
+				}
+				for (const ch of getChildren(id)) walk(ch.id, d + 1);
+			})(sid, 0);
+		}
 
-		groupEntities.sort((a, b) => (depths[b.id] || 0) - (depths[a.id] || 0));
+		groupEntities.sort(
+			(a, b) => (depths[b.id] || 0) - (depths[a.id] || 0)
+		);
 
 		const claimed = new Set();
 		const newGroups = [];
 
 		for (const gEntity of groupEntities) {
 			const gid = gEntity.id + '-group';
-			const descIds = new Set(getAllDescendants(gEntity.id).map((d) => d.id));
+			const descIds = new Set(
+				getAllDescendants(gEntity.id).map((d) => d.id)
+			);
 			descIds.add(gEntity.id);
 
 			const members = absNodes.filter((n) => {
@@ -296,7 +441,14 @@ export function computeLayout() {
 				claimed.add(m.id);
 			}
 
-			const gn = groupNode(gid, gx, gy, gw, gh, gEntity.data?.label || gEntity.id);
+			const gn = groupNode(
+				gid,
+				gx,
+				gy,
+				gw,
+				gh,
+				gEntity.data?.label || gEntity.id
+			);
 			newGroups.push(gn);
 		}
 
@@ -305,7 +457,8 @@ export function computeLayout() {
 			const prev = newGroups[i - 1];
 			const curr = newGroups[i];
 			const prevW = parseDims(prev).w;
-			const overlap = prev.position.x + prevW + GROUP_GAP - curr.position.x;
+			const overlap =
+				prev.position.x + prevW + GROUP_GAP - curr.position.x;
 			if (overlap > 0) {
 				curr.position.x += overlap;
 			}
@@ -361,5 +514,23 @@ export function computeLayout() {
 		}
 	}
 
-	return { nodes: allNodes, edges: allEdges };
+	const seenIds = new Set();
+	const dedupedNodes = [];
+	for (const n of allNodes) {
+		if (!seenIds.has(n.id)) {
+			seenIds.add(n.id);
+			dedupedNodes.push(n);
+		}
+	}
+
+	const seenEdgeIds = new Set();
+	const dedupedEdges = [];
+	for (const e of allEdges) {
+		if (!seenEdgeIds.has(e.id)) {
+			seenEdgeIds.add(e.id);
+			dedupedEdges.push(e);
+		}
+	}
+
+	return { nodes: dedupedNodes, edges: dedupedEdges };
 }
