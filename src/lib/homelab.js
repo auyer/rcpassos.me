@@ -39,11 +39,29 @@ export const entities = {
 		name: 'Ragtech ups',
 		logo: 'ups'
 	},
+	k1hp: {
+		entityType: 'infrastructure',
+		kind: 'server',
+		name: 'K1 (HP 400 G3)',
+		logo: 'server'
+	},
+	k2hp: {
+		entityType: 'infrastructure',
+		kind: 'server',
+		name: 'K2 (HP 400 G3)',
+		logo: 'server'
+	},
+	k3hp: {
+		entityType: 'infrastructure',
+		kind: 'server',
+		name: 'K3 (HP 400 G3)',
+		logo: 'server'
+	},
 
 	fbox: {
 		entityType: 'infrastructure',
 		kind: 'server',
-		name: 'Freebox (HP Mini PC)',
+		name: 'Freebox (HP 805 G6 SFF)',
 		logo: 'server',
 		boards: [
 			'Marvell PCIe 4 port Sata Controller',
@@ -130,27 +148,26 @@ export const entities = {
 		runsOn: ['qemu-fbox'],
 		passthrough: ['Sonoff Zigbee 3.0 USB Dongle Plus']
 	},
-
-	'vm-k3': {
+	'k3': {
 		entityType: 'platform',
-		kind: 'vm',
+		kind: 'os',
 		name: 'K3S Node 3',
 		logo: 'k3s',
-		runsOn: ['qemu-fbox']
+		runsOn: ['k3hp']
 	},
-	'vm-k2': {
+	'k2': {
 		entityType: 'platform',
-		kind: 'vm',
+		kind: 'os',
 		name: 'K3S Node 2',
 		logo: 'k3s',
-		runsOn: ['qemu-fbox']
+		runsOn: ['k2hp']
 	},
-	'vm-k1': {
+	'k1': {
 		entityType: 'platform',
-		kind: 'vm',
+		kind: 'os',
 		name: 'K3S Node 1',
 		logo: 'k3s',
-		runsOn: ['qemu-fbox']
+		runsOn: ['k1hp']
 	},
 
 	// Proxmox LXCs
@@ -367,7 +384,7 @@ export const entities = {
 		kind: 'orchestrator',
 		name: 'K3S Cluster',
 		group: true,
-		runsOn: ['vm-k1', 'vm-k2', 'vm-k3'],
+		runsOn: ['k1', 'k2', 'k3'],
 		logo: 'k8s',
 		method: 'ansible'
 	},
@@ -413,6 +430,9 @@ export const networkEdges = [
 	['usw-flex', 'ups-rag'],
 	['usw-flex', 'tplink-sg108e'],
 	['usw-flex', 'u7-pro'],
+	['usw-flex', 'k1hp'],
+	['usw-flex', 'k2hp'],
+	['usw-flex', 'k3hp'],
 	['tplink-sg108e', 'pi3b']
 ];
 
