@@ -395,7 +395,7 @@ export const entities = {
 		runsOn: ['k3s'],
 		method: 'podman-compose'
 	},
-	'pi5-uptimekuma': {
+	uptimekuma: {
 		entityType: 'service',
 		kind: 'pod',
 		name: 'Uptime Kuma',
@@ -406,6 +406,13 @@ export const entities = {
 		entityType: 'service',
 		kind: 'pod',
 		name: 'Matrix (Continuwuity)',
+		runsOn: ['k3s'],
+		method: 'helm'
+	},
+    navidrome: {
+		entityType: 'service',
+		kind: 'service',
+		name: 'Navidrome',
 		runsOn: ['k3s'],
 		method: 'helm'
 	},
