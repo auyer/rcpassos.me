@@ -422,6 +422,14 @@ export const entities = {
 		name: 'Kubewarden',
 		runsOn: ['k3s'],
 		method: 'helm'
+	},
+    rancher: {
+		entityType: 'service',
+		kind: 'controller',
+		name: 'Rancher',
+		runsOn: ['k3s'],
+        logo: 'rancher',
+        method: 'helm'
 	}
 };
 
