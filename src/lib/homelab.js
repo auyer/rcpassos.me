@@ -179,37 +179,6 @@ export const entities = {
 		method: 'Debian Package',
 		logo: 'pi-hole'
 	},
-	'lxc-grafana': {
-		entityType: 'service',
-		kind: 'lxc',
-		name: 'Grafana',
-		runsOn: ['lxc-fbox'],
-		method: 'podman-compose',
-		ansibleRoles: ['grafana'],
-		logo: 'grafana',
-		connections: ['lxc-loki', 'lxc-prometheus'],
-		nestedServices: ['grafana', 'prometheus', 'unpoller', 'matchtower']
-	},
-	'lxc-loki': {
-		entityType: 'service',
-		kind: 'lxc',
-		name: 'Grafana Loki',
-		runsOn: ['lxc-fbox'],
-		method: 'docker-compose',
-		ansibleRoles: ['loki'],
-		logo: 'grafana-loki',
-		connections: ['truenas-rustfs']
-	},
-	'lxc-prometheus': {
-		entityType: 'service',
-		kind: 'lxc',
-		name: 'Prometheus',
-		runsOn: ['lxc-fbox'],
-		method: 'podman-compose',
-		ansibleRoles: ['grafana'],
-		logo: 'prometheus',
-		details: 'Same compose as Grafana'
-	},
 	'lxc-traefik': {
 		entityType: 'service',
 		kind: 'lxc',
@@ -388,12 +357,38 @@ export const entities = {
 		logo: 'k8s',
 		method: 'ansible'
 	},
+    grafana: {
+		entityType: 'service',
+		kind: 'service',
+		name: 'Grafana',
+		runsOn: ['k3s'],
+		logo: 'grafana',
+		connections: ['loki', 'prometheus'],
+		method: 'helm'
+	},
+	loki: {
+		entityType: 'service',
+		kind: 'service',
+		name: 'Grafana Loki',
+		logo: 'grafana-loki',
+		runsOn: ['k3s'],
+		connections: ['truenas-rustfs'],
+		method: 'helm'
+	},
+	prometheus: {
+		entityType: 'service',
+		kind: 'service',
+		name: 'Prometheus',
+		runsOn: ['k3s'],
+		logo: 'prometheus',
+		method: 'helm'
+	},
 	languagetool: {
 		entityType: 'service',
 		kind: 'pod',
 		name: 'LanguageTool',
 		runsOn: ['k3s'],
-		method: 'podman-compose'
+		method: 'helm'
 	},
 	uptimekuma: {
 		entityType: 'service',
