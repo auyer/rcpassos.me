@@ -20,6 +20,9 @@
 		<p>
 			This article was accepted by the IEEE ICSME 2026, Tool Demonstration and Data Showcase Track.
 		</p>
+        <p> It was also presented in <a href="https://debconf26.debconf.org/talks/71-making-sense-of-30-million-emails-introducing-the-lkml5ws-dataset/">
+            DebConf 2026</a> by David Tadokoro (co-author).
+        </p>
 		<!-- <p> -->
 		<!-- 	Published by IEEE: <a href="https://doi.org/10.1109/VISSOFT67405.2025.00025" -->
 		<!-- 		>10.1109/VISSOFT67405.2025.00025</a -->
@@ -31,7 +34,7 @@
 		<p>
 			<a
 				href="https://conf.researchr.org/details/icsme-2026/icsme-2026-tool-demonstration/18/LKML5Ws-The-What-When-Who-Where-and-Why-in-the-Linux-Kernel-Mailing-Lists"
-				>Conference Page</a
+				>ICSME 2026 Conference Page</a
 			>
 		</p>
 		<p>
