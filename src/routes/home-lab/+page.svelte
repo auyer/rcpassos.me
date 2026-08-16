@@ -1,5 +1,7 @@
 <script lang="js">
 	import HomelabGraph from '$lib/components/HomelabGraph.svelte';
+
+	import homelabPhotoUrl from './homelab.avif?url';
 </script>
 
 <svelte:head>
@@ -10,12 +12,21 @@
 <div class="homelab-page">
 	<div class="homelab-header-wrap">
 		<header class="homelab-header">
-			<h1>Home Lab</h1>
-			<p>
-				Personal map of my HomeLab. Some of these are configured with Ansible: <a
-					href="https://github.com/auyer/HomeLab">auyer/Homelab</a
-				>.
-			</p>
+			<div class="homelab-header-text">
+				<h1>Home Lab</h1>
+				<p>Personal map of my HomeLab. Some of these are configured with Ansible</p>
+				<p>Most parts live under my desk :)</p>
+				<p>
+					<a href="https://github.com/auyer/HomeLab">auyer/Homelab</a>
+				</p>
+			</div>
+			<div class="homelab-header-media">
+				<img
+					src={homelabPhotoUrl}
+					alt="Home Lab mini-rack under my desk. One SFF PC with a 3D printed Hard Drive Slots, 3 Mini PCs, one router, and a ventilation controller."
+					loading="lazy"
+				/>
+			</div>
 		</header>
 	</div>
 
@@ -32,7 +43,7 @@
 	}
 
 	:global(.homelab-header-wrap) {
-		max-width: 720px;
+		max-width: 1024px;
 		width: 100%;
 		margin: 0 auto;
 		padding: 1rem 1rem 0 1rem;
@@ -40,10 +51,35 @@
 	}
 
 	:global(.homelab-header) {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
 		padding-top: 1rem;
 		border-bottom: 1px solid var(--terminal-border);
 		padding-bottom: 1rem;
 		margin-bottom: 0;
+	}
+
+	:global(.homelab-header-text) {
+		flex: 1 1 55%;
+		width: 100%;
+	}
+
+	:global(.homelab-header-media) {
+		flex: 1 1 45%;
+		width: 100%;
+	}
+
+	:global(.homelab-header-media img) {
+		max-width: 100%;
+		height: auto;
+	}
+
+	@media (min-width: 768px) {
+		:global(.homelab-header) {
+			flex-direction: row;
+		}
 	}
 
 	:global(.homelab-header h1) {
