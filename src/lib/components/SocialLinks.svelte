@@ -3,13 +3,15 @@
 		linkedin,
 		github,
 		stackoverflow,
-		xmpp,
 		debian,
 		gitlab,
 		mastodon,
 		matrix,
 		gpg
 	} from '$lib/info';
+
+    let xmpp = false;
+
 </script>
 
 <div class="social-links">
