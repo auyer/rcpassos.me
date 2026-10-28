@@ -1,0 +1,10 @@
+FROM docker.io/node:26-trixie
+
+RUN apt update && \
+    apt upgrade -y && \
+    apt install -y \
+    python3 \
+    git \
+    curl \
+    ripgrep jq yq 
+
