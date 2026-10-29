@@ -11,7 +11,7 @@ if (browser) {
 }
 
 // Get all posts and add metadata
-/** @typedef {{ metadata?: { title?: string, date?: string, preview?: string, headings?: any[], updated?: string, [key: string]: any }, default?: any }} GlobResult */
+/** @typedef {{ metadata?: { title?: string, date?: string, preview?: string, headings?: any[], updated?: string, ogImage?: string | false, [key: string]: any }, default?: any }} GlobResult */
 
 const globResult = /** @type {Record<string, GlobResult>} */ (
 	import.meta.glob('/posts/**/*.md', { eager: true })

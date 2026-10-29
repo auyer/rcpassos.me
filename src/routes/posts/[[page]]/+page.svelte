@@ -1,5 +1,6 @@
 <script>
-	import { name } from '#lib/info.js';
+	import { name, website } from '#lib/info.js';
+	import Seo from '#lib/components/Seo.svelte';
 	import ArrowLeftIcon from '#lib/components/ArrowLeftIcon.svelte';
 	import ArrowRightIcon from '#lib/components/ArrowRightIcon.svelte';
 	import PostsList from '#lib/components/PostsList.svelte';
@@ -13,6 +14,13 @@
 <svelte:head>
 	<title>{name} | Posts</title>
 </svelte:head>
+
+<Seo
+	title={`${name} | Posts`}
+	description="Blog posts by Rafael Passos."
+	url={`${website}/posts`}
+	image={`${website}/og/pages/posts.png`}
+/>
 
 <container class="posts-container">
 	<article class="posts-article">

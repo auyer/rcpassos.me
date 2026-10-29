@@ -1,5 +1,6 @@
 <script>
-	import { name } from '#lib/info.js';
+	import { name, website } from '#lib/info.js';
+	import Seo from '#lib/components/Seo.svelte';
 	import OrcidBadge from '#lib/components/OrcidBadge.svelte';
 	import PaperList from '#lib/components/PaperList.svelte';
 
@@ -10,6 +11,13 @@
 <svelte:head>
 	<title>{name} | Research</title>
 </svelte:head>
+
+<Seo
+	title={`${name} | Research`}
+	description="My academic contributions and research."
+	url={`${website}/research`}
+	image={`${website}/og/pages/research.png`}
+/>
 
 <container class="research-container">
 	<article class="research-article">
