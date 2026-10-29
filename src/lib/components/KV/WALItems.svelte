@@ -5,7 +5,7 @@
 	import { fade, fly } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
 
-	import WALItem from '$lib/components/KV/WALItem.svelte';
+	import WALItem from '#lib/components/KV/WALItem.svelte';
 </script>
 
 <div>

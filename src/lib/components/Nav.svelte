@@ -1,12 +1,12 @@
 <script>
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import LightSwitch from './LightSwitch.svelte';
 
 	/**
 	 * @param {string} href
 	 */
 	function isActive(href) {
-		return href === $page.url.pathname;
+		return href === page.url.pathname;
 	}
 
 	let menuOpen = $state(false);
@@ -16,7 +16,7 @@
 	}
 
 	$effect(() => {
-		const currentPath = $page.url.pathname;
+		const currentPath = page.url.pathname;
 		if (currentPath) {
 			menuOpen = false;
 		}

@@ -1,7 +1,7 @@
 <script>
 	import pdfUrl from './lkml5ws-icsme2026-preprint.pdf?url';
-	import BibTeX from '$lib/components/BibTeX.svelte';
-	import { papers } from '$lib/data/research';
+	import BibTeX from '#lib/components/BibTeX.svelte';
+	import { papers } from '#lib/data/research.js';
 
 	const paper = papers.find((p) => p.url === 'research/lkml5ws-ICSME-2026');
 </script>

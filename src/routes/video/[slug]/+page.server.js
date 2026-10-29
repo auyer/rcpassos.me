@@ -1,4 +1,4 @@
-import { videos } from '$lib/data/videos';
+import { videos } from '#lib/data/videos.js';
 import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */

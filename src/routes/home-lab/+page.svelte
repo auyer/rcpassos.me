@@ -1,5 +1,5 @@
 <script lang="js">
-	import HomelabGraph from '$lib/components/HomelabGraph.svelte';
+	import HomelabGraph from '#lib/components/HomelabGraph.svelte';
 
 	import homelabPhotoUrl from './homelab.avif?url';
 </script>

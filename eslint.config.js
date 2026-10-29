@@ -5,9 +5,13 @@ import js from '@eslint/js';
 import svelte from 'eslint-plugin-svelte';
 import { defineConfig } from 'eslint/config';
 import globals from 'globals';
-import svelteConfig from './svelte.config.js';
+import sveltePreprocess from 'svelte-preprocess';
 
 const gitignorePath = path.resolve(import.meta.dirname, '.gitignore');
+
+const svelteConfig = {
+	preprocess: [sveltePreprocess({ scss: true, typescript: false })]
+};
 
 export default defineConfig(
 	[

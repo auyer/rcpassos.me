@@ -1,8 +1,8 @@
 <script>
-	import { name } from '$lib/info.js';
-	import ArrowLeftIcon from '$lib/components/ArrowLeftIcon.svelte';
-	import ArrowRightIcon from '$lib/components/ArrowRightIcon.svelte';
-	import PostsList from '$lib/components/PostsList.svelte';
+	import { name } from '#lib/info.js';
+	import ArrowLeftIcon from '#lib/components/ArrowLeftIcon.svelte';
+	import ArrowRightIcon from '#lib/components/ArrowRightIcon.svelte';
+	import PostsList from '#lib/components/PostsList.svelte';
 
 	export let data;
 

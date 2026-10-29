@@ -1,5 +1,5 @@
 <script lang="js">
-	import { openConnection, messageStore } from '$lib/store/wal';
+	import { openConnection, messageStore } from '#lib/store/wal.js';
 	import { onMount } from 'svelte';
 
 	import {
@@ -10,7 +10,7 @@
 		DeleteKey,
 		DeletePrefix,
 		DeleteAll
-	} from '$lib/services';
+	} from '#lib/services.js';
 
 	/** @type {String} */
 	let panelResults = '';
@@ -143,8 +143,8 @@
 		}
 	};
 
-	import WALItems from '$lib/components/KV/WALItems.svelte';
-	import KVPanel from '$lib/components/KV/KVPanel.svelte';
+	import WALItems from '#lib/components/KV/WALItems.svelte';
+	import KVPanel from '#lib/components/KV/KVPanel.svelte';
 </script>
 
 <div class="kv-page">

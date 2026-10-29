@@ -1,7 +1,7 @@
 <script>
 	import pdfUrl from './linux-kernel-with-duks-preprint.pdf?url';
-	import BibTeX from '$lib/components/BibTeX.svelte';
-	import { papers } from '$lib/data/research';
+	import BibTeX from '#lib/components/BibTeX.svelte';
+	import { papers } from '#lib/data/research.js';
 
 	const paper = papers.find((p) => p.url === 'research/linux-kernel-with-DUKS-vissoft-2025');
 </script>

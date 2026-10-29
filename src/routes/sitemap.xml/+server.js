@@ -1,5 +1,5 @@
-import { posts } from '$lib/data/posts';
-import { website } from '$lib/info';
+import { posts } from '#lib/data/posts.js';
+import { website } from '#lib/info.js';
 
 export const prerender = true;
 

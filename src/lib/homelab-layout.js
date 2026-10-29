@@ -213,8 +213,7 @@ function findOverlappingGroups(serverIds, subtrees) {
 }
 
 function hasOverlap(setA, setB) {
-	const [smaller, larger] =
-		setA.size <= setB.size ? [setA, setB] : [setB, setA];
+	const [smaller, larger] = setA.size <= setB.size ? [setA, setB] : [setB, setA];
 	for (const item of smaller) {
 		if (larger.has(item)) return true;
 	}
@@ -356,9 +355,7 @@ export function computeLayout() {
 		const multiIds = new Set(group);
 		const firstId = group[0];
 
-		const { nodes: dagreNodes } = isMulti
-			? layoutServerGroup(group)
-			: layoutServerSubtree(firstId);
+		const { nodes: dagreNodes } = isMulti ? layoutServerGroup(group) : layoutServerSubtree(firstId);
 
 		if (!dagreNodes.length) continue;
 
@@ -373,13 +370,9 @@ export function computeLayout() {
 			height: n.height
 		}));
 
-		const absNodes = adjusted.map((n) =>
-			homelabNode(n.id, n.x, n.y, n.width, n.height)
-		);
+		const absNodes = adjusted.map((n) => homelabNode(n.id, n.x, n.y, n.width, n.height));
 
-		const groupEntities = absNodes.filter(
-			(n) => getEntity(n.id)?.group === true
-		);
+		const groupEntities = absNodes.filter((n) => getEntity(n.id)?.group === true);
 
 		const depths = {};
 		for (const sid of group) {
@@ -391,18 +384,14 @@ export function computeLayout() {
 			})(sid, 0);
 		}
 
-		groupEntities.sort(
-			(a, b) => (depths[b.id] || 0) - (depths[a.id] || 0)
-		);
+		groupEntities.sort((a, b) => (depths[b.id] || 0) - (depths[a.id] || 0));
 
 		const claimed = new Set();
 		const newGroups = [];
 
 		for (const gEntity of groupEntities) {
 			const gid = gEntity.id + '-group';
-			const descIds = new Set(
-				getAllDescendants(gEntity.id).map((d) => d.id)
-			);
+			const descIds = new Set(getAllDescendants(gEntity.id).map((d) => d.id));
 			descIds.add(gEntity.id);
 
 			const members = absNodes.filter((n) => {
@@ -441,14 +430,7 @@ export function computeLayout() {
 				claimed.add(m.id);
 			}
 
-			const gn = groupNode(
-				gid,
-				gx,
-				gy,
-				gw,
-				gh,
-				gEntity.data?.label || gEntity.id
-			);
+			const gn = groupNode(gid, gx, gy, gw, gh, gEntity.data?.label || gEntity.id);
 			newGroups.push(gn);
 		}
 
@@ -457,8 +439,7 @@ export function computeLayout() {
 			const prev = newGroups[i - 1];
 			const curr = newGroups[i];
 			const prevW = parseDims(prev).w;
-			const overlap =
-				prev.position.x + prevW + GROUP_GAP - curr.position.x;
+			const overlap = prev.position.x + prevW + GROUP_GAP - curr.position.x;
 			if (overlap > 0) {
 				curr.position.x += overlap;
 			}

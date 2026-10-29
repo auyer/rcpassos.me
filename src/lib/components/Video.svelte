@@ -1,5 +1,5 @@
 <script>
-	import { videos } from '$lib/data/videos.js';
+	import { videos } from '#lib/data/videos.js';
 
 	/** @type {string} */
 	export let slug;

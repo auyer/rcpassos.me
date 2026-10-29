@@ -1,7 +1,7 @@
 <script>
-	import { name } from '$lib/info.js';
-	import OrcidBadge from '$lib/components/OrcidBadge.svelte';
-	import PaperList from '$lib/components/PaperList.svelte';
+	import { name } from '#lib/info.js';
+	import OrcidBadge from '#lib/components/OrcidBadge.svelte';
+	import PaperList from '#lib/components/PaperList.svelte';
 
 	/** @type {import('./$types').PageData} */
 	export let data;

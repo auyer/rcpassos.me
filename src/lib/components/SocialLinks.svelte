@@ -8,10 +8,9 @@
 		mastodon,
 		matrix,
 		gpg
-	} from '$lib/info';
+	} from '#lib/info.js';
 
-    let xmpp = false;
-
+	let xmpp = false;
 </script>
 
 <div class="social-links">

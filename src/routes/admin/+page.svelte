@@ -1,6 +1,6 @@
 <script>
-	import { bio, name } from '$lib/info.js';
-	import Troll from '$lib/components/Troll.svelte';
+	import { bio, name } from '#lib/info.js';
+	import Troll from '#lib/components/Troll.svelte';
 </script>
 
 <svelte:head>

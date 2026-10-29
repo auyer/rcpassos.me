@@ -1,8 +1,8 @@
 <script>
-	import { website, name, bio, avatar_avif } from '$lib/info.js';
-	import ArrowLeftIcon from '$lib/components/ArrowLeftIcon.svelte';
-	import Video from '$lib/components/Video.svelte';
-	import SocialLinks from '$lib/components/SocialLinks.svelte';
+	import { website, name, bio, avatar_avif } from '#lib/info.js';
+	import ArrowLeftIcon from '#lib/components/ArrowLeftIcon.svelte';
+	import Video from '#lib/components/Video.svelte';
+	import SocialLinks from '#lib/components/SocialLinks.svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { format, parseISO } from 'date-fns';
 

@@ -2,8 +2,8 @@
 	import '@xyflow/svelte/dist/style.css';
 	import { SvelteFlow, Controls, MiniMap, Background, BackgroundVariant } from '@xyflow/svelte';
 	import HomelabNode from './HomelabNode.svelte';
-	import { computeLayout } from '$lib/homelab-layout.js';
-	import { getNodeDetails, getLogoPath, resolveLogo } from '$lib/homelab.js';
+	import { computeLayout } from '#lib/homelab-layout.js';
+	import { getNodeDetails, getLogoPath, resolveLogo } from '#lib/homelab.js';
 
 	const nodeTypes = { homelab: HomelabNode };
 

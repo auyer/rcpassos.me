@@ -1,4 +1,4 @@
-import { papers, coPapers } from '$lib/data/research';
+import { papers, coPapers } from '#lib/data/research.js';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {

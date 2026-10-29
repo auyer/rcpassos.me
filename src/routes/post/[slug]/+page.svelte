@@ -1,11 +1,11 @@
 <script>
-	import { website, name, bio, avatar_avif } from '$lib/info.js';
-	import ToC from '$lib/components/ToC.svelte';
-	import ArrowLeftIcon from '$lib/components/ArrowLeftIcon.svelte';
-	import SocialLinks from '$lib/components/SocialLinks.svelte';
+	import { website, name, bio, avatar_avif } from '#lib/info.js';
+	import ToC from '#lib/components/ToC.svelte';
+	import ArrowLeftIcon from '#lib/components/ArrowLeftIcon.svelte';
+	import SocialLinks from '#lib/components/SocialLinks.svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import PostDate from '$lib/components/PostDate.svelte';
+	import PostDate from '#lib/components/PostDate.svelte';
 	import 'katex/dist/katex.min.css';
 	import katex from 'katex';
 
@@ -13,10 +13,13 @@
 	export let data;
 
 	// generated open-graph image for sharing on social media.
-	// see https://og-image.vercel.app/ for more options.
-	const ogImage = `https://og-image.vercel.app/**${encodeURIComponent(
-		data.post.title ?? ''
-	)}**?theme=dark&md=1&fontSize=100px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fhyper-color-logo.svg`;
+	// Set `ogImage` in a post's frontmatter to use a custom static asset instead
+	// (e.g. ogImage: /logos/my-icon.svg, served from static/)
+	const ogImage = data.post.ogImage
+		? `${website}${data.post.ogImage}`
+		: `https://og-image.vercel.app/**${encodeURIComponent(
+				data.post.title ?? ''
+			)}**?theme=dark&md=1&fontSize=100px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fhyper-color-logo.svg`;
 
 	const url = `${website}/${data.post.slug}`;
 

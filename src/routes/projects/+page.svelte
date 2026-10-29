@@ -1,6 +1,6 @@
 <script>
-	import { name, debian, github, gitlab, codeberg } from '$lib/info.js';
-	import ProjectList from '$lib/components/ProjectList.svelte';
+	import { name, debian, github, gitlab, codeberg } from '#lib/info.js';
+	import ProjectList from '#lib/components/ProjectList.svelte';
 
 	export let data;
 </script>

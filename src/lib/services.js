@@ -18,7 +18,7 @@ export async function Post(url, body) {
 			});
 			const resBody = await response.json();
 			if (!response.ok) {
-				return ['', error(response.status, resBody)];
+				return ['', error(response.status, JSON.stringify(resBody))];
 			}
 			return [resBody, null];
 		}
@@ -91,7 +91,7 @@ export async function Delete(
 		});
 		const resBody = await response.json();
 		if (!response.ok) {
-			return ['', error(response.status, resBody)];
+			return ['', error(response.status, JSON.stringify(resBody))];
 		}
 		return [resBody, null];
 	} catch (error) {

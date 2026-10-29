@@ -1,5 +1,5 @@
 <script>
-	import { name } from '$lib/info.js';
+	import { name } from '#lib/info.js';
 
 	/** @type {import('./$types').PageData} */
 	export let data;

@@ -1,8 +1,8 @@
 <script>
-	import ArrowRightIcon from '$lib/components/ArrowRightIcon.svelte';
-	import PostsList from '$lib/components/PostsList.svelte';
-	import SocialLinks from '$lib/components/SocialLinks.svelte';
-	import { avatar_avif, avatar_png, bio, bio_splitted, name } from '$lib/info.js';
+	import ArrowRightIcon from '#lib/components/ArrowRightIcon.svelte';
+	import PostsList from '#lib/components/PostsList.svelte';
+	import SocialLinks from '#lib/components/SocialLinks.svelte';
+	import { avatar_avif, avatar_png, bio, bio_splitted, name } from '#lib/info.js';
 
 	/** @type {import('./$types').PageData} */
 	export let data;

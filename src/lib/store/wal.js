@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 export const messageStore = writable();
 // const API_ENDPOINT = 'ws://localhost:8080';
 const API_ENDPOINT = 'wss://memorykv.rcpassos.me';
