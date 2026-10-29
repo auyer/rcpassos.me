@@ -2,6 +2,7 @@ node_modules
 /build
 /.svelte-kit
 /package
+/static/og
 .env
 .env.*
 !.env.example

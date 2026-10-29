@@ -13,13 +13,16 @@
 	export let data;
 
 	// generated open-graph image for sharing on social media.
-	// Set `ogImage` in a post's frontmatter to use a custom static asset instead
-	// (e.g. ogImage: /logos/my-icon.svg, served from static/)
-	const ogImage = data.post.ogImage
-		? `${website}${data.post.ogImage}`
-		: `https://og-image.vercel.app/**${encodeURIComponent(
-				data.post.title ?? ''
-			)}**?theme=dark&md=1&fontSize=100px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fhyper-color-logo.svg`;
+	// By default the image is generated at build time to `static/og/<slug>.png`.
+	// Set `ogImage` in a post's frontmatter to a static asset path to override it
+	// (e.g. ogImage: /logos/my-icon.svg, served from static/), or to `false` to
+	// disable the og/twitter image meta tags entirely.
+	const ogImage =
+		data.post.ogImage === false
+			? undefined
+			: data.post.ogImage
+				? `${website}${data.post.ogImage}`
+				: `${website}/og/${data.post.slug}.png`;
 
 	const url = `${website}/${data.post.slug}`;
 
@@ -147,7 +150,9 @@
 	<meta property="og:type" content="website" />
 	<meta property="og:title" content={data.post.title} />
 	<meta property="og:description" content={data.post.preview.text} />
-	<meta property="og:image" content={ogImage} />
+	{#if ogImage}
+		<meta property="og:image" content={ogImage} />
+	{/if}
 
 	<!-- Twitter Meta Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
@@ -155,7 +160,9 @@
 	<meta property="twitter:url" content={url} />
 	<meta name="twitter:title" content={data.post.title} />
 	<meta name="twitter:description" content={data.post.preview.text} />
-	<meta name="twitter:image" content={ogImage} />
+	{#if ogImage}
+		<meta name="twitter:image" content={ogImage} />
+	{/if}
 </svelte:head>
 
 <div class="post-layout">
