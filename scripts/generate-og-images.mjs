@@ -7,6 +7,16 @@ const rootDir = fileURLToPath(new URL('..', import.meta.url));
 const postsDir = join(rootDir, 'posts');
 const ogDir = join(rootDir, 'static', 'og');
 
+/** Fixed site pages (nav links) that get a generated OG image too. */
+const STATIC_PAGES = [
+	{ name: 'home', title: 'Rafael Passos' },
+	{ name: 'posts', title: 'Posts' },
+	{ name: 'research', title: 'Research' },
+	{ name: 'projects', title: 'Projects' },
+	{ name: 'home-lab', title: 'Home Lab' },
+	{ name: 'videos', title: 'Videos' }
+];
+
 /**
  * Extract the frontmatter block (--- ... ---) from a markdown file and parse it
  * as simple `key: value` lines. Handles quoted values and `false` booleans.
@@ -67,6 +77,7 @@ async function main() {
 	mkdirSync(ogDir, { recursive: true });
 
 	let generated = 0;
+	let pagesGenerated = 0;
 	const skipped = [];
 
 	/** @type {Promise<void>[]} */
@@ -107,6 +118,19 @@ async function main() {
 		);
 	}
 
+	// Generate a card for each fixed site page.
+	const pagesDir = join(ogDir, 'pages');
+	mkdirSync(pagesDir, { recursive: true });
+	for (const page of STATIC_PAGES) {
+		jobs.push(
+			renderOgImage({ title: page.title }).then((png) => {
+				writeFileSync(join(pagesDir, `${page.name}.png`), png);
+				pagesGenerated += 1;
+				console.log(`generated og/pages/${page.name}.png`);
+			})
+		);
+	}
+
 	const results = await Promise.allSettled(jobs);
 
 	for (const result of results) {
@@ -116,7 +140,7 @@ async function main() {
 		}
 	}
 
-	console.log(`\ngenerated ${generated}, skipped ${skipped.length}`);
+	console.log(`\ngenerated ${generated} posts, ${pagesGenerated} pages, skipped ${skipped.length}`);
 	for (const reason of skipped) console.log(`  skipped: ${reason}`);
 
 	if (process.exitCode) {

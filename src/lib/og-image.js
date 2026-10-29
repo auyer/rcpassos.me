@@ -69,6 +69,10 @@ export async function renderOgImage({ title, date }) {
 	const logoPng = await loadLogoPng();
 	const logoSrc = `data:image/png;base64,${logoPng.toString('base64')}`;
 
+	const footer = safeDate
+		? `<div style="display: flex; align-items: center; font-size: 24px; color: ${COLORS.muted};"><div>${safeDate}</div></div>`
+		: '';
+
 	const markup =
 		html(`<div style="display: flex; flex-direction: column; width: ${WIDTH}px; height: ${HEIGHT}px; padding: 64px; background-color: ${COLORS.bg}; color: ${COLORS.fg}; font-family: '${FONT_FAMILY}';">
 		<div style="display: flex; align-items: center; gap: 20px;">
@@ -76,9 +80,7 @@ export async function renderOgImage({ title, date }) {
 			<div style="font-size: 30px; font-weight: 700; color: ${COLORS.accent};">rcpassos.me</div>
 		</div>
 		<div style="display: flex; flex-grow: 1; align-items: center; font-size: ${titleSize}px; line-height: 1.25; font-weight: 700;">${safeTitle}</div>
-		<div style="display: flex; align-items: center; font-size: 24px; color: ${COLORS.muted};">
-			<div>${safeDate}</div>
-		</div>
+		${footer}
 	</div>`);
 
 	const fonts = await Promise.all(

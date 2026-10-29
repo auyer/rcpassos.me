@@ -2,7 +2,8 @@
 	import ArrowRightIcon from '#lib/components/ArrowRightIcon.svelte';
 	import PostsList from '#lib/components/PostsList.svelte';
 	import SocialLinks from '#lib/components/SocialLinks.svelte';
-	import { avatar_avif, avatar_png, bio, bio_splitted, name } from '#lib/info.js';
+	import { avatar_avif, avatar_png, bio, bio_splitted, name, website } from '#lib/info.js';
+	import Seo from '#lib/components/Seo.svelte';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -12,6 +13,8 @@
 	<title>{name}: Home</title>
 	<meta name="description" content={bio} />
 </svelte:head>
+
+<Seo title={name} description={bio} url={website} image={`${website}/og/pages/home.png`} />
 
 <container class="container home-container">
 	<!-- bio -->

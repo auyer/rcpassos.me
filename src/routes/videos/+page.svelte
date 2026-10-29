@@ -1,5 +1,6 @@
 <script>
-	import { name } from '#lib/info.js';
+	import { name, website } from '#lib/info.js';
+	import Seo from '#lib/components/Seo.svelte';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -8,6 +9,13 @@
 <svelte:head>
 	<title>{name} | Videos</title>
 </svelte:head>
+
+<Seo
+	title={`${name} | Videos`}
+	description="Videos by Rafael Passos."
+	url={`${website}/videos`}
+	image={`${website}/og/pages/videos.png`}
+/>
 
 <div class="videos-container">
 	<article class="videos-article">

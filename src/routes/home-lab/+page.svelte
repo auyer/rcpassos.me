@@ -1,5 +1,7 @@
 <script lang="js">
 	import HomelabGraph from '#lib/components/HomelabGraph.svelte';
+	import Seo from '#lib/components/Seo.svelte';
+	import { website } from '#lib/info.js';
 
 	import homelabPhotoUrl from './homelab.avif?url';
 </script>
@@ -8,6 +10,13 @@
 	<title>Homelab Docs</title>
 	<meta name="description" content="Interactive visualization of my home lab infrastructure." />
 </svelte:head>
+
+<Seo
+	title="Homelab Docs"
+	description="Interactive visualization of my home lab infrastructure."
+	url={`${website}/home-lab`}
+	image={`${website}/og/pages/home-lab.png`}
+/>
 
 <div class="homelab-page">
 	<div class="homelab-header-wrap">

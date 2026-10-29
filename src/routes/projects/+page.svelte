@@ -1,5 +1,6 @@
 <script>
-	import { name, debian, github, gitlab, codeberg } from '#lib/info.js';
+	import { name, debian, github, gitlab, codeberg, website } from '#lib/info.js';
+	import Seo from '#lib/components/Seo.svelte';
 	import ProjectList from '#lib/components/ProjectList.svelte';
 
 	export let data;
@@ -8,6 +9,13 @@
 <svelte:head>
 	<title>{name} | Personal Projects</title>
 </svelte:head>
+
+<Seo
+	title={`${name} | Personal Projects`}
+	description="Personal projects by Rafael Passos."
+	url={`${website}/projects`}
+	image={`${website}/og/pages/projects.png`}
+/>
 
 <container class="projects-container">
 	<article class="projects-article">
