@@ -148,21 +148,21 @@ export const entities = {
 		runsOn: ['qemu-fbox'],
 		passthrough: ['Sonoff Zigbee 3.0 USB Dongle Plus']
 	},
-	'k3': {
+	k3: {
 		entityType: 'platform',
 		kind: 'os',
 		name: 'K3S Node 3',
 		logo: 'k3s',
 		runsOn: ['k3hp']
 	},
-	'k2': {
+	k2: {
 		entityType: 'platform',
 		kind: 'os',
 		name: 'K3S Node 2',
 		logo: 'k3s',
 		runsOn: ['k2hp']
 	},
-	'k1': {
+	k1: {
 		entityType: 'platform',
 		kind: 'os',
 		name: 'K3S Node 1',
@@ -357,7 +357,7 @@ export const entities = {
 		logo: 'k8s',
 		method: 'ansible'
 	},
-    grafana: {
+	grafana: {
 		entityType: 'service',
 		kind: 'service',
 		name: 'Grafana',
@@ -404,27 +404,27 @@ export const entities = {
 		runsOn: ['k3s'],
 		method: 'helm'
 	},
-    navidrome: {
+	navidrome: {
 		entityType: 'service',
 		kind: 'service',
 		name: 'Navidrome',
 		runsOn: ['k3s'],
 		method: 'helm'
 	},
-    kubewarden: {
+	kubewarden: {
 		entityType: 'service',
 		kind: 'controller',
 		name: 'Kubewarden',
 		runsOn: ['k3s'],
 		method: 'helm'
 	},
-    rancher: {
+	rancher: {
 		entityType: 'service',
 		kind: 'controller',
 		name: 'Rancher',
 		runsOn: ['k3s'],
-        logo: 'rancher',
-        method: 'helm'
+		logo: 'rancher',
+		method: 'helm'
 	}
 };
 

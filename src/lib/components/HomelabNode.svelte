@@ -1,7 +1,7 @@
 <script>
 	import { Handle, Position } from '@xyflow/svelte';
 
-	let { id, data, selected } = $props();
+	let { data, selected } = $props();
 </script>
 
 <div class="hnode" class:selected>

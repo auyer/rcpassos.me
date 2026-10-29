@@ -1,6 +1,5 @@
 import { Graph, layout } from '@dagrejs/dagre';
 import {
-	entities,
 	networkEdges,
 	getChildren,
 	getEntity,
@@ -343,7 +342,7 @@ export function computeLayout() {
 		const desc = getAllDescendants(sid).map((d) => d.id);
 		subtrees[sid] = new Set(desc);
 	}
-	let allGroups = [];
+	let allGroups;
 	if (serverIds.length === 1) {
 		allGroups = [[serverIds[0]]];
 	} else {
@@ -352,7 +351,6 @@ export function computeLayout() {
 
 	for (const group of allGroups) {
 		const isMulti = group.length > 1;
-		const multiIds = new Set(group);
 		const firstId = group[0];
 
 		const { nodes: dagreNodes } = isMulti ? layoutServerGroup(group) : layoutServerSubtree(firstId);
