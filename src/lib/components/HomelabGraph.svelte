@@ -1,5 +1,5 @@
 <script lang="js">
-	import '@xyflow/svelte/dist/style.css';
+	import '@xyflow/svelte/style.css';
 	import { SvelteFlow, Controls, MiniMap, Background, BackgroundVariant } from '@xyflow/svelte';
 	import HomelabNode from './HomelabNode.svelte';
 	import { computeLayout } from '#lib/homelab-layout.js';
@@ -50,7 +50,6 @@
 		deleteKey={null}
 		disableKeyboardA11y
 		defaultEdgeOptions={{ type: 'smoothstep' }}
-		colorMode="system"
 		onnodeclick={handleNodeClick}
 		style="height: 100%;"
 	>

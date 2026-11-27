@@ -1,6 +1,10 @@
 /* ── PicoCSS base ── */
-@import '@picocss/pico/css/pico.min.css';
-@import '@picocss/pico/css/pico.colors.min.css';
+/* Pico is placed in a `base` cascade layer so that layered libraries which come
+   later (e.g. @xyflow/svelte's `xyflow` layer) can override its element-level
+   selectors such as `button`. Site rules below stay unlayered, so they keep
+   winning over both layers, exactly as before. */
+@import '@picocss/pico/css/pico.min.css' layer(base);
+@import '@picocss/pico/css/pico.colors.min.css' layer(base);
 
 /* ── Fira Code font-face ── */
 @font-face {

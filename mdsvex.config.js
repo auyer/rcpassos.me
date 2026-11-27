@@ -1,91 +1,59 @@
-import { visit } from 'unist-util-visit';
-import autolinkHeadings from 'rehype-autolink-headings';
-import slugPlugin from 'rehype-slug';
-import relativeImages from 'mdsvex-relative-images';
-import remarkHeadings from '@vcarl/remark-headings';
-// other option to investigate
-// import rehypeShiki from '@shikijs/rehype'
+import { anchors } from '@mdsvex/plugin-anchors';
+import { toc } from '@mdsvex/plugin-toc';
+import { external_links } from '@mdsvex/plugin-external-links';
+import { createHighlighter } from 'shiki';
 
-import { codeToHtml } from 'shiki';
-
-export default {
-	extensions: ['.svx', '.md'],
-	smartypants: {
-		quotes: true,
-		dashes: 'oldschool'
-	},
-	highlight: {
-		highlighter: async (code, lang) => {
-			const codeHtml = await codeToHtml(code, {
-				lang: lang,
-				themes: {
-					light: 'catppuccin-latte',
-					dark: 'catppuccin-mocha'
-				}
-			});
-			//
-			// workaround for the desired trailing /
-			// inspired by https://github.com/pngwn/MDsveX/issues/224 but mixed with shiki
-			if (lang === 'bash') {
-				return `{@html ${JSON.stringify(codeHtml)}}`;
-			}
-
-			return `{@html \`${codeHtml}\` }`;
-		}
-	},
-	remarkPlugins: [videos, relativeImages, headings],
-	rehypePlugins: [
-		slugPlugin,
-		[
-			autolinkHeadings,
-			{
-				behavior: 'wrap'
-			}
-		]
-	]
+// Shiki is loaded once, up front, so the highlighter itself can be synchronous,
+// which is what mdsvex 1.x requires.
+const THEMES = {
+	light: 'catppuccin-latte',
+	dark: 'catppuccin-mocha'
 };
 
-/**
- * Adds support to video files in markdown image links
- */
-function videos() {
-	const extensions = ['mp4', 'webm'];
-	return function transformer(tree) {
-		visit(tree, 'image', (node) => {
-			if (extensions.some((ext) => node.url.endsWith(ext))) {
-				node.type = 'html';
-				node.value = `
-            <video
-              src="${node.url}"
-              autoplay
-              muted
-              playsinline
-              loop
-              title="${node.alt}"
-            />
-          `;
-			}
-		});
-	};
-}
+// Every non-`text` language used by a fence in `posts/`. Add to this list when a
+// document starts using another one.
+const LANGUAGES = ['bash', 'c', 'cpp', 'go', 'python', 'yaml', 'xml'];
 
-/**
- * Parses headings and includes the result in metadata
- */
-function headings() {
-	return function transformer(tree, vfile) {
-		// run remark-headings plugin
-		remarkHeadings()(tree, vfile);
+const shiki = await createHighlighter({
+	themes: Object.values(THEMES),
+	langs: LANGUAGES
+});
 
-		// include the headings data in mdsvex frontmatter
-		vfile.data.fm ??= {};
-		vfile.data.fm.headings = vfile.data.headings.map((heading) => ({
-			...heading,
-			// slugify heading.value
-			id: heading.value
-				.toLowerCase()
-				.replace(/\s/g, '-')
-				.replace(/[^a-z0-9-]/g, '')
-		}));
-	};
-}
+/** @type {import('mdsvex').MdsvexOptions} */
+export default {
+	extensions: ['.svx', '.md'],
+
+	// Replaces rehype-slug: the ids are GitHub's, which is what the site had.
+	heading_ids: true,
+
+	// Replaces the 0.x `smartypants: { quotes: true, dashes: 'oldschool' }`.
+	// `dashes: true` is the default and means the same as 'oldschool' did.
+	smart_punctuation: true,
+
+	plugins: [
+		// Replaces rehype-autolink-headings with `behavior: 'wrap'`.
+		anchors({ position: 'wrap' }),
+		// Replaces @vcarl/remark-headings plus the custom `headings()` transformer.
+		// The data lands on `plugin_data.toc.headings` of the compiled module.
+		toc(),
+		// Replaces the rel="nofollow" mdsvex 0.x put on links to other sites.
+		external_links({ rel: ['nofollow'] })
+	],
+
+	/**
+	 * @param {string} code
+	 * @param {{ lang: string, meta: string, inline: boolean, filename?: string }} info
+	 */
+	highlight: (code, { lang, inline }) => {
+		if (inline) return null;
+
+		const language = lang || 'text';
+		if (language !== 'text' && !shiki.getLoadedLanguages().includes(language)) {
+			// Render unknown languages as plain code rather than failing the build.
+			console.error(`[mdsvex] no highlighter for fence language "${lang}", rendering plain`);
+			return null;
+		}
+
+		return shiki.codeToHtml(code, { lang: language, themes: THEMES });
+	}
+};

@@ -11,7 +11,7 @@ if (browser) {
 }
 
 // Get all posts and add metadata
-/** @typedef {{ metadata?: { title?: string, date?: string, preview?: string, headings?: any[], updated?: string, ogImage?: string | false, [key: string]: any }, default?: any }} GlobResult */
+/** @typedef {{ metadata?: { title?: string, date?: string, preview?: string, headings?: any[], updated?: string, ogImage?: string | false, [key: string]: any }, plugin_data?: { toc?: { headings?: any[] } }, default?: any }} GlobResult */
 
 const globResult = /** @type {Record<string, GlobResult>} */ (
 	import.meta.glob('/posts/**/*.md', { eager: true })
@@ -38,8 +38,23 @@ export const posts = Object.entries(globResult)
 		// Calculate reading time from full content (without frontmatter)
 		const fullReadingTime = readingTime(contentWithoutFrontmatter);
 
+		// mdsvex 1.x leaves the headings on the compiled module's `plugin_data`
+		// rather than injecting them into the frontmatter. Map them onto the
+		// `{ depth, value, id }` shape ToC.svelte reads.
+		const tocHeadings = post.plugin_data?.toc?.headings;
+		const headings = (tocHeadings ?? post.metadata?.headings ?? []).map(
+			(/** @type {{ depth: number, id: string, text: string }} */ heading) => ({
+				depth: heading.depth,
+				value: heading.text,
+				id: heading.id
+			})
+		);
+
 		return {
 			...post.metadata,
+
+			// table of contents data for this post
+			headings,
 
 			// generate the slug from the file path
 			slug: filepath
