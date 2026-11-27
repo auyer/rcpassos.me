@@ -40,36 +40,46 @@
 			<a
 				href="/posts"
 				data-sveltekit-preload-data="hover"
-				aria-current={isActive('/posts') ? 'page' : undefined}>Posts</a
+				aria-current={isActive('/posts') ? 'page' : undefined}
 			>
+				Posts
+			</a>
 		</li>
 		<li>
 			<a
 				href="/research"
 				data-sveltekit-preload-data="hover"
-				aria-current={isActive('/research') ? 'page' : undefined}>Research</a
+				aria-current={isActive('/research') ? 'page' : undefined}
 			>
+				Research
+			</a>
 		</li>
 		<li>
 			<a
 				href="/projects"
 				data-sveltekit-preload-data="hover"
-				aria-current={isActive('/projects') ? 'page' : undefined}>Projects</a
+				aria-current={isActive('/projects') ? 'page' : undefined}
 			>
+				Projects
+			</a>
 		</li>
 		<li>
 			<a
 				href="/home-lab"
 				data-sveltekit-preload-data="hover"
-				aria-current={isActive('/home-lab') ? 'page' : undefined}>Home-Lab</a
+				aria-current={isActive('/home-lab') ? 'page' : undefined}
 			>
+				Home-Lab
+			</a>
 		</li>
 		<li>
 			<a
 				href="/videos"
 				data-sveltekit-preload-data="hover"
-				aria-current={isActive('/videos') ? 'page' : undefined}>Videos</a
+				aria-current={isActive('/videos') ? 'page' : undefined}
 			>
+				Videos
+			</a>
 		</li>
 		<li>
 			<a href="https://lore.rcpassos.me" data-sveltekit-preload-data="hover">Lore</a>

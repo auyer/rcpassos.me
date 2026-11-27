@@ -1,4 +1,5 @@
 import { Graph, layout } from '@dagrejs/dagre';
+import { Position } from '@xyflow/system';
 import {
 	networkEdges,
 	getChildren,
@@ -12,6 +13,17 @@ import {
 	getAllDescendants
 } from './homelab.js';
 
+/**
+ * A node in the flow graph, shaped like @xyflow/svelte's Node (NodeBase plus the
+ * optional `style` field the svelte build adds). The two are mutually assignable,
+ * so this stays compatible with `<SvelteFlow bind:nodes>`.
+ * @typedef {import('@xyflow/system').NodeBase<Record<string, any>, string | undefined> & { style?: string }} FlowNode
+ */
+/**
+ * An edge in the flow graph, shaped like @xyflow/svelte's Edge.
+ * @typedef {import('@xyflow/system').EdgeBase} FlowEdge
+ */
+
 const MAX_PER_ROW = 5;
 const HW_WIDTH = 150;
 const HW_HEIGHT = 60;
@@ -23,6 +35,9 @@ const COL_PAD = 20;
 const GROUP_PAD = 10;
 const GROUP_GAP = 10;
 
+/**
+ * @param {{ id: string, kind: string }} entity
+ */
 function nodeWidth(entity) {
 	if (isPlatform(entity.id) || isService(entity.id)) {
 		if (entity.kind === 'vm') return VM_WIDTH;
@@ -31,6 +46,9 @@ function nodeWidth(entity) {
 	return HW_WIDTH;
 }
 
+/**
+ * @param {{ id: string, kind: string }} entity
+ */
 function nodeHeight(entity) {
 	if (isPlatform(entity.id) || isService(entity.id)) {
 		if (entity.kind === 'vm') return VM_HEIGHT;
@@ -39,8 +57,16 @@ function nodeHeight(entity) {
 	return HW_HEIGHT;
 }
 
+/**
+ * @param {string} serverId
+ */
 function computeRanks(serverId) {
+	/** @type {Record<string, number>} */
 	const ranks = {};
+	/**
+	 * @param {string} id
+	 * @param {number} rank
+	 */
 	function assign(id, rank) {
 		const existing = ranks[id];
 		if (existing !== undefined) {
@@ -60,6 +86,9 @@ function computeRanks(serverId) {
 	return ranks;
 }
 
+/**
+ * @param {string} serverId
+ */
 function layoutServerSubtree(serverId) {
 	const ranks = computeRanks(serverId);
 	const g = new Graph({ multigraph: true });
@@ -106,6 +135,9 @@ function layoutServerSubtree(serverId) {
 	return { nodes };
 }
 
+/**
+ * @param {string[]} serverIds
+ */
 function layoutServerGroup(serverIds) {
 	const allIds = new Set();
 	for (const sid of serverIds) {
@@ -114,12 +146,15 @@ function layoutServerGroup(serverIds) {
 		desc.forEach((d) => allIds.add(d));
 	}
 
+	/** @type {Record<string, number>} */
 	const ranks = {};
 	const queue = serverIds.map((id) => ({ id, rank: 0 }));
 	const visited = new Set();
 
 	while (queue.length) {
-		const { id, rank } = queue.shift();
+		const entry = queue.shift();
+		if (entry === undefined) break;
+		const { id, rank } = entry;
 		if (visited.has(id)) continue;
 		visited.add(id);
 
@@ -181,12 +216,18 @@ function layoutServerGroup(serverIds) {
 	return { nodes };
 }
 
+/**
+ * @param {string[]} serverIds
+ * @param {Record<string, Set<string>>} subtrees
+ * @returns {string[][]}
+ */
 function findOverlappingGroups(serverIds, subtrees) {
 	const groups = [];
 	const remaining = new Set(serverIds);
 
 	while (remaining.size > 0) {
 		const seed = remaining.values().next().value;
+		if (seed === undefined) break;
 		remaining.delete(seed);
 		const group = new Set([seed]);
 		let changed = true;
@@ -211,6 +252,10 @@ function findOverlappingGroups(serverIds, subtrees) {
 	return groups;
 }
 
+/**
+ * @param {Set<string>} setA
+ * @param {Set<string>} setB
+ */
 function hasOverlap(setA, setB) {
 	const [smaller, larger] = setA.size <= setB.size ? [setA, setB] : [setB, setA];
 	for (const item of smaller) {
@@ -221,7 +266,9 @@ function hasOverlap(setA, setB) {
 
 function buildNetworkNodes() {
 	const netIds = getNetworkEntities();
+	/** @type {Record<string, string[]>} */
 	const adj = {};
+	/** @type {Record<string, number>} */
 	const indeg = {};
 	for (const id of netIds) {
 		adj[id] = [];
@@ -237,6 +284,7 @@ function buildNetworkNodes() {
 	const order = [];
 	while (queue.length) {
 		const cur = queue.shift();
+		if (cur === undefined) break;
 		order.push(cur);
 		for (const nb of adj[cur]) {
 			indeg[nb]--;
@@ -271,11 +319,23 @@ function buildSideColumn() {
 	return nodes;
 }
 
+/**
+ * @param {Array<{ x: number, width: number }>} list
+ */
 function maxX(list) {
 	if (!list.length) return 0;
 	return Math.max(...list.map((item) => item.x + item.width));
 }
 
+/**
+ * @param {string} id
+ * @param {number} x
+ * @param {number} y
+ * @param {number} w
+ * @param {number} h
+ * @param {Record<string, any>} [extra]
+ * @returns {FlowNode}
+ */
 function homelabNode(id, x, y, w, h, extra = {}) {
 	const entity = getEntity(id);
 	return {
@@ -291,11 +351,20 @@ function homelabNode(id, x, y, w, h, extra = {}) {
 			...extra
 		},
 		style: `width:${w}px; height:${h}px;`,
-		sourcePosition: 'bottom',
-		targetPosition: 'top'
+		sourcePosition: Position.Bottom,
+		targetPosition: Position.Top
 	};
 }
 
+/**
+ * @param {string} id
+ * @param {number} x
+ * @param {number} y
+ * @param {number} w
+ * @param {number} h
+ * @param {string} [label]
+ * @returns {FlowNode}
+ */
 function groupNode(id, x, y, w, h, label) {
 	return {
 		id,
@@ -306,6 +375,9 @@ function groupNode(id, x, y, w, h, label) {
 	};
 }
 
+/**
+ * @param {FlowNode} node
+ */
 function parseDims(node) {
 	const w = parseInt(node.style?.match(/width:(\d+)px/)?.[1] || '0');
 	const h = parseInt(node.style?.match(/height:(\d+)px/)?.[1] || '0');
@@ -331,12 +403,15 @@ export function computeLayout() {
 	let colX = sideEndX + COL_PAD;
 	const TOP_Y = 220;
 
+	/** @type {FlowNode[]} */
 	const allNodes = [];
+	/** @type {FlowEdge[]} */
 	const allEdges = [];
 
 	for (const n of netRaw) allNodes.push(homelabNode(n.id, n.x, n.y, n.width, n.height));
 	for (const n of sideRaw) allNodes.push(homelabNode(n.id, n.x, n.y, n.width, n.height));
 
+	/** @type {Record<string, Set<string>>} */
 	const subtrees = {};
 	for (const sid of serverIds) {
 		const desc = getAllDescendants(sid).map((d) => d.id);
@@ -372,6 +447,7 @@ export function computeLayout() {
 
 		const groupEntities = absNodes.filter((n) => getEntity(n.id)?.group === true);
 
+		/** @type {Record<string, number>} */
 		const depths = {};
 		for (const sid of group) {
 			(function walk(id, d) {

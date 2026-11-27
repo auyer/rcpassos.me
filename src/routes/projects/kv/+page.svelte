@@ -158,9 +158,9 @@
 		</p>
 		<p>This page has a control panel and a WebSocket feed.</p>
 		<p>
-			The server is hosted in a small free-tier cloud VM, with <s
-				>WAF rules to allow Cloudflare proxy as the only ingress point.</s
-			> Cloudflare Tunnel acting as a reverse Proxy.
+			The server is hosted in a small free-tier cloud VM, with <s>
+				WAF rules to allow Cloudflare proxy as the only ingress point.
+			</s> Cloudflare Tunnel acting as a reverse Proxy.
 		</p>
 		<p>
 			Play with it, inserting some data, and looking for what is inside the database. When this page

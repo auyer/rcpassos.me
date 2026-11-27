@@ -9,11 +9,18 @@
 
 	const { nodes: initialNodes, edges: initialEdges } = computeLayout();
 
+	/** @type {import('#lib/homelab-layout.js').FlowNode[]} */
 	let nodes = $state.raw(initialNodes);
+	/** @type {import('#lib/homelab-layout.js').FlowEdge[]} */
 	let edges = $state.raw(initialEdges);
+	/** @type {string | null} */
 	let selectedNodeId = $state(null);
+	/** @type {ReturnType<typeof getNodeDetails>} */
 	let details = $state(null);
 
+	/**
+	 * @param {{ node: import('#lib/homelab-layout.js').FlowNode, event: MouseEvent | TouchEvent }} payload
+	 */
 	function handleNodeClick({ node }) {
 		if (node.type !== 'homelab') return;
 
@@ -60,15 +67,17 @@
 			<h3>{details.name}</h3>
 			<button
 				class="close-btn"
-				on:click={() => {
+				onclick={() => {
 					nodes = nodes.map((n) => ({
 						...n,
 						data: { ...n.data, selected: false }
 					}));
 					selectedNodeId = null;
 					details = null;
-				}}>x</button
+				}}
 			>
+				x
+			</button>
 		</header>
 		<div class="detail-body">
 			{#if details.category}

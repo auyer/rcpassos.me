@@ -20,8 +20,8 @@
 			<p>What are you doing here?</p>
 			<p></p>
 		</div>
-		<div slot="actions"></div></Card
-	>
+		<div slot="actions"></div>
+	</Card>
 </container>
 
 <style>

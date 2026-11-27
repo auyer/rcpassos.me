@@ -1,3 +1,44 @@
+/**
+ * A single entity in the homelab topology.
+ * @typedef {{
+ * 	entityType: 'infrastructure' | 'platform' | 'service',
+ * 	kind: string,
+ * 	name: string,
+ * 	logo?: string,
+ * 	runsOn?: string[],
+ * 	group?: boolean,
+ * 	method?: string,
+ * 	details?: string,
+ * 	boards?: string[],
+ * 	passthrough?: string[],
+ * 	storagePools?: Array<{ scheme: string; disks: string[] }>,
+ * 	ansibleRoles?: string[],
+ * 	connections?: string[],
+ * 	nestedServices?: string[],
+ * 	os?: string
+ * }} Entity
+ */
+
+/**
+ * Details shown in the graph's side panel for a selected node.
+ * @typedef {{
+ * 	name: string,
+ * 	type: string,
+ * 	category: string,
+ * 	layer: null,
+ * 	os: string | null,
+ * 	method: string | null,
+ * 	details: string | null,
+ * 	services: string[],
+ * 	ansible_roles: string[],
+ * 	hardware_passthrough: string[],
+ * 	storage_pools: Array<{ scheme: string; disks: string[] }>,
+ * 	boards: string[],
+ * 	connections: string[]
+ * }} NodeDetails
+ */
+
+/** @type {Record<string, Entity>} */
 export const entities = {
 	'isp-modem': {
 		entityType: 'infrastructure',
@@ -446,6 +487,7 @@ export const networkEdges = [
 	['tplink-sg108e', 'pi3b']
 ];
 
+/** @type {Record<string, string>} */
 const DEFAULT_LOGOS = {
 	hypervisor: 'proxmox',
 	vm: 'Qemu_logo',
@@ -481,31 +523,51 @@ const DEFAULT_LOGOS = {
 	rustfs: 'rustfs'
 };
 
+/**
+ * @param {string | Entity | null} kindOrEntity
+ */
 export function resolveLogo(kindOrEntity) {
 	if (typeof kindOrEntity === 'string') {
 		return DEFAULT_LOGOS[kindOrEntity] || 'app';
 	}
+	if (!kindOrEntity) return 'app';
 	return kindOrEntity.logo || DEFAULT_LOGOS[kindOrEntity.kind] || 'app';
 }
 
+/**
+ * @param {string} logo
+ */
 export function getLogoPath(logo) {
 	return `/logos/${logo}.svg`;
 }
 
+/**
+ * @param {string | Entity | null} kindOrName
+ */
 export function getLogo(kindOrName) {
 	return getLogoPath(resolveLogo(kindOrName));
 }
 
+/**
+ * @param {string} id
+ */
 export function getEntity(id) {
 	return entities[id] || null;
 }
 
+/**
+ * @param {string} parentId
+ */
 export function getChildren(parentId) {
 	return Object.entries(entities)
 		.filter(([, e]) => e.runsOn && e.runsOn.includes(parentId))
 		.map(([id, e]) => ({ id, ...e }));
 }
 
+/**
+ * @param {string} parentId
+ * @param {Set<string>} [_visited]
+ */
 export function getAllDescendants(parentId, _visited) {
 	const visited = _visited || new Set();
 	if (visited.has(parentId)) return [];
@@ -529,21 +591,34 @@ export function getNetworkEntities() {
 		.map(([id]) => id);
 }
 
+/**
+ * @param {string} id
+ */
 export function isPlatform(id) {
 	const entity = entities[id];
 	return entity && entity.entityType === 'platform';
 }
 
+/**
+ * @param {string} id
+ */
 export function isService(id) {
 	const entity = entities[id];
 	return entity && entity.entityType === 'service';
 }
 
+/**
+ * @param {string} id
+ */
 export function isInfrastructure(id) {
 	const entity = entities[id];
 	return entity && entity.entityType === 'infrastructure';
 }
 
+/**
+ * @param {string} nodeId
+ * @returns {NodeDetails | null}
+ */
 export function getNodeDetails(nodeId) {
 	const entity = entities[nodeId];
 	if (!entity) return null;

@@ -216,6 +216,9 @@
 	</div>
 </div>
 
+<!-- svelte-ignore css_unused_selector: the nav-icon class is forwarded onto the svg via
+     <ArrowLeftIcon class="..."> ({...$$props}), and [data-theme] is set on <html> outside
+     the component, so svelte-check can't see these selectors as used -->
 <style>
 	:global(.post-layout) {
 		display: grid;

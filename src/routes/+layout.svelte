@@ -10,7 +10,7 @@
 		rel="preload"
 		as="font"
 		type="font/woff2"
-		crossorigin
+		crossorigin=""
 		href="/fira/woff2/FiraCode-VF.woff2"
 	/>
 </svelte:head>

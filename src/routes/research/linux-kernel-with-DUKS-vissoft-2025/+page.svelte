@@ -17,9 +17,9 @@
 		</header>
 		<p>This article was accepted by the IEEE VISSOFT 2025, Visualization Challenge Track.</p>
 		<p>
-			Published by IEEE: <a href="https://doi.org/10.1109/VISSOFT67405.2025.00025"
-				>10.1109/VISSOFT67405.2025.00025</a
-			>
+			Published by IEEE: <a href="https://doi.org/10.1109/VISSOFT67405.2025.00025">
+				10.1109/VISSOFT67405.2025.00025
+			</a>
 		</p>
 		<p>
 			<BibTeX open={true} content={paper?.bibtex}></BibTeX>
@@ -39,9 +39,9 @@
 			for all other uses, in any current or future media, including reprinting/republishing this
 			material for advertising or promotional purposes, creating new collective works, for resale or
 			redistribution to servers or lists, or reuse of any copyrighted component of this work in
-			other works. DOI: <a href="https://doi.org/10.1109/VISSOFT67405.2025.00025"
-				>10.1109/VISSOFT67405.2025.00025</a
-			>
+			other works. DOI: <a href="https://doi.org/10.1109/VISSOFT67405.2025.00025">
+				10.1109/VISSOFT67405.2025.00025
+			</a>
 		</p>
 	</article>
 </div>

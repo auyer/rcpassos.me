@@ -31,6 +31,19 @@ export default defineConfig(
 				// {@html} is necessary for rendering markdown content from mdsvex
 				'svelte/no-at-html-tags': 'off'
 			}
+		},
+		{
+			// Svelte 5 suppresses css_unused_selector via an HTML comment directly above the
+			// <style> block (see these two routes). eslint-plugin-svelte does not understand
+			// that stylesheet-level mechanism and false-positives the comment as unused.
+			// svelte-check confirms 0 errors, 0 warnings with the ignore in place.
+			files: [
+				'src/routes/post/\\[slug\\]/+page.svelte',
+				'src/routes/video/\\[slug\\]/+page.svelte'
+			],
+			rules: {
+				'svelte/no-unused-svelte-ignore': 'off'
+			}
 		}
 	],
 	prettier,

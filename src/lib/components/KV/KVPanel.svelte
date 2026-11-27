@@ -132,9 +132,9 @@
 		<button class="btn variant-filled text-center" onclick={listPrefix}>List Prefix</button>
 
 		<button class="btn variant-filled-warning text-center" onclick={deleteKey}>Delete</button>
-		<button class="btn variant-filled-warning text-center" onclick={deletePrefix}
-			>Delete Prefix</button
-		>
+		<button class="btn variant-filled-warning text-center" onclick={deletePrefix}>
+			Delete Prefix
+		</button>
 		<button class="btn variant-filled-warning text-center" onclick={deleteAll}>Delete All</button>
 
 		<button class="btn btn-sm variant-filled-error align-top" onclick={cancelBg}>
