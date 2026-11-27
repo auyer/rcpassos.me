@@ -32,9 +32,9 @@
 		<!-- 		>10.1109/VISSOFT67405.2025.00025</a -->
 		<!-- 	> -->
 		<!-- </p> -->
-		<p>
+		<div class="bibtex-block">
 			<BibTeX open={true} content={paper?.bibtex}></BibTeX>
-		</p>
+		</div>
 		<p>
 			<a
 				href="https://conf.researchr.org/details/icsme-2026/icsme-2026-tool-demonstration/18/LKML5Ws-The-What-When-Who-Where-and-Why-in-the-Linux-Kernel-Mailing-Lists"
@@ -93,5 +93,10 @@
 
 	.pdf-embed {
 		width: 100%;
+	}
+
+	/* match the vertical rhythm the surrounding `.prose p` rules would have given */
+	.bibtex-block {
+		margin: 1rem 0;
 	}
 </style>

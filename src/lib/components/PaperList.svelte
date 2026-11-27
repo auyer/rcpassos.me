@@ -17,10 +17,10 @@
 				</a>
 				<p class="paper-published">
 					{paper.published}
-					{#if paper.bibtex}
-						<BibTeX open={false} content={paper.bibtex}></BibTeX>
-					{/if}
 				</p>
+				{#if paper.bibtex}
+					<BibTeX open={false} content={paper.bibtex}></BibTeX>
+				{/if}
 				{#if paper.language}
 					<p class="paper-language">
 						{paper.language}

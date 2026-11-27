@@ -21,9 +21,9 @@
 				10.1109/VISSOFT67405.2025.00025
 			</a>
 		</p>
-		<p>
+		<div class="bibtex-block">
 			<BibTeX open={true} content={paper?.bibtex}></BibTeX>
-		</p>
+		</div>
 		<p>
 			DUKS an innovative framework that supports multiple visualizations and data analyses
 			previously unsupported for the Linux kernel. Using the Linux kernel mainline as an example, we
@@ -70,5 +70,10 @@
 
 	.pdf-embed {
 		width: 100%;
+	}
+
+	/* match the vertical rhythm the surrounding `.prose p` rules would have given */
+	.bibtex-block {
+		margin: 1rem 0;
 	}
 </style>
